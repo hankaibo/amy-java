@@ -5,42 +5,39 @@ project:
   description: ${description}
   group-id: ${groupId}
   artifact-id: ${artifactId}
-  core-package: ${project.package.core}
-  service-package: ${project.package.service}
   author:
-    name: username
-    url: http://domain.com
-    email: xxx@email.com
+    name: ${project.author.name}
+    url: ${project.author.url}
+    email: ${project.author.email}
 ## 服务配置
 server:
   port: 8080
+  max-http-header-size: 10240
 spring:
   profiles:
-    active: dev
+    active: @spring.active@
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 ###############################################################################
 ## mybatis
 mybatis:
-  type-aliases-package: cn.mypandora.springbootdemo.common.entity
+  type-aliases-package: cn.mypandora.springboot.modular.system.model
   mapper-locations: classpath:mybatis/mapper/**/*.xml
 ###############################################################################
 ## mapper
 mapper:
   mappers:
-    - cn.mypandora.springbootdemo.common.base.MyBaseMapper
+    - cn.mypandora.springboot.core.base.MyBaseMapper
   not-empty: true
   identity: Mysql
 ###############################################################################
 ## pagehelper
 pagehelper:
   helper-dialect: mysql
-  reasonable: true
+  reasonable: false
   support-methods-arguments: true
   params: count=countSql
-  offset-as-page-num: true
-  row-bounds-with-count: true
 ###############################################################################
 ## log
 logging:
