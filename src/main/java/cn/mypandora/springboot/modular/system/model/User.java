@@ -5,6 +5,7 @@ import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User
@@ -95,4 +96,16 @@ public class User {
      */
     @Column(name = "modify_time")
     private Date modifyTime;
+
+    /**
+     * 角色列表
+     */
+    @Transient
+    private List<Role> roleList;
+
+    /**
+     * 资源列表
+     */
+    @Transient
+    private List<Resource> resourceList;
 }

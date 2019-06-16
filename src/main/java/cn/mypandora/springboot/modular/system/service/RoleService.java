@@ -37,6 +37,16 @@ public interface RoleService {
      */
     List<Role> selectAll();
 
+
+    /**
+     * 根据角色Id或者名称查询角色。
+     *
+     * @param roleId   角色id
+     * @param roleName 角色名称
+     * @return 角色信息
+     */
+    Role queryRoleByIdOrName(Long roleId, String roleName);
+
     /**
      * 新增角色。
      *
