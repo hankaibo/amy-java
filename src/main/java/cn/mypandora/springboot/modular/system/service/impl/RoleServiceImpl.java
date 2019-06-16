@@ -51,6 +51,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public Role queryRoleByIdOrName(Long roleId, String roleName) {
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+        return roleMapper.selectOne(role);
+    }
+
+    @Override
     public void deleteRole(Long roleId) {
         roleMapper.deleteByIds(roleId.toString());
     }

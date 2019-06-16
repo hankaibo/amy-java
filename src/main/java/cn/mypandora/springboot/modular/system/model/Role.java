@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.model;
 
 import lombok.Data;
+import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,7 +19,7 @@ public class Role {
      * 角色ID
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @KeySql(useGeneratedKeys = true)
     private Long id;
 
     /**
@@ -34,7 +35,7 @@ public class Role {
     /**
      * 状态
      */
-    private Integer status;
+    private Integer state;
 
     /**
      * 角色描述
