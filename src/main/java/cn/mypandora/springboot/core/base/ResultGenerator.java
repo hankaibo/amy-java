@@ -3,6 +3,12 @@ package cn.mypandora.springboot.core.base;
 import cn.mypandora.springboot.core.enums.ResultEnum;
 import cn.mypandora.springboot.core.exception.BusinessException;
 
+/**
+ * ResultGenerator
+ *
+ * @author hankaibo
+ * @date 2019/6/19
+ */
 public class ResultGenerator {
 
     /**

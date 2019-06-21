@@ -3,8 +3,6 @@ project:
   name: ${name}
   version: ${version}
   description: ${description}
-  group-id: ${groupId}
-  artifact-id: ${artifactId}
   author:
     name: ${project.author.name}
     url: ${project.author.url}
@@ -22,7 +20,7 @@ spring:
 ###############################################################################
 ## mybatis
 mybatis:
-  type-aliases-package: cn.mypandora.springboot.modular.system.model
+  type-aliases-package: cn.mypandora.springboot.modular.system.model.po
   mapper-locations: classpath:mybatis/mapper/**/*.xml
 ###############################################################################
 ## mapper

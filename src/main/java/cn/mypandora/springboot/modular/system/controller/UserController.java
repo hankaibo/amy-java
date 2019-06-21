@@ -2,7 +2,7 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
-import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -25,11 +25,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
-    @RequestMapping("/hello")
-    public String index() {
-        return "Hello World";
-    }
 
     @ApiOperation(value = "用户列表", notes = "查询用户列表")
     @GetMapping

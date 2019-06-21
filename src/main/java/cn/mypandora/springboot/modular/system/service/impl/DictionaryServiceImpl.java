@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.modular.system.mapper.DictionaryMapper;
-import cn.mypandora.springboot.modular.system.model.Dictionary;
+import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -20,8 +20,12 @@ import java.util.List;
 @Service
 public class DictionaryServiceImpl implements DictionaryService {
 
-    @Autowired
     private DictionaryMapper dictionaryMapper;
+
+    @Autowired
+    public DictionaryServiceImpl(DictionaryMapper dictionaryMapper) {
+        this.dictionaryMapper = dictionaryMapper;
+    }
 
     @Override
     public PageInfo<Dictionary> selectDictionary(int pageNum, int pageSize, Dictionary dictionary) {
@@ -49,7 +53,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void updateDictionary(Dictionary dictionary) {
-        Date now=new Date(System.currentTimeMillis());
+        Date now = new Date(System.currentTimeMillis());
         dictionary.setModifyTime(now);
         dictionaryMapper.updateByPrimaryKey(dictionary);
     }

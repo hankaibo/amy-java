@@ -25,6 +25,23 @@ spring:
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       use-global-data-source-stat: true
       filters: stat,wall,log4j2
+  # redis
+  redis:
+    database: 0
+    host: 58.87.121.239
+    port: 6379
+    password: hankaibo
+
+  jedis:
+    pool:
+      max-active: 800
+      max-wait: 10000
+      max-idle: 20
+      min-idle: 2
+    timeout: 30000
+  cache:
+    type: redis
+
   servlet:
     multipart:
       max-file-size: 10KB

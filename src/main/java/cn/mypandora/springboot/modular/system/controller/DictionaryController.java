@@ -2,7 +2,7 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
-import cn.mypandora.springboot.modular.system.model.Dictionary;
+import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
  * DictionaryController
- *
+ * <p>
  * 因使用application/json格式传输数据，故使用@RequestParam @PathVariable @RequestBody等注解收集参数。
  * 批量删除收集前台数组参数时(复杂参数)，只能使用Map或者对应的POJO接收，为了省写代码，使用Map方式了。
  *
