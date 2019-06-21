@@ -1,55 +1,58 @@
 package cn.mypandora.springboot.config.swagger;
 
-import cn.mypandora.springboot.core.enums.EnvironmentEnum;
-import cn.mypandora.springboot.core.enums.EnvironmentGroupEnum;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * ProjectProperties
+ * <p>
+ * 读取配置文件(application*.xml)中的属性值。
+ * 注：
+ * 1. @Component 将该类作为Bean注入Ioc容器；
+ * 2. @ConfigurationProperties批量注入配置文件的属性。@Value只能一个个指定。
+ *
+ * @author hankaibo
+ * @date 2019/6/17
+ * @see <a href="../druid/DataSourceProperties.java" />
+ */
 @Data
-@Repository
+@Component
 @ConfigurationProperties(prefix = "project")
-@EnableConfigurationProperties(ProjectProperties.class)
-public class ProjectProperties {
-
-    private String name;
-    private String version;
-    private String description;
-    private String groupId;
-    private String artifactId;
-    private String[] env;
-    private ProjectAuthorProperties author;
-    private final Environment environment;
-
-    @Autowired
-    public ProjectProperties(Environment environment) {
-        this.environment = environment;
-        this.env = environment.getActiveProfiles();
-    }
+class ProjectProperties {
 
     /**
-     * 判断是否是生产环境。
-     *
-     * @return  boolean 判断结果
+     * 项目名称
      */
-    public boolean isProduct() {
-        List<String> runtimeEnvs = new ArrayList<>();
-        for (String s : this.env) {
-            if (EnvironmentGroupEnum.isRuntime(s)) {
-                runtimeEnvs.add(s);
-            }
-        }
-        if (runtimeEnvs.size() == 0) {
-            return false;
-        }
-        //最后一个运行环境, 如果spring.profiles.active=dev, prod, mysql  则运行环境为dev, prod, 最后一个运行环境为prod，是生产环境
-        String env = runtimeEnvs.get(runtimeEnvs.size() - 1);
-        return EnvironmentEnum.PROD.getName().equals(env);
+    private String name;
+
+    /**
+     * 项目版本号
+     */
+    private String version;
+
+    /**
+     * 项目描述
+     */
+    private String description;
+
+    /**
+     * swagger contact属性
+     */
+    private ContactProperties author;
+
+    /**
+     * ProjectProperties
+     * <p>
+     * swagger 作者、网址、邮箱
+     *
+     * @author hankaibo
+     * @date 2019/6/21
+     */
+    @Data
+    static class ContactProperties {
+        private String name;
+        private String url;
+        private String email;
     }
 }

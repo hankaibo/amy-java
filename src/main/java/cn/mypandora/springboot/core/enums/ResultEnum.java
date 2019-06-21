@@ -2,6 +2,12 @@ package cn.mypandora.springboot.core.enums;
 
 import lombok.Getter;
 
+/**
+ * ResultEnum
+ *
+ * @author hankaibo
+ * @date 2019/6/19
+ */
 @Getter
 public enum ResultEnum {
     /**

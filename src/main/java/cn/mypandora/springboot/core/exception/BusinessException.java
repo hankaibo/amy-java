@@ -3,12 +3,20 @@ package cn.mypandora.springboot.core.exception;
 import cn.mypandora.springboot.core.enums.ResultEnum;
 import lombok.*;
 
+/**
+ * BusinessException
+ *
+ * @author hankaibo
+ * @date 2019/6/19
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BusinessException extends RuntimeException {
+
+    private static final long serialVersionUID = -1842090721936158195L;
     /**
      * 异常代码
      */

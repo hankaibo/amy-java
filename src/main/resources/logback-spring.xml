@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--https://blog.csdn.net/vbirdbest/article/details/79669545-->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
-    <contextName>demo</contextName>
+    <contextName>myspringboot</contextName>
     <property name="log.path" value="./logs"/>
-    <property name="log.name" value="demo"/>
+    <property name="log.name" value="myspringboot"/>
 
     <!--输出到控制台-->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -18,8 +19,9 @@
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/${log.name}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>1MB</maxFileSize>
+            <maxFileSize>10MB</maxFileSize>
             <maxHistory>30</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -31,16 +33,13 @@
         <appender-ref ref="file"/>
     </root>
 
-    <logger name="com.example.demo.mapper" level="DEBUG" additivity="false">
+    <logger name="cn.mypandora.springboot.modular.system.mapper" level="DEBUG" additivity="false">
         <appender-ref ref="console"/>
     </logger>
 
     <!-- 效果不对 测试环境+开发环境. -->
-    <springProfile name="test,dev">
+    <springProfile name="dev">
         <logger name="cn.mypandora.springboot" level="INFO"/>
-        <logger name="cn.mypandora.springboot.modular.system.mapper" level="DEBUG" additivity="false">
-            <appender-ref ref="console" />
-        </logger>
     </springProfile>
     <!-- 生产环境 -->
     <springProfile name="prod">

@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.config.swagger;
 
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * SwaggerConfiguration
- * 配置swagger-ui
+ * <p>
+ * 配置swagger-ui。
+ * 注：
+ * 1. @Configuration是指的java Config(Java 配置)，是一个Ioc容器类，相当于传统项目中见到的一个spring的xml配置文件。
+ * 当Spring发现某个类使用了@Configuration标注了，就去将该类下使用@Bean注解的方法创建bean并放入到容器中。
+ * 2. @Conditional满足特定条件时才会创建一个Bean放入到IOC容器，@ConditionalOnXxx都是组合@Conditional元注解，
+ * 使用了不同的条件Condition。@ConditionalOnProperty指定的属性是否有指定的值。
  *
  * @author hankaibo
  * @date 2019/1/14
@@ -33,17 +38,47 @@ public class SwaggerConfiguration {
         this.projectProperties = projectProperties;
     }
 
+    /**
+     * 系统模块接口组
+     *
+     * @return Docket
+     */
     @Bean
-    public Docket docket() {
+    public Docket docketSystem() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("系统API接口文档")
                 .apiInfo(apiInfo())
+                .pathMapping("/")
                 .select()
-                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class)) //这里采用包含注解的方式来确定要显示的接口
+                //这里采用包含注解的方式来确定要显示的接口
+                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))
                 .paths(PathSelectors.regex("/api/.*"))
-                .build()
-                .pathMapping("/");
+                .build();
     }
 
+    /**
+     * 业务模块接口组
+     *
+     * @return Docket
+     */
+    @Bean
+    public Docket docketBusiness() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("业务API接口文档")
+                .apiInfo(apiInfo())
+                .pathMapping("/")
+                .select()
+                //这里采用包含注解的方式来确定要显示的接口
+                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.zhizhu.controller"))
+                .paths(PathSelectors.regex("/api/.*"))
+                .build();
+    }
+
+    /**
+     * swagger 信息
+     *
+     * @return swagger页面信息
+     */
     private ApiInfo apiInfo() {
         Contact contact = new Contact(
                 projectProperties.getAuthor().getName(),

@@ -6,6 +6,16 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
 import tk.mybatis.spring.annotation.MapperScan;
 
+/**
+ * SpringbootApplication
+ *
+ * 注：
+ * 1. @MapperScan，此注解为tk的而非mybatis。
+ *
+ * @author hankaibo
+ * @date 2019/6/17
+ */
+
 @SpringBootApplication
 @ServletComponentScan
 @MapperScan("cn.mypandora.springboot.modular.system.mapper")

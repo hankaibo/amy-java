@@ -1,4 +1,4 @@
-package cn.mypandora.springboot.modular.system.model;
+package cn.mypandora.springboot.modular.system.model.po;
 
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
@@ -108,4 +108,7 @@ public class User {
      */
     @Transient
     private List<Resource> resourceList;
+
+    @Transient
+    private String token;
 }

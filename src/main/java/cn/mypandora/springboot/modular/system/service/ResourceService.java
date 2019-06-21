@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.modular.system.model.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
 
 import java.util.List;
 
@@ -20,12 +20,31 @@ public interface ResourceService {
      */
     List<Resource> selectMenusByUserId(Long userId);
 
+    /**
+     * a
+     * @return aa
+     */
     List<Resource> selecMenus();
 
+    /**
+     * aa
+     * @param menu a
+     * @return a
+     */
     Boolean addMenu(Resource menu);
 
+    /**
+     * aa
+     * @param menu  a
+     * @return a
+     */
     Boolean updateMenu(Resource menu);
 
+    /**
+     * aa
+     * @param menuId a
+     * @return a
+     */
     Boolean deleteMenuByMenuId(Long menuId);
 
     List<Resource> selectApiTeamList();

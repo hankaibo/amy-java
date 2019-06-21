@@ -6,8 +6,12 @@ import tk.mybatis.mapper.common.IdsMapper;
 import tk.mybatis.mapper.common.special.InsertListMapper;
 
 /**
+ * MyBaseMapper
+ * <p>
  * 该接口不能被扫描到，否则会出错🤔
- * @param <T>
+ *
+ * @author hankaibo
+ * @date 2019/6/19
  */
 public interface MyBaseMapper<T> extends BaseMapper<T>, ConditionMapper<T>, IdsMapper<T>, InsertListMapper<T> {
 }
