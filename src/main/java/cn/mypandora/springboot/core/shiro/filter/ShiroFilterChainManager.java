@@ -83,16 +83,20 @@ public class ShiroFilterChainManager {
             List<RolePermRule> rolePermRules = new ArrayList<>();
             RolePermRule foo1 = new RolePermRule();
             foo1.setUrl("/api/v1/dicts==POST");
-            foo1.setNeedRoles("role_admin,role_guest,admin,user");
+            foo1.setNeedRoles("admin,user");
             rolePermRules.add(foo1);
             RolePermRule foo2 = new RolePermRule();
             foo2.setUrl("/api/v1/dicts==GET");
-            foo2.setNeedRoles("role_admin,role_guest,admin,user");
+            foo2.setNeedRoles("admin,user");
             rolePermRules.add(foo2);
             RolePermRule foo3 = new RolePermRule();
             foo3.setUrl("/api/v1/dicts==DELETE");
-            foo3.setNeedRoles("role_admin,role_guest,admin,user");
+            foo3.setNeedRoles("admin,user");
             rolePermRules.add(foo3);
+            RolePermRule foo4 = new RolePermRule();
+            foo4.setUrl("/api/v1/users/info==GET");
+            foo4.setNeedRoles("admin,user");
+            rolePermRules.add(foo4);
             // ---- TODO-------------------------------------------------------------------
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {

@@ -10,12 +10,12 @@ import com.alibaba.fastjson.JSON;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -124,18 +124,14 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
 
     private boolean isJwtSubmission(ServletRequest request) {
         String jwt = RequestResponseUtil.getHeader(request, "authorization");
-        String appId = RequestResponseUtil.getHeader(request, "appId");
-        return (request instanceof HttpServletRequest)
-                && !StringUtils.isEmpty(jwt)
-                && !StringUtils.isEmpty(appId);
+        return (request instanceof HttpServletRequest)   && StringUtils.isNotEmpty(jwt);
     }
 
     private AuthenticationToken createJwtToken(ServletRequest request) {
         Map<String, String> maps = RequestResponseUtil.getRequestHeaders(request);
-        String appId = maps.get("user");
         String jwt = maps.get("authorization");
 
-        return new JwtToken(appId, jwt);
+        return new JwtToken(jwt);
     }
 
     /**

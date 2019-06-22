@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.Role;
 
 import java.util.List;
 

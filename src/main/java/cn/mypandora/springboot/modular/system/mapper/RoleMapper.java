@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
-import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.Role;
 
 /**
  * RoleMapper
