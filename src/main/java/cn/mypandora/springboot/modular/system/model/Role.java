@@ -1,4 +1,4 @@
-package cn.mypandora.springboot.modular.system.model.po;
+package cn.mypandora.springboot.modular.system.model;
 
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
@@ -7,28 +7,28 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Resource
+ * Role
  *
  * @author hankaibo
  * @date 2019/1/12
  */
 @Data
-@Table(name = "sys_resource")
-public class Resource {
+@Table(name = "sys_role")
+public class Role {
     /**
-     * 资源ID
+     * 角色ID
      */
     @Id
     @KeySql(useGeneratedKeys = true)
     private Long id;
 
     /**
-     * 资源名称
+     * 角色名
      */
     private String name;
 
     /**
-     * 资源编码
+     * 角色编码
      */
     private String code;
 
@@ -38,35 +38,9 @@ public class Resource {
     private Integer state;
 
     /**
-     * URI
-     */
-    private String uri;
-
-    /**
-     * 类型
-     */
-    private Short type;
-
-    /**
-     * 方法
-     */
-    private String method;
-
-    /**
-     * 图标
-     */
-    private String icon;
-
-    /**
-     * 描述
+     * 角色描述
      */
     private String description;
-
-    /**
-     * 父Id
-     */
-    @Column(name = "parent_id")
-    private Long parentId;
 
     /**
      * 创建时间

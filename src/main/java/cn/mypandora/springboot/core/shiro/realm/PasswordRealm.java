@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.core.shiro.realm;
 
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
-import cn.mypandora.springboot.modular.system.model.po.User;
+import cn.mypandora.springboot.modular.system.model.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import lombok.Setter;
 import org.apache.shiro.authc.*;

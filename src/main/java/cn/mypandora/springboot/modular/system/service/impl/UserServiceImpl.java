@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.modular.system.model.po.User;
-import cn.mypandora.springboot.modular.system.model.po.UserRole;
+import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.UserRole;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
 import cn.mypandora.springboot.modular.system.service.UserService;

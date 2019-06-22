@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.Resource;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import org.springframework.stereotype.Service;
 

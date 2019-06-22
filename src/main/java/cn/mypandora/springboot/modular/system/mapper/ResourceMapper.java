@@ -2,7 +2,7 @@ package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.Resource;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.modular.system.model.po.User;
+import cn.mypandora.springboot.modular.system.model.User;
 import cn.mypandora.springboot.modular.system.service.LoginService;
 import org.springframework.stereotype.Service;
 

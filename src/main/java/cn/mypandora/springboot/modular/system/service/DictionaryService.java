@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.modular.system.model.po.Dictionary;
+import cn.mypandora.springboot.modular.system.model.Dictionary;
 import com.github.pagehelper.PageInfo;
 
 /**
