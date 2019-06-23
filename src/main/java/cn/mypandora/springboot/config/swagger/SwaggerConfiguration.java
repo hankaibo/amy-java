@@ -1,17 +1,25 @@
 package cn.mypandora.springboot.config.swagger;
 
+import cn.mypandora.springboot.core.enums.ResultEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
+import org.springframework.web.bind.annotation.RequestMethod;
+import springfox.documentation.builders.*;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.Parameter;
+import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.common.SwaggerPluginSupport;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * SwaggerConfiguration
@@ -45,15 +53,28 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket docketSystem() {
+        Parameter parameter = new ParameterBuilder().name("Authorization").description("header带上token")
+                // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
+                .modelRef(new ModelRef("string")).parameterType("header").order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
+
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("系统API接口文档")
                 .apiInfo(apiInfo())
-                .pathMapping("/")
-                .select()
+                .groupName("系统API接口文档")
                 //这里采用包含注解的方式来确定要显示的接口
+                .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))
-                .paths(PathSelectors.regex("/api/.*"))
-                .build();
+//                .paths(PathSelectors.regex("/api/.*"))
+//                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+                .paths(PathSelectors.any())
+                .build()
+                .useDefaultResponseMessages(false)
+                // 全局信息
+                .globalResponseMessage(RequestMethod.GET, customResponseMessage())
+                .globalResponseMessage(RequestMethod.POST, customResponseMessage())
+                .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
+                .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
+                //请求,带上token
+                .globalOperationParameters(Arrays.asList(parameter));
     }
 
     /**
@@ -63,15 +84,24 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket docketBusiness() {
+        Parameter parameter = new ParameterBuilder().name("Authorization").description("header带上token")
+                // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
+                .modelRef(new ModelRef("string")).parameterType("header").order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("业务API接口文档")
                 .apiInfo(apiInfo())
-                .pathMapping("/")
-                .select()
+                .groupName("业务API接口文档")
                 //这里采用包含注解的方式来确定要显示的接口
+                .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.zhizhu.controller"))
                 .paths(PathSelectors.regex("/api/.*"))
-                .build();
+                .build()
+                .useDefaultResponseMessages(false)
+                .globalResponseMessage(RequestMethod.GET, customResponseMessage())
+                .globalResponseMessage(RequestMethod.POST, customResponseMessage())
+                .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
+                .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
+                //请求,带上token
+                .globalOperationParameters(Arrays.asList(parameter));
     }
 
     /**
@@ -86,10 +116,21 @@ public class SwaggerConfiguration {
                 projectProperties.getAuthor().getEmail()
         );
         return new ApiInfoBuilder()
+                .version(projectProperties.getVersion())
                 .title(projectProperties.getName())
                 .description(projectProperties.getDescription())
-                .version(projectProperties.getVersion())
                 .contact(contact)
                 .build();
+    }
+
+    private List<ResponseMessage> customResponseMessage() {
+        List<ResponseMessage> responseMessageList = new ArrayList<>();
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.SUCCESS.getCode()).message(ResultEnum.SUCCESS.getMessage()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.FAIL.getCode()).message(ResultEnum.FAIL.getMessage()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.UNAUTHORIZED.getCode()).message(ResultEnum.UNAUTHORIZED.getMessage()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.FORBIDDEN.getCode()).message(ResultEnum.FORBIDDEN.getMessage()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.NOT_FOUND.getCode()).message(ResultEnum.NOT_FOUND.getMessage()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.INTERNAL_SERVER_ERROR.getCode()).message(ResultEnum.INTERNAL_SERVER_ERROR.getMessage()).build());
+        return responseMessageList;
     }
 }

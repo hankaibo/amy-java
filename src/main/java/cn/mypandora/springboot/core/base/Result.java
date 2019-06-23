@@ -2,6 +2,8 @@ package cn.mypandora.springboot.core.base;
 
 import cn.mypandora.springboot.core.enums.ResultEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +18,7 @@ import java.io.Serializable;
  * @author hankaibo
  * @date 2019/6/19
  */
+@ApiModel
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,21 +30,25 @@ public class Result<T> implements Serializable {
     /**
      * 状态码
      */
+    @ApiModelProperty(value = "状态码", example = "200")
     private int code;
 
     /**
      * 成功与否
      */
+    @ApiModelProperty(value = "成功与否")
     private boolean success;
 
     /**
      * 状态说明
      */
+    @ApiModelProperty(value = "状态码说明")
     private String message;
 
     /**
      * 返回的数据
      */
+    @ApiModelProperty(value = "响应数据")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 

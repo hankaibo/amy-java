@@ -5,9 +5,7 @@ import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.modular.system.model.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageInfo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,58 +21,99 @@ import java.util.Map;
  * @author hankaibo
  * @date 2019/6/14
  */
+@Api(tags = "字典管理", description = "字典相关接口")
 @RestController
 @RequestMapping("/api/v1/dicts")
-@Api(value = "Dictionary API接口", tags = "字典管理", description = "Dictionary API接口")
 public class DictionaryController {
 
     @Resource
     private DictionaryService dictionaryService;
 
+    /**
+     * 查询分页字典数据。
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页条数
+     * @return 分页数据
+     */
     @ApiOperation(value = "字典列表", notes = "查询字典列表")
     @GetMapping
-    public Result<PageInfo> listAll(@RequestParam(value = "page", defaultValue = "1") int pageNum,
-                                    @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+    public Result<PageInfo> listAll(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+                                    @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize) {
         Dictionary dictionary = new Dictionary();
         dictionary.setParentId(-1L);
         return ResultGenerator.success(dictionaryService.selectDictionary(pageNum, pageSize, dictionary));
     }
 
+    /**
+     * 查询字典某项的分页数据。
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页条数
+     * @param id       工夫项字典主键id
+     * @return 该项的分页数据
+     */
     @ApiOperation(value = "字典项", notes = "查询字典某项")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization bearer token", required = true, dataType = "string", paramType = "header"),
+    })
     @GetMapping("/{id}")
-    public Result<PageInfo> listById(@RequestParam(value = "page", defaultValue = "1") int pageNum,
-                                     @RequestParam(value = "size", defaultValue = "10") int pageSize,
-                                     @PathVariable("id") Long id) {
+    public Result<PageInfo> listById(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+                                     @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
+                                     @PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id) {
         Dictionary dictionary = new Dictionary();
         dictionary.setParentId(id);
         return ResultGenerator.success(dictionaryService.selectDictionary(pageNum, pageSize, dictionary));
     }
 
+    /**
+     * 新建字典。
+     *
+     * @param dictionary 字典数据
+     * @return 成功
+     */
     @ApiOperation(value = "新建字典")
-    @ApiImplicitParam(name = "dictionary", value = "字典对象", required = true, dataType = "Dictionary")
     @PostMapping
-    public Result<Dictionary> insert(@RequestBody Dictionary dictionary) {
+    public Result insert(@RequestBody @ApiParam(name = "dictionary", value = "json格式", required = true) Dictionary dictionary) {
         dictionaryService.addDictionary(dictionary);
         return ResultGenerator.success();
     }
 
+    /**
+     * 删除字典。
+     *
+     * @param dictId 字典主键id
+     * @return 成功
+     */
     @ApiOperation(value = "删除字典", notes = "根据字典Id删除")
     @DeleteMapping("/{id}")
-    public Result<Dictionary> remove(@PathVariable("id") Long dictId) {
+    public Result remove(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long dictId) {
         dictionaryService.deleteDictionary(dictId);
         return ResultGenerator.success();
     }
 
+    /**
+     * 批量删除字典。
+     *
+     * @param ids 字典id数据
+     * @return 成功
+     */
     @ApiOperation(value = "删除字典(批量)", notes = "根据字典Id批量删除")
     @DeleteMapping
-    public Result<Dictionary> remove(@RequestBody Map<String, Long[]> ids) {
+    public Result remove(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, Long[]> ids) {
         dictionaryService.deleteBatchDictionary(StringUtils.join(ids.get("ids"), ","));
         return ResultGenerator.success();
     }
 
+    /**
+     * 更新字典。
+     *
+     * @param dictionary 字典数据
+     * @return 成功
+     */
     @ApiOperation(value = "更新字典")
     @PutMapping
-    public Result<Dictionary> update(@RequestBody Dictionary dictionary) {
+    public Result update(@RequestBody @ApiParam(value = "更新的字典实体对象", required = true) Dictionary dictionary) {
         dictionaryService.updateDictionary(dictionary);
         return ResultGenerator.success();
     }
