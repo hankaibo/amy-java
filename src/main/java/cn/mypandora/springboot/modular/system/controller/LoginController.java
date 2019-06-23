@@ -4,20 +4,17 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -28,10 +25,9 @@ import java.util.concurrent.TimeUnit;
  * @author hankaibo
  * @date 2019/6/19
  */
-@Slf4j
+@Api(tags = "登录管理", description = "登录登出相关接口")
 @RestController
 @RequestMapping("/api/v1")
-@Api(value = "Login API接口", tags = "登录管理", description = "Login API接口")
 public class LoginController {
 
     private UserService userService;
@@ -49,8 +45,13 @@ public class LoginController {
      * @param request request
      * @return token
      */
+    @ApiOperation(value = "用户登录", notes = "输入名称与密码，返回token与role信息。")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
+            @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")
+    })
     @PostMapping("/login")
-    public Result<Map> login(HttpServletRequest request) {
+    public Result<Token> login(HttpServletRequest request) {
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
         // TODO 根据用户id/姓名获取用户角色、权限
@@ -62,9 +63,9 @@ public class LoginController {
                 refreshPeriodTime >> 1, roles, perms, SignatureAlgorithm.HS512);
         // 将签发的JWT存储到Redis： {JWT-SESSION-{appID} , jwt}
         redisTemplate.opsForValue().set("JWT-SESSION-" + username, jwt, refreshPeriodTime, TimeUnit.SECONDS);
-        Map<String, String> token = new HashMap<>(2);
-        token.put("token", jwt);
-        token.put("role", roles);
+        Token token = new Token();
+        token.setToken(jwt);
+        token.setRole(roles);
 
         return ResultGenerator.success(token);
     }
