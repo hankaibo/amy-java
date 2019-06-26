@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -39,10 +40,25 @@ public class DictionaryController {
     @ApiOperation(value = "字典列表", notes = "查询字典列表")
     @GetMapping
     public Result<PageInfo> listAll(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                    @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize) {
+                                    @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
+                                    HttpServletRequest request) {
         Dictionary dictionary = new Dictionary();
-        dictionary.setParentId(-1L);
+        if (request.getParameter("parentId") != null) {
+            dictionary.setParentId(Long.parseLong(request.getParameter("parentId")));
+        }
         return ResultGenerator.success(dictionaryService.selectDictionary(pageNum, pageSize, dictionary));
+    }
+
+    @ApiOperation(value = "字典列表", notes = "根据code查询其下的所有字典")
+    @GetMapping("/code")
+    public Result<PageInfo> listByParent(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+                                         @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
+                                         HttpServletRequest request) {
+        Dictionary dictionary = new Dictionary();
+        if (request.getParameter("code") != null) {
+            dictionary.setCode(request.getParameter("code"));
+        }
+        return ResultGenerator.success(dictionaryService.selectDictionaryByCode(pageNum, pageSize, dictionary));
     }
 
     /**
@@ -54,9 +70,6 @@ public class DictionaryController {
      * @return 该项的分页数据
      */
     @ApiOperation(value = "字典项", notes = "查询字典某项")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization bearer token", required = true, dataType = "string", paramType = "header"),
-    })
     @GetMapping("/{id}")
     public Result<PageInfo> listById(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
                                      @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,

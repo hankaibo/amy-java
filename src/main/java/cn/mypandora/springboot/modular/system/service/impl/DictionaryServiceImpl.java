@@ -35,6 +35,13 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
+    public PageInfo<Dictionary> selectDictionaryByCode(int pageNum, int pageSize, Dictionary dictionary) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Dictionary> dictionaryList = dictionaryMapper.selectByCode(dictionary);
+        return new PageInfo<>(dictionaryList);
+    }
+
+    @Override
     public void addDictionary(Dictionary dictionary) {
         Date now = new Date(System.currentTimeMillis());
         dictionary.setCreateTime(now);
