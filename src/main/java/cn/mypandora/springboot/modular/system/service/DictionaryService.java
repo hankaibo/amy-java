@@ -22,6 +22,16 @@ public interface DictionaryService {
     PageInfo<Dictionary> selectDictionary(int pageNum, int pageSize, Dictionary dictionary);
 
     /**
+     * 根据code值，查询其下的所有子级字典数据。
+     *
+     * @param pageNum    当前页码
+     * @param pageSize   当前页数
+     * @param dictionary 查询条件
+     * @return 字典数据
+     */
+    PageInfo<Dictionary> selectDictionaryByCode(int pageNum, int pageSize, Dictionary dictionary);
+
+    /**
      * 添加字典。
      *
      * @param dictionary 字典

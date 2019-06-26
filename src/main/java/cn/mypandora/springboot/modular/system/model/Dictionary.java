@@ -57,7 +57,7 @@ public class Dictionary {
      * 排序
      */
     @ApiModelProperty(value = "字典顺序", example = "1")
-    private String sort;
+    private Integer sort;
 
     /**
      * 字典描述
