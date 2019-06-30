@@ -4,12 +4,15 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.*;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,6 +71,24 @@ public class LoginController {
         token.setRole(roles);
 
         return ResultGenerator.success(token);
+    }
+
+    @ApiOperation(value = "用户登出", notes = "带token。")
+    @PostMapping("/logout")
+    public Result logout(HttpServletRequest request) {
+        SecurityUtils.getSubject().logout();
+        String token = RequestResponseUtil.getHeader(request, "authorization");
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(token, JsonWebTokenUtil.SECRET_KEY);
+        String appId = jwtAccount.getAppId();
+        if (StringUtils.isEmpty(appId)) {
+            return ResultGenerator.failure("用户无法登出。");
+        }
+        String jwt = redisTemplate.opsForValue().get("JWT-SESSION-" + appId);
+        if (StringUtils.isEmpty(jwt)) {
+            return ResultGenerator.failure("用户无法登出。");
+        }
+        redisTemplate.opsForValue().getOperations().delete("JWT-SESSION-" + appId);
+        return ResultGenerator.success("用户登出成功。");
     }
 
 }
