@@ -46,37 +46,19 @@ public class DictionaryController {
         if (request.getParameter("parentId") != null) {
             dictionary.setParentId(Long.parseLong(request.getParameter("parentId")));
         }
-        return ResultGenerator.success(dictionaryService.selectDictionary(pageNum, pageSize, dictionary));
-    }
-
-    @ApiOperation(value = "字典列表", notes = "根据code查询其下的所有字典")
-    @GetMapping("/code")
-    public Result<PageInfo> listByParent(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                         @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
-                                         HttpServletRequest request) {
-        Dictionary dictionary = new Dictionary();
-        if (request.getParameter("code") != null) {
-            dictionary.setCode(request.getParameter("code"));
-        }
-        return ResultGenerator.success(dictionaryService.selectDictionaryByCode(pageNum, pageSize, dictionary));
+        return ResultGenerator.success(dictionaryService.selectDictionaryList(pageNum, pageSize, dictionary));
     }
 
     /**
-     * 查询字典某项的分页数据。
+     * 查询字典某项的详细数据。
      *
-     * @param pageNum  页码
-     * @param pageSize 每页条数
-     * @param id       工夫项字典主键id
-     * @return 该项的分页数据
+     * @param id 工夫项字典主键id
+     * @return 数据
      */
-    @ApiOperation(value = "字典项", notes = "查询字典某项")
+    @ApiOperation(value = "字典项", notes = "查询字典详情")
     @GetMapping("/{id}")
-    public Result<PageInfo> listById(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                     @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
-                                     @PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id) {
-        Dictionary dictionary = new Dictionary();
-        dictionary.setParentId(id);
-        return ResultGenerator.success(dictionaryService.selectDictionary(pageNum, pageSize, dictionary));
+    public Result<Dictionary> listById(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id) {
+        return ResultGenerator.success(dictionaryService.selectDictionary(id));
     }
 
     /**
