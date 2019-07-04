@@ -28,17 +28,17 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public PageInfo<Dictionary> selectDictionary(int pageNum, int pageSize, Dictionary dictionary) {
+    public PageInfo<Dictionary> selectDictionaryList(int pageNum, int pageSize, Dictionary dictionary) {
         PageHelper.startPage(pageNum, pageSize);
         List<Dictionary> dictionaryList = dictionaryMapper.select(dictionary);
         return new PageInfo<>(dictionaryList);
     }
 
     @Override
-    public PageInfo<Dictionary> selectDictionaryByCode(int pageNum, int pageSize, Dictionary dictionary) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<Dictionary> dictionaryList = dictionaryMapper.selectByCode(dictionary);
-        return new PageInfo<>(dictionaryList);
+    public Dictionary selectDictionary(Long id) {
+        Dictionary dictionary = new Dictionary();
+        dictionary.setId(id);
+        return dictionaryMapper.selectOne(dictionary);
     }
 
     @Override
