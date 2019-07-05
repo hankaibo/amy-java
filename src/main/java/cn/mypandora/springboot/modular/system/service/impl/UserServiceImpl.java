@@ -1,14 +1,13 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.modular.system.model.User;
-import cn.mypandora.springboot.modular.system.model.UserRole;
+import cn.mypandora.springboot.core.utils.PasswordUtil;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
+import cn.mypandora.springboot.modular.system.model.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import cn.mypandora.springboot.core.utils.PasswordUtil;
-import cn.mypandora.springboot.core.utils.RandomUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,48 +34,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String selectRoleByUserId(Long userId) {
-        return userMapper.selectRoleByUserId(userId);
-    }
-
-    @Override
-    public List<User> selectAll() {
-        return userMapper.selectAll();
-    }
-
-    @Override
-    public List<User> selectUserByRoleId(Long roleId) {
-        return userMapper.selectUserByRoleId(roleId);
-    }
-
-    @Override
-    public boolean authorityUserRole(Long userId, Long roleId) {
-        Date now = new Date(System.currentTimeMillis());
-        UserRole userRole = new UserRole();
-        userRole.setUserId(userId);
-        userRole.setRoleId(roleId);
-        userRole.setCreateTime(now);
-        userRole.setModifyTime(now);
-        return userRoleMapper.insert(userRole) == 1 ? Boolean.TRUE : Boolean.FALSE;
-    }
-
-    @Override
-    public boolean deleteAuthorityUserRole(Long userId, Long roleId) {
-        UserRole userRole = new UserRole();
-        userRole.setUserId(userId);
-        userRole.setRoleId(roleId);
-        return userRoleMapper.delete(userRole) == 1 ? Boolean.TRUE : Boolean.FALSE;
-    }
-
-    @Override
-    public PageInfo<User> selectByPage(int pageNum, int pageSize, User user) {
+    public PageInfo<User> selectUserList(int pageNum, int pageSize, User user) {
         PageHelper.startPage(pageNum, pageSize);
         List<User> userList = userMapper.selectByCondition(user);
         return new PageInfo<>(userList);
     }
 
     @Override
-    public User selectByIdOrName(Long userId, String username) {
+    public User selectUserByIdOrName(Long userId, String username) {
         User user = new User();
         user.setId(userId);
         user.setUsername(username);
@@ -84,37 +49,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectById(Long userId) {
-        User user = new User();
-        user.setId(userId);
-        return userMapper.selectOne(user);
-    }
-
-    @Override
-    public List<User> selectByIds(List<Long> userIdList) {
-        return userMapper.selectByIds(userIdList.toString());
-    }
-
-    @Override
     public void addUser(User user) {
         Date now = new Date(System.currentTimeMillis());
-        String salt = RandomUtil.getSalt();
+        String salt = RandomStringUtils.randomAlphabetic(16);
         user.setSalt(salt);
         //
         String password = PasswordUtil.encrypt(user.getPassword(), salt);
         user.setPassword(password);
         user.setCreateTime(now);
-        user.setModifyTime(now);
         userMapper.insert(user);
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        userMapper.deleteByIds(userId.toString());
+    public void deleteUser(Long id) {
+        userMapper.deleteByIds(id.toString());
+    }
+
+    @Override
+    public void deleteBatchUser(String ids) {
+        userMapper.deleteByIds(ids);
     }
 
     @Override
     public void updateUser(User user) {
+        Date now = new Date(System.currentTimeMillis());
+        user.setModifyTime(now);
         userMapper.updateByPrimaryKey(user);
+    }
+
+    @Override
+    public boolean enableUser(Long id) {
+        return false;
     }
 }

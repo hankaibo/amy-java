@@ -62,7 +62,7 @@ public class PasswordRealm extends AuthorizingRealm {
         }
 
         String username = (String) authenticationToken.getPrincipal();
-        User user = userService.selectByIdOrName(null, username);
+        User user = userService.selectUserByIdOrName(null, username);
         if (user != null) {
             // TODO 用盐对authenticationToken密码进行MD5加密,再比较
             return new SimpleAuthenticationInfo(username, user.getPassword(), getName());

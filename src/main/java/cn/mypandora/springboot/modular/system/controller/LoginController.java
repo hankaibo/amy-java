@@ -8,7 +8,10 @@ import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -50,6 +53,7 @@ public class LoginController {
      */
     @ApiOperation(value = "用户登录", notes = "输入名称与密码，返回token与role信息。")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "String", access = "hidden"),
             @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
             @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")
     })

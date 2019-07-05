@@ -71,7 +71,6 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))
                 .paths(PathSelectors.regex("/api/.*"))
-                .paths(PathSelectors.regex("^((?!/api/v1/login).)*$"))
                 .build()
                 .useDefaultResponseMessages(false)
                 // 全局信息
@@ -81,29 +80,6 @@ public class SwaggerConfiguration {
                 .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
                 //请求,带上token
                 .globalOperationParameters(Arrays.asList(parameter));
-    }
-
-    /**
-     * 单独的登录接口，不需要token。
-     *
-     * @return Docket
-     */
-    @Bean
-    public Docket docketLogin() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName("登录接口文档")
-                //这里采用包含注解的方式来确定要显示的接口
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))
-                .paths(PathSelectors.regex("/api/v1/login"))
-                .build()
-                .useDefaultResponseMessages(false)
-                // 全局信息
-                .globalResponseMessage(RequestMethod.GET, customResponseMessage())
-                .globalResponseMessage(RequestMethod.POST, customResponseMessage())
-                .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
-                .globalResponseMessage(RequestMethod.DELETE, customResponseMessage());
     }
 
     /**
