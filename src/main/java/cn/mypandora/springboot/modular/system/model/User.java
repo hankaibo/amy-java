@@ -7,6 +7,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class User {
     /**
      * 用户名
      */
+    @NotNull
     @ApiModelProperty(value = "用户名称")
     private String username;
 

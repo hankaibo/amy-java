@@ -97,6 +97,10 @@ public class ShiroFilterChainManager {
             foo4.setUrl("/api/v1/users/info==GET");
             foo4.setNeedRoles("admin,user");
             rolePermRules.add(foo4);
+            RolePermRule foo5 = new RolePermRule();
+            foo4.setUrl("/api/v1/users**==GET,POST,DELETE,PUT");
+            foo4.setNeedRoles("admin,user");
+            rolePermRules.add(foo5);
             // ---- TODO-------------------------------------------------------------------
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {

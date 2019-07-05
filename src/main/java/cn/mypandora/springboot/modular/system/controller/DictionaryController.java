@@ -41,23 +41,19 @@ public class DictionaryController {
     @GetMapping
     public Result<PageInfo> listAll(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
                                     @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
-                                    HttpServletRequest request) {
-        Dictionary dictionary = new Dictionary();
-        if (request.getParameter("parentId") != null) {
-            dictionary.setParentId(Long.parseLong(request.getParameter("parentId")));
-        }
+                                    Dictionary dictionary) {
         return ResultGenerator.success(dictionaryService.selectDictionaryList(pageNum, pageSize, dictionary));
     }
 
     /**
      * 查询字典某项的详细数据。
      *
-     * @param id 工夫项字典主键id
-     * @return 数据
+     * @param id 字典主键id
+     * @return 新建结果
      */
-    @ApiOperation(value = "字典项", notes = "查询字典详情")
+    @ApiOperation(value = "字典详情")
     @GetMapping("/{id}")
-    public Result<Dictionary> listById(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id) {
+    public Result<Dictionary> listById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
         return ResultGenerator.success(dictionaryService.selectDictionary(id));
     }
 
@@ -65,11 +61,11 @@ public class DictionaryController {
      * 新建字典。
      *
      * @param dictionary 字典数据
-     * @return 成功
+     * @return 新建结果
      */
     @ApiOperation(value = "新建字典")
     @PostMapping
-    public Result insert(@RequestBody @ApiParam(name = "dictionary", value = "json格式", required = true) Dictionary dictionary) {
+    public Result insert(@RequestBody @ApiParam(name = "dictionary", value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.addDictionary(dictionary);
         return ResultGenerator.success();
     }
@@ -78,7 +74,7 @@ public class DictionaryController {
      * 删除字典。
      *
      * @param dictId 字典主键id
-     * @return 成功
+     * @return 删除结果
      */
     @ApiOperation(value = "删除字典", notes = "根据字典Id删除")
     @DeleteMapping("/{id}")
@@ -90,8 +86,8 @@ public class DictionaryController {
     /**
      * 批量删除字典。
      *
-     * @param ids 字典id数据
-     * @return 成功
+     * @param ids 字典id数组
+     * @return 删除结果
      */
     @ApiOperation(value = "删除字典(批量)", notes = "根据字典Id批量删除")
     @DeleteMapping
@@ -104,11 +100,11 @@ public class DictionaryController {
      * 更新字典。
      *
      * @param dictionary 字典数据
-     * @return 成功
+     * @return 更新结果
      */
     @ApiOperation(value = "更新字典")
     @PutMapping
-    public Result update(@RequestBody @ApiParam(value = "更新的字典实体对象", required = true) Dictionary dictionary) {
+    public Result update(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.updateDictionary(dictionary);
         return ResultGenerator.success();
     }

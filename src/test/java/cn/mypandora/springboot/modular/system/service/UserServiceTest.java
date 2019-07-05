@@ -25,7 +25,7 @@ public class UserServiceTest extends SpringbootApplicationTest {
 
         userService.addUser(user);
 
-        User result = userService.selectByIdOrName(null, "admin");
+        User result = userService.selectUserByIdOrName(null, "admin");
         log.info("------------------------------------------------------------");
         log.info("查询结果=> {}", result);
         log.info("------------------------------------------------------------");
@@ -34,7 +34,7 @@ public class UserServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void updateUser() {
-        User user = userService.selectByIdOrName(null, "test");
+        User user = userService.selectUserByIdOrName(null, "test");
         user.setPhone("010-12345678");
 
         userService.updateUser(user);
@@ -42,7 +42,7 @@ public class UserServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void selectById() {
-        User user = userService.selectById(2L);
+        User user = userService.selectUserByIdOrName(2L, null);
         log.info("------------------------------------------------------------");
         log.info("查询结果=> {}", user);
         log.info("------------------------------------------------------------");
@@ -50,7 +50,7 @@ public class UserServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void selectByPage() {
-        PageInfo<User> userList = userService.selectByPage(1, 10, null);
+        PageInfo<User> userList = userService.selectUserList(1, 10, null);
         log.info("------------------------------------------------------------");
         log.info("查询结果=> {}", userList);
         log.info("------------------------------------------------------------");

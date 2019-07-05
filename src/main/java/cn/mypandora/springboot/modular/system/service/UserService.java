@@ -14,47 +14,6 @@ import java.util.List;
 public interface UserService {
 
     /**
-     * 查询某个用户的所有角色权限。
-     *
-     * @param userId 用户Id
-     * @return 用户拥有的所有角色
-     */
-    String selectRoleByUserId(Long userId);
-
-    /**
-     * 查询所有的用户。
-     *
-     * @return 所有的用户
-     */
-    List<User> selectAll();
-
-    /**
-     * 查询某个角色对应的所有用户。
-     *
-     * @param roleId 角色Id
-     * @return 拥有该角色的所有用户
-     */
-    List<User> selectUserByRoleId(Long roleId);
-
-    /**
-     * 授权某用户某个角色权限。
-     *
-     * @param userId 用户Id
-     * @param roleId 角色Id
-     * @return 成功与否
-     */
-    boolean authorityUserRole(Long userId, Long roleId);
-
-    /**
-     * 删除某用户的某个角色权限。
-     *
-     * @param userId 用户Id
-     * @param roleId 角色Id
-     * @return 成功与否
-     */
-    boolean deleteAuthorityUserRole(Long userId, Long roleId);
-
-    /**
      * 根据分页参数查询用户。
      *
      * @param pageNum  当前页码
@@ -62,32 +21,16 @@ public interface UserService {
      * @param user     用户条件
      * @return 用户列表
      */
-    PageInfo<User> selectByPage(int pageNum, int pageSize, User user);
+    PageInfo<User> selectUserList(int pageNum, int pageSize, User user);
 
     /**
      * 根据用户Id或者名称查询用户。
      *
-     * @param userId   用户Id
+     * @param id       用户Id
      * @param username 用户名称
      * @return 用户信息
      */
-    User selectByIdOrName(Long userId, String username);
-
-    /**
-     * 根据用户ID查询用户信息。
-     *
-     * @param userId 用户Id
-     * @return 用户信息
-     */
-    User selectById(Long userId);
-
-    /**
-     * 根据用户Id集合查询用户信息。
-     *
-     * @param userIdList 用户Id集合
-     * @return 用户信息
-     */
-    List<User> selectByIds(List<Long> userIdList);
+    User selectUserByIdOrName(Long id, String username);
 
     /**
      * 添加用户。
@@ -99,9 +42,17 @@ public interface UserService {
     /**
      * 删除用户。
      *
-     * @param userId 用户id
+     * @param id 用户id
      */
-    void deleteUser(Long userId);
+    void deleteUser(Long id);
+
+
+    /**
+     * 批量删除用户。
+     *
+     * @param ids '1,2,3,4'
+     */
+    void deleteBatchUser(String ids);
 
     /**
      * 更新用户。
@@ -109,4 +60,12 @@ public interface UserService {
      * @param user 用户
      */
     void updateUser(User user);
+
+    /**
+     * 启用禁用用户。 1:开启; 0:禁用。
+     *
+     * @param id 用户id
+     * @return 是否成功
+     */
+    boolean enableUser(Long id);
 }
