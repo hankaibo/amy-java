@@ -1,17 +1,18 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.core.utils.PasswordUtil;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
+import cn.mypandora.springboot.modular.system.model.Role;
 import cn.mypandora.springboot.modular.system.model.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +25,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private UserMapper userMapper;
-
     private UserRoleMapper userRoleMapper;
 
     @Autowired
@@ -41,9 +41,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectUserByIdOrName(Long userId, String username) {
+    public User selectUserByIdOrName(Long id, String username) {
         User user = new User();
-        user.setId(userId);
+        user.setId(id);
         user.setUsername(username);
         return this.userMapper.selectOne(user);
     }
@@ -51,10 +51,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(User user) {
         Date now = new Date(System.currentTimeMillis());
-        String salt = RandomStringUtils.randomAlphabetic(16);
+        // 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
+        String salt = BCrypt.gensalt();
         user.setSalt(salt);
-        //
-        String password = PasswordUtil.encrypt(user.getPassword(), salt);
+        String password = BCrypt.hashpw(user.getPassword(), salt);
         user.setPassword(password);
         user.setCreateTime(now);
         userMapper.insert(user);
@@ -78,7 +78,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean enableUser(Long id) {
-        return false;
+    public boolean enableUser(Long id, Integer state) {
+        User user = new User();
+        user.setId(id);
+
+        User info = this.userMapper.selectOne(user);
+        info.setState(state);
+        int result = this.userMapper.updateByPrimaryKey(user);
+        return result > 0;
+    }
+
+    @Override
+    public List<Role> selectRoleList(Long id, String username) {
+        Role role = new Role();
+        role.setName("admin");
+        List<Role> roleList = new ArrayList<>();
+        roleList.add(role);
+
+        return roleList;
     }
 }

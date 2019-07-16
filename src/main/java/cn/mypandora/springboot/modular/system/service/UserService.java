@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.service;
 
+import cn.mypandora.springboot.modular.system.model.Role;
 import cn.mypandora.springboot.modular.system.model.User;
 import com.github.pagehelper.PageInfo;
 
@@ -64,8 +65,18 @@ public interface UserService {
     /**
      * 启用禁用用户。 1:开启; 0:禁用。
      *
-     * @param id 用户id
+     * @param id    用户id
+     * @param state 启用(1),禁用(0)
      * @return 是否成功
      */
-    boolean enableUser(Long id);
+    boolean enableUser(Long id, Integer state);
+
+    /**
+     * 根据用户id或者名称查询用户的所有角色。
+     *
+     * @param id       用户id
+     * @param username 用户名称
+     * @return 角色列表
+     */
+    List<Role> selectRoleList(Long id, String username);
 }

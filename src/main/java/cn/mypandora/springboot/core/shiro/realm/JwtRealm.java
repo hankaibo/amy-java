@@ -34,6 +34,7 @@ public class JwtRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String payload = (String) principals.getPrimaryPrincipal();
+
         if (payload.startsWith(JWT) && payload.charAt(NUM_4) == LEFT && payload.charAt(payload.length() - 1) == RIGHT) {
             Map<String, Object> payloadMap = JsonWebTokenUtil.readValue(payload.substring(4));
             Set<String> roles = JsonWebTokenUtil.split((String) payloadMap.get("roles"));
@@ -56,6 +57,7 @@ public class JwtRealm extends AuthorizingRealm {
         if (!(token instanceof JwtToken)) {
             return null;
         }
+
         JwtToken jwtToken = (JwtToken) token;
         String jwt = (String) jwtToken.getCredentials();
         String payload = null;
@@ -76,4 +78,5 @@ public class JwtRealm extends AuthorizingRealm {
         }
         return new SimpleAuthenticationInfo("jwt:"+payload,jwt,this.getName());
     }
+
 }

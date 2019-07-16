@@ -8,6 +8,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 /**
  * PasswordToken
  * 自定义passwordToken。
+ * 如果不喜欢用户/密码的认证方式，可以自定义其它的。比如手机号/随机短信；身份证号/验证码等等。
  *
  * @author hankaibo
  * @date 2019/6/18

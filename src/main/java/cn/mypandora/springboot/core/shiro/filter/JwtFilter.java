@@ -4,6 +4,7 @@ import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.utils.IpUtil;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.Role;
 import cn.mypandora.springboot.modular.system.model.vo.Message;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
@@ -15,30 +16,36 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
- * BonJwtFilter
+ * JwtFilter
  *
  * @author hankaibo
  * @date 2019/6/18
  */
 @Slf4j
-public class BonJwtFilter extends AbstractPathMatchingFilter {
+public class JwtFilter extends AbstractPathMatchingFilter {
     private static final String STR_EXPIRED = "expiredJwt";
 
-    @Setter
     private StringRedisTemplate redisTemplate;
-    @Setter
     private UserService userService;
+
+    @Autowired
+    public JwtFilter(StringRedisTemplate redisTemplate, UserService userService) {
+        this.redisTemplate = redisTemplate;
+        this.userService = userService;
+    }
 
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object mappedValue) throws Exception {
@@ -60,21 +67,31 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
                     // refresh也过期则告知客户端JWT时间过期重新认证
 
                     // 当存储在redis的JWT没有过期，即refresh time 没有过期
-                    String appId = WebUtils.toHttp(servletRequest).getHeader("appId");
+                    // TODO
+                    String username = null;
                     String jwt = WebUtils.toHttp(servletRequest).getHeader("authorization");
-                    String refreshJwt = redisTemplate.opsForValue().get("JWT-SESSION-" + appId);
+                    String refreshJwt = redisTemplate.opsForValue().get("JWT-SESSION-" + username);
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
                         // 重新申请新的JWT
-                        // 根据appId获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
-                        // TODO
-//                        String roles = accountService.loadAccountRole(appId);
-                        String roles = "admin";
+                        // 根据 username 获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
+                        List<Role> roleList = userService.selectRoleList(null, username);
+                        StringBuffer stringBuffer = new StringBuffer();
+                        for (Role role : roleList) {
+                            stringBuffer.append(role.getName());
+                        }
+                        String roles = stringBuffer.toString();
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
-                        String newJwt = JsonWebTokenUtil.issuejwt(UUID.randomUUID().toString(), appId,
-                                "token-server", refreshPeriodTime >> 1, roles, null, SignatureAlgorithm.HS512);
+                        String newJwt = JsonWebTokenUtil.issuejwt(UUID.randomUUID().toString(),
+                                username,
+                                "token-server",
+                                refreshPeriodTime >> 1,
+                                roles,
+                                null,
+                                SignatureAlgorithm.HS512
+                        );
                         // 将签发的JWT存储到Redis： {JWT-SESSION-{appID} , jwt}
-                        redisTemplate.opsForValue().set("JWT-SESSION-" + appId, newJwt, refreshPeriodTime, TimeUnit.SECONDS);
+                        redisTemplate.opsForValue().set("JWT-SESSION-" + username, newJwt, refreshPeriodTime, TimeUnit.SECONDS);
                         Message message = new Message().ok(1005, "new jwt").addData("jwt", newJwt);
                         RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
                         return false;
@@ -124,7 +141,7 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
 
     private boolean isJwtSubmission(ServletRequest request) {
         String jwt = RequestResponseUtil.getHeader(request, "authorization");
-        return (request instanceof HttpServletRequest)   && StringUtils.isNotEmpty(jwt);
+        return (request instanceof HttpServletRequest) && StringUtils.isNotEmpty(jwt);
     }
 
     private AuthenticationToken createJwtToken(ServletRequest request) {
@@ -143,6 +160,8 @@ public class BonJwtFilter extends AbstractPathMatchingFilter {
      */
     private boolean checkRoles(Subject subject, Object mappedValue) {
         String[] rolesArray = (String[]) mappedValue;
-        return rolesArray == null || rolesArray.length == 0 || Stream.of(rolesArray).anyMatch(role -> subject.hasRole(role.trim()));
+        return rolesArray == null
+                || rolesArray.length == 0
+                || Stream.of(rolesArray).anyMatch(role -> subject.hasRole(role.trim()));
     }
 }

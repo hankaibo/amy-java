@@ -7,6 +7,7 @@ import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,8 +28,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/dicts")
 public class DictionaryController {
 
-    @Resource
-    private DictionaryService dictionaryService;
+    private final DictionaryService dictionaryService;
+
+    @Autowired
+    public DictionaryController(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
 
     /**
      * 查询分页字典数据。

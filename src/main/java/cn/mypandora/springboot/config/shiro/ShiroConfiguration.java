@@ -1,14 +1,12 @@
 package cn.mypandora.springboot.config.shiro;
 
-import cn.mypandora.springboot.core.shiro.filter.ShiroFilterChainManager;
-import cn.mypandora.springboot.core.shiro.filter.StatelessWebSubjectFactory;
+import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.core.shiro.realm.AonModularRealmAuthenticator;
 import cn.mypandora.springboot.core.shiro.realm.RealmManager;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
@@ -27,29 +25,27 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ShiroConfiguration {
 
-    @Bean(name = "lifecycleBeanPostProcessor")
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
-        return new LifecycleBeanPostProcessor();
-    }
-
-    @Bean(name = "shiroFilter")
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, ShiroFilterChainManager filterChainManager) {
+    @Bean
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, FilterChainManager filterChainManager) {
         RestShiroFilterFactoryBean shiroFilterFactoryBean = new RestShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        shiroFilterFactoryBean.setFilters(filterChainManager.initGetFilters());
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainManager.initGetFilterChainDefinitionMap());
+        shiroFilterFactoryBean.setFilters(filterChainManager.initFilters());
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainManager.initFilterChainDefinitionMap());
         return shiroFilterFactoryBean;
     }
 
-    @Bean(name = "securityManager")
+    @Bean
     public SecurityManager securityManager(RealmManager realmManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setAuthenticator(new AonModularRealmAuthenticator());
-        securityManager.setRealms(realmManager.initGetRealm());
+        securityManager.setRealms(realmManager.initRealms());
 
+        // 关闭shiro自带的session，详情见文档
+        // <href="http://shiro.apache.org/session-management.html#SessionManagement-StatelessApplications%28Sessionless%29" >
+        DefaultSubjectDAO defaultSubjectDAO = (DefaultSubjectDAO) securityManager.getSubjectDAO();
+        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = (DefaultSessionStorageEvaluator) defaultSubjectDAO.getSessionStorageEvaluator();
+        defaultSessionStorageEvaluator.setSessionStorageEnabled(Boolean.FALSE);
         // 无状态subjectFactory设置
-        DefaultSessionStorageEvaluator evaluator = (DefaultSessionStorageEvaluator) ((DefaultSubjectDAO) securityManager.getSubjectDAO()).getSessionStorageEvaluator();
-        evaluator.setSessionStorageEnabled(Boolean.FALSE);
         StatelessWebSubjectFactory subjectFactory = new StatelessWebSubjectFactory();
         securityManager.setSubjectFactory(subjectFactory);
 
