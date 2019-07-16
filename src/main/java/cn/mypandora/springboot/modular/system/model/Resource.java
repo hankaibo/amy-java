@@ -15,6 +15,7 @@ import java.util.Date;
 @Data
 @Table(name = "sys_resource")
 public class Resource {
+
     /**
      * 资源ID
      */
@@ -79,4 +80,5 @@ public class Resource {
      */
     @Column(name = "modify_time")
     private Date modifyTime;
+
 }

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class JwtMatcher implements CredentialsMatcher {
+
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         String jwt = (String) info.getCredentials();
@@ -37,4 +38,5 @@ public class JwtMatcher implements CredentialsMatcher {
         }
         return true;
     }
+
 }

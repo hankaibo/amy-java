@@ -20,6 +20,7 @@ import java.util.Date;
 @Data
 @Table(name = "sys_dict")
 public class Dictionary {
+
     /**
      * ID
      */
@@ -93,4 +94,5 @@ public class Dictionary {
     @ApiModelProperty(value = "字典修改人id", example = "101")
     @Column(name = "modify_user")
     private Long modifyUser;
+
 }

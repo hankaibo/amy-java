@@ -55,4 +55,5 @@ class ProjectProperties {
         private String url;
         private String email;
     }
+
 }

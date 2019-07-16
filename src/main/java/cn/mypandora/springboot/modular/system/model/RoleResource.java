@@ -15,6 +15,7 @@ import java.util.Date;
 @Data
 @Table(name = "sys_role_resource")
 public class RoleResource {
+
     /**
      * 角色资源关系ID
      */
@@ -45,4 +46,5 @@ public class RoleResource {
      */
     @Column(name = "modify_time")
     private Date modifyTime;
+
 }

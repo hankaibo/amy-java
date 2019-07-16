@@ -13,9 +13,12 @@ import java.util.List;
  * @date 2019/6/14
  */
 public interface ResourceMapper extends MyBaseMapper<Resource> {
+
     /**
      * todo
+     *
      * @return list
      */
     List<RolePermRule> selectRoleRules();
+
 }

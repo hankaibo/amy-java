@@ -20,4 +20,5 @@ public interface DictionaryMapper extends MyBaseMapper<Dictionary> {
      * @return ok
      */
     List<Dictionary> selectByCode(Dictionary dictionary);
+
 }

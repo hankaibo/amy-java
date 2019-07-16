@@ -10,6 +10,7 @@ import lombok.Getter;
  */
 @Getter
 public enum BooleanEnum {
+
     /**
      * YES: 1
      * NO: 0
@@ -22,4 +23,5 @@ public enum BooleanEnum {
     BooleanEnum(int value) {
         this.value = value;
     }
+
 }
