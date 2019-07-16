@@ -13,6 +13,7 @@ import java.util.Set;
  * @date 2019/6/18
  */
 public class RolePermRule implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private static final String ANON_ROLE = "role_anon";
 
@@ -72,4 +73,5 @@ public class RolePermRule implements Serializable {
     public String toString() {
         return "RolePermRule [url=" + url + ",needRoles=" + needRoles + "]";
     }
+
 }

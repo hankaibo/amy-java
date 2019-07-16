@@ -27,4 +27,5 @@ public interface UserMapper extends MyBaseMapper<User> {
      * @return 某个角色的所有用户
      */
     List<User> selectUserByRoleId(Long roleId);
+
 }

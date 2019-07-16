@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PasswordMatcher implements CredentialsMatcher {
+
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         return token.getPrincipal().toString().equals(info.getPrincipals().getPrimaryPrincipal().toString())
                 && token.getCredentials().toString().equals(info.getCredentials().toString());
     }
+
 }

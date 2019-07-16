@@ -21,6 +21,7 @@ import java.util.List;
 @Data
 @Table(name = "sys_user")
 public class User {
+
     /**
      * ID
      */
@@ -131,4 +132,5 @@ public class User {
     @ApiModelProperty(hidden = true)
     @Transient
     private List<Resource> resourceList;
+
 }

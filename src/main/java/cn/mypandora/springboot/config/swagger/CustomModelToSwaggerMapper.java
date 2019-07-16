@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @Component("ServiceModelToSwagger2Mapper")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CustomModelToSwaggerMapper extends ServiceModelToSwagger2MapperImpl {
+
     @Override
     protected List<Parameter> parameterListToParameterList(List<springfox.documentation.service.Parameter> list) {
         // 自定义规则，当access="hidden"，不显示
@@ -29,4 +30,5 @@ public class CustomModelToSwaggerMapper extends ServiceModelToSwagger2MapperImpl
         list = list.stream().sorted((p1, p2) -> Integer.compare(p1.getOrder(), p2.getOrder())).collect(Collectors.toList());
         return super.parameterListToParameterList(list);
     }
+
 }
