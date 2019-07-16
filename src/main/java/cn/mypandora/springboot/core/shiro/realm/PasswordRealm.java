@@ -3,28 +3,34 @@ package cn.mypandora.springboot.core.shiro.realm;
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
 import cn.mypandora.springboot.modular.system.model.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import lombok.Setter;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * PasswordRealm
+ * 登录认证的Realm。
  *
  * @author hankaibo
  * @date 2019/6/18
  */
 public class PasswordRealm extends AuthorizingRealm {
 
-    /**
-     * 注入接口，从数据库中获取用户进行比对。
-     */
-    @Setter
     private UserService userService;
 
     /**
-     * Realm只支持PasswordToken
+     * 注入接口，从数据库中获取用户进行比对。
+     */
+    @Autowired
+    public PasswordRealm(UserService userService) {
+        this.userService = userService;
+    }
+
+    /**
+     * Realm 只支持PasswordToken
      *
      * @return Class
      */
@@ -34,7 +40,8 @@ public class PasswordRealm extends AuthorizingRealm {
     }
 
     /**
-     * 这里只需要认证登录，成功之后派发 json web token 授权在那里进行
+     * 因为把认证与授权分在两个realm中实现。所以这个登录realm只负责登录认证，不负责授权。
+     * 登录成功之后，通过json web token 授权。
      *
      * @param principalCollection principalCollection
      * @return authorizationInfo
@@ -47,29 +54,29 @@ public class PasswordRealm extends AuthorizingRealm {
     /**
      * 认证判断。
      *
-     * @param authenticationToken 用户名/密码封装成的PasswordToken
+     * @param token 用户名/密码封装成的PasswordToken
      * @return 认证信息
      * @throws AuthenticationException 登录异常信息，例如：密码错误、用户错误、次数过多、禁用……
      */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        if (!(authenticationToken instanceof PasswordToken)) {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        if (!(token instanceof PasswordToken)) {
             return null;
         }
 
-        if (null == authenticationToken.getPrincipal() || null == authenticationToken.getCredentials()) {
+        if (null == token.getPrincipal() || null == token.getCredentials()) {
             throw new UnknownAccountException();
         }
 
-        String username = (String) authenticationToken.getPrincipal();
-        User user = userService.selectUserByIdOrName(null, username);
-        if (user != null) {
-            // TODO 用盐对authenticationToken密码进行MD5加密,再比较
-            return new SimpleAuthenticationInfo(username, user.getPassword(), getName());
+        String username = (String) token.getPrincipal();
+        User info = userService.selectUserByIdOrName(null, username);
+        if (info != null) {
+            // 与新建用户时所采用的加密方法一致。
+            ((PasswordToken) token).setPassword(BCrypt.hashpw(((PasswordToken) token).getPassword(), info.getSalt()));
+            return new SimpleAuthenticationInfo(username, info.getPassword(), getName());
         } else {
             return new SimpleAuthenticationInfo(username, "", getName());
         }
-
     }
 
 }

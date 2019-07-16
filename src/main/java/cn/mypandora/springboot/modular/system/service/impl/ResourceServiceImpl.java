@@ -1,9 +1,12 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.model.Resource;
+import cn.mypandora.springboot.modular.system.model.Role;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,63 +17,22 @@ import java.util.List;
  */
 @Service("ResourceService")
 public class ResourceServiceImpl implements ResourceService {
-    @Override
-    public List<Resource> selectMenusByUserId(Long userId) {
-        return null;
-    }
 
     @Override
-    public List<Resource> selecMenus() {
-        return null;
+    public List<RolePermRule> rolePermRules() {
+        List<RolePermRule> rolePermRules = new ArrayList<>();
+
+        RolePermRule foo5 = new RolePermRule();
+        foo5.setUrl("/api/v1/users==GET");
+        foo5.setNeedRoles("admin,user");
+        rolePermRules.add(foo5);
+
+        RolePermRule foo4 = new RolePermRule();
+        foo4.setUrl("/api/v1/users/info==GET");
+        foo4.setNeedRoles("admin,user");
+        rolePermRules.add(foo4);
+
+        return rolePermRules;
     }
 
-    @Override
-    public Boolean addMenu(Resource menu) {
-        return null;
-    }
-
-    @Override
-    public Boolean updateMenu(Resource menu) {
-        return null;
-    }
-
-    @Override
-    public Boolean deleteMenuByMenuId(Long menuId) {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectApiTeamList() {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectApiList() {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectApiListByTeamId(Long teamId) {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectApisByRoleId(Long roleId) {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectMenusByRoleId(Long roleId) {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectNotApisByRoleId(Long roleId) {
-        return null;
-    }
-
-    @Override
-    public List<Resource> selectNotMenusByRoleId(Long roleId) {
-        return null;
-    }
 }

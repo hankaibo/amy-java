@@ -105,6 +105,11 @@
             <artifactId>shiro-spring</artifactId>
             <version>${shiro.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.svenkubiak</groupId>
+            <artifactId>jBCrypt</artifactId>
+            <version>0.4.1</version>
+        </dependency>
 
         <!--jwt-->
         <dependency>

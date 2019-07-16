@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * BaseRealm
+ * Realm管理器。
  * 需要注入自己的接口，判断用户认证结果、授权结果。
  *
  * @author hankaibo
@@ -24,10 +24,10 @@ import java.util.List;
 public class RealmManager {
 
     /**
-     * 注入接口，以供登录难时调用数据库获取用户进行比对。
+     * 1. 注入UserService接口，以供登录难时调用数据库获取用户进行比对。
+     * 2. 分别针对登录与接口注入相应的匹配器进行规则匹配。
      */
     private UserService userService;
-
     private PasswordMatcher passwordMatcher;
     private JwtMatcher jwtMatcher;
 
@@ -38,11 +38,10 @@ public class RealmManager {
         this.jwtMatcher = jwtMatcher;
     }
 
-    public List<Realm> initGetRealm() {
+    public List<Realm> initRealms() {
         List<Realm> realmList = new LinkedList<>();
         // ----- password
-        PasswordRealm passwordRealm = new PasswordRealm();
-        passwordRealm.setUserService(userService);
+        PasswordRealm passwordRealm = new PasswordRealm(userService);
         passwordRealm.setCredentialsMatcher(passwordMatcher);
         passwordRealm.setAuthenticationTokenClass(PasswordToken.class);
         realmList.add(passwordRealm);
@@ -53,4 +52,5 @@ public class RealmManager {
         realmList.add(jwtRealm);
         return Collections.unmodifiableList(realmList);
     }
+
 }

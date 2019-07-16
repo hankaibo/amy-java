@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
+import lombok.NoArgsConstructor;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.PathMatchingFilter;
@@ -15,12 +16,10 @@ import javax.servlet.ServletResponse;
  * @author hankaibo
  * @date 2019/6/18
  */
+@NoArgsConstructor
 public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
+
     private static final String DEFAULT_PATH_SEPARATOR = "/";
-
-    public AbstractPathMatchingFilter() {
-
-    }
 
     /**
      * description 重写URL匹配  加入httpMethod支持
@@ -32,21 +31,20 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
     @Override
     protected boolean pathsMatch(String path, ServletRequest request) {
         String requestURI = this.getPathWithinApplication(request);
-        if (requestURI != null && requestURI.endsWith(DEFAULT_PATH_SEPARATOR)) {
-            requestURI = requestURI.substring(0, requestURI.length() - 1);
-        }
+        requestURI=safeFormatUrl(requestURI);
         // path: url==method eg: http://api/menu==GET   需要解析出path中的url和httpMethod
         String[] strings = path.split("==");
-        if (strings[0] != null && strings[0].endsWith(DEFAULT_PATH_SEPARATOR)) {
-            strings[0] = strings[0].substring(0, strings[0].length() - 1);
-        }
-        if (strings.length <= 1) {
+        String URL=strings[0];
+        String method=strings[1];
+
+        URL=safeFormatUrl(URL);
+        if (strings.length == 1) {
             // 分割出来只有URL
-            return this.pathsMatch(strings[0], requestURI);
+            return this.pathsMatch(URL, requestURI);
         } else {
             // 分割出url+httpMethod,判断httpMethod和request请求的method是否一致,不一致直接false
             String httpMethod = WebUtils.toHttp(request).getMethod().toUpperCase();
-            return httpMethod.equals(strings[1].toUpperCase()) && this.pathsMatch(strings[0], requestURI);
+            return httpMethod.equals(method) && this.pathsMatch(URL, requestURI);
         }
     }
 
@@ -84,10 +82,15 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
         return this.isAccessAllowed(request, response, mappedValue) || this.onAccessDenied(request, response, mappedValue);
     }
 
-
     protected void saveRequest(ServletRequest request) {
         WebUtils.saveRequest(request);
     }
 
+    private String safeFormatUrl(String originUrl) {
+        if (originUrl != null && originUrl.endsWith(DEFAULT_PATH_SEPARATOR)) {
+            originUrl = originUrl.substring(0, originUrl.length() - 1);
+        }
+        return originUrl;
+    }
 
 }

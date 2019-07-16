@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,9 +30,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    @Resource
-    private UserService userService;
+    private final UserService userService;
 
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * 根据token获取用户信息。
@@ -50,7 +54,7 @@ public class UserController {
     }
 
     /**
-     * 分页查询用户数据
+     * 分页查询用户数据。
      *
      * @param pageNum  页码
      * @param pageSize 每页条数
@@ -69,9 +73,9 @@ public class UserController {
      * @param id 用户主键id
      * @return 数据
      */
-    @ApiOperation(value = "用户详情")
+    @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
     @GetMapping("/{id}")
-    public Result<User> listById(@PathVariable("id") @ApiParam(value = "用户主键", required = true) Long id) {
+    public Result<User> listById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         return ResultGenerator.success(userService.selectUserByIdOrName(id, null));
     }
 
@@ -81,11 +85,13 @@ public class UserController {
      * @param user 用户数据
      * @return 新建结果
      */
-    @ApiOperation(value = "新建用户")
+    @ApiOperation(value = "新建用户", notes = "根据用户数据新建用户。")
     @PostMapping
     public Result insert(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+        // 管理员新建用户时，如果密码为空，则统一使用默认密码。
         if (StringUtils.isBlank(user.getPassword())) {
-            user.setPassword("123456");
+            String defaultPassword = "123456";
+            user.setPassword(defaultPassword);
         }
         userService.addUser(user);
         return ResultGenerator.success();
@@ -94,13 +100,13 @@ public class UserController {
     /**
      * 删除用户。
      *
-     * @param userId 用户主键id
+     * @param id 用户主键id
      * @return 删除结果
      */
-    @ApiOperation(value = "删除用户", notes = "根据用户Id删除")
+    @ApiOperation(value = "删除用户", notes = "根据用户Id删除用户。")
     @DeleteMapping("/{id}")
-    public Result remove(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long userId) {
-        userService.deleteUser(userId);
+    public Result remove(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+        userService.deleteUser(id);
         return ResultGenerator.success();
     }
 
@@ -110,7 +116,7 @@ public class UserController {
      * @param ids 用户id数组
      * @return 删除结果
      */
-    @ApiOperation(value = "删除用户(批量)", notes = "根据用户Id批量删除")
+    @ApiOperation(value = "删除用户(批量)", notes = "根据用户Id批量删除用户。")
     @DeleteMapping
     public Result remove(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
         userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ","));
@@ -124,10 +130,25 @@ public class UserController {
      * @param user 用户数据
      * @return 更新结果
      */
-    @ApiOperation(value = "更新用户")
+    @ApiOperation(value = "更新用户", notes = "根据用户数据更新用户。")
     @PutMapping
     public Result update(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         userService.updateUser(user);
+        return ResultGenerator.success();
+    }
+
+    /**
+     * 启用|禁用用户。
+     *
+     * @param id    用户主键id
+     * @param state 启用:1，禁用:0
+     * @return 启用成功与否。
+     */
+    @ApiOperation(value = "启用|禁用用户", notes = "根据用户id启用或禁用用户。")
+    @PutMapping("/{id}")
+    public Result enable(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                         @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer state) {
+        userService.enableUser(id, state);
         return ResultGenerator.success();
     }
 

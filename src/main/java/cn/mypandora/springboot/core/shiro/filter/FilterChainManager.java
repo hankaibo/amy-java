@@ -29,7 +29,7 @@ import java.util.*;
  */
 @Slf4j
 @Component
-public class ShiroFilterChainManager {
+public class FilterChainManager {
 
     private final StringRedisTemplate redisTemplate;
     private final UserService userService;
@@ -37,7 +37,7 @@ public class ShiroFilterChainManager {
 
     @Lazy
     @Autowired
-    public ShiroFilterChainManager(StringRedisTemplate redisTemplate, UserService userService, ResourceService resourceService) {
+    public FilterChainManager(StringRedisTemplate redisTemplate, UserService userService, ResourceService resourceService) {
         this.redisTemplate = redisTemplate;
         this.userService = userService;
         this.resourceService = resourceService;
@@ -48,16 +48,14 @@ public class ShiroFilterChainManager {
      *
      * @return 过滤器链Map对象
      */
-    public Map<String, Filter> initGetFilters() {
+    public Map<String, Filter> initFilters() {
         Map<String, Filter> filters = new LinkedHashMap<>();
         // 配置登录过滤器
-        PasswordFilter passwordFilter = new PasswordFilter();
+        PasswordFilter passwordFilter = new PasswordFilter(redisTemplate);
         filters.put("auth", passwordFilter);
 
         // 配置token过滤器
-        BonJwtFilter jwtFilter = new BonJwtFilter();
-        jwtFilter.setRedisTemplate(redisTemplate);
-        jwtFilter.setUserService(userService);
+        JwtFilter jwtFilter = new JwtFilter(redisTemplate, userService);
         filters.put("jwt", jwtFilter);
 
         return filters;
@@ -68,50 +66,32 @@ public class ShiroFilterChainManager {
      *
      * @return 规则Map对象
      */
-    public Map<String, String> initGetFilterChainDefinitionMap() {
-        Map<String, String> chains = new LinkedHashMap<>();
+    public Map<String, String> initFilterChainDefinitionMap() {
+        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // anon 默认过滤器忽略的url
-        List<String> defaultAnon = Arrays.asList("/css/**","/swagger-resources/**","/swagger/**");
-        defaultAnon.forEach(ignored -> chains.put(ignored, "anon"));
-        // auth 默认需要认证过滤器的url 走auth-PasswordFilter
-        List<String> defaultAth = Arrays.asList("/api/v1/login/**");
-        defaultAth.forEach(auth -> chains.put(auth, "auth"));
+        List<String> defaultAnon = Arrays.asList(
+                "/css/**",
+                "/js/**",
+                "/swagger-resources/**",
+                "/swagger/**"
+        );
+        defaultAnon.forEach(ignored -> filterChainDefinitionMap.put(ignored, "anon"));
+        // auth
+        List<String> defaultAuth = Arrays.asList("/api/v1/login", "/api/v1/register");
+        defaultAuth.forEach(auth -> filterChainDefinitionMap.put(auth, "auth"));
         // dynamic 动态url
         if (resourceService != null) {
-//            List<RolePermRule> rolePermRules = this.resourceService.loadRolePermRules();
-            // ---- TODO-------------------------------------------------------------------
-            List<RolePermRule> rolePermRules = new ArrayList<>();
-            RolePermRule foo1 = new RolePermRule();
-            foo1.setUrl("/api/v1/dicts==POST");
-            foo1.setNeedRoles("admin,user");
-            rolePermRules.add(foo1);
-            RolePermRule foo2 = new RolePermRule();
-            foo2.setUrl("/api/v1/dicts==GET");
-            foo2.setNeedRoles("admin,user");
-            rolePermRules.add(foo2);
-            RolePermRule foo3 = new RolePermRule();
-            foo3.setUrl("/api/v1/dicts==DELETE");
-            foo3.setNeedRoles("admin,user");
-            rolePermRules.add(foo3);
-            RolePermRule foo4 = new RolePermRule();
-            foo4.setUrl("/api/v1/users/info==GET");
-            foo4.setNeedRoles("admin,user");
-            rolePermRules.add(foo4);
-            RolePermRule foo5 = new RolePermRule();
-            foo4.setUrl("/api/v1/users**==GET,POST,DELETE,PUT");
-            foo4.setNeedRoles("admin,user");
-            rolePermRules.add(foo5);
-            // ---- TODO-------------------------------------------------------------------
+            List<RolePermRule> rolePermRules = this.resourceService.rolePermRules();
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {
                     StringBuilder chain = rule.toFilterChain();
                     if (null != chain) {
-                        chains.putIfAbsent(rule.getUrl(), chain.toString());
+                        filterChainDefinitionMap.putIfAbsent(rule.getUrl(), chain.toString());
                     }
                 });
             }
         }
-        return chains;
+        return filterChainDefinitionMap;
     }
 
     /**
@@ -127,7 +107,7 @@ public class ShiroFilterChainManager {
             DefaultFilterChainManager filterChainManager = (DefaultFilterChainManager) filterChainResolver.getFilterChainManager();
             filterChainManager.getFilterChains().clear();
             shiroFilterFactoryBean.getFilterChainDefinitionMap().clear();
-            shiroFilterFactoryBean.setFilterChainDefinitionMap(this.initGetFilterChainDefinitionMap());
+            shiroFilterFactoryBean.setFilterChainDefinitionMap(this.initFilterChainDefinitionMap());
             shiroFilterFactoryBean.getFilterChainDefinitionMap().forEach((k, v) -> filterChainManager.createChain(k, v));
         } catch (Exception e) {
             log.error(e.getMessage(), e);

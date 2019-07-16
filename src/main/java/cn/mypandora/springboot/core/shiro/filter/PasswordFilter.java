@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
 import cn.mypandora.springboot.core.base.Result;
-import cn.mypandora.springboot.core.enums.ResultEnum;
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.model.vo.Message;
@@ -11,6 +10,9 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -24,6 +26,13 @@ import java.util.Map;
  */
 @Slf4j
 public class PasswordFilter extends AccessControlFilter {
+
+    private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    public PasswordFilter(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -42,8 +51,8 @@ public class PasswordFilter extends AccessControlFilter {
             // response 告知无效请求
             Message message = new Message().error(1111, "error request");
             Result result = new Result();
-            result.setCode(ResultEnum.FAIL.getCode());
-            result.setMessage(ResultEnum.FAIL.getMessage());
+            result.setCode(HttpStatus.BAD_REQUEST.value());
+            result.setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
             RequestResponseUtil.responseWrite(JSON.toJSONString(message), response);
             return false;
         }
@@ -70,9 +79,9 @@ public class PasswordFilter extends AccessControlFilter {
 
     private AuthenticationToken createPasswordToken(ServletRequest request) throws Exception {
         Map<String, String> map = RequestResponseUtil.getRequestBodyMap(request);
-        String appId = map.get("username");
+        String username = map.get("username");
         String password = map.get("password");
-        return new PasswordToken(appId, password);
+        return new PasswordToken(username, password);
     }
 
 }
