@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.core.exception;
 
-import cn.mypandora.springboot.core.enums.ResultEnum;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 /**
  * BusinessException
@@ -21,7 +21,7 @@ public class BusinessException extends RuntimeException {
      * 异常代码
      */
     @Builder.Default
-    private int errorCode = ResultEnum.INTERNAL_SERVER_ERROR.getCode();
+    private int errorCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
     /**
      * 异常信息
@@ -29,13 +29,13 @@ public class BusinessException extends RuntimeException {
     private String errorMessage;
 
     public BusinessException(String errorMessage) {
-        this.errorCode = ResultEnum.INTERNAL_SERVER_ERROR.getCode();
+        this.errorCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
         this.errorMessage = errorMessage;
     }
 
     public BusinessException(String errorMessage, Throwable e) {
         super(errorMessage, e);
-        this.errorCode = ResultEnum.INTERNAL_SERVER_ERROR.getCode();
+        this.errorCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
     }
 
     public BusinessException(int errorCode, String errorMessage, Throwable e) {

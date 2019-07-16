@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.core.base;
 
-import cn.mypandora.springboot.core.enums.ResultEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
@@ -58,6 +58,7 @@ public class Result<T> implements Serializable {
      * @return 判断结果
      */
     public boolean isSuccess() {
-        return ResultEnum.SUCCESS.getCode() == this.code;
+        return HttpStatus.OK.value() == this.code;
     }
+
 }
