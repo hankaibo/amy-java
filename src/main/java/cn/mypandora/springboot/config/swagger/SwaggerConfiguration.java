@@ -1,10 +1,10 @@
 package cn.mypandora.springboot.config.swagger;
 
-import cn.mypandora.springboot.core.enums.ResultEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.builders.*;
 import springfox.documentation.schema.ModelRef;
@@ -53,7 +53,7 @@ public class SwaggerConfiguration {
      * @return Docket
      */
     @Bean
-    public Docket docketSystemWithoutLogin() {
+    public Docket docketSystem() {
         Parameter parameter = new ParameterBuilder()
                 .name("Authorization")
                 .description("header带上token")
@@ -95,9 +95,8 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .groupName("业务API接口文档")
-                //这里采用包含注解的方式来确定要显示的接口
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.zhizhu.controller"))
+                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.your"))
                 .paths(PathSelectors.regex("/api/.*"))
                 .build()
                 .useDefaultResponseMessages(false)
@@ -130,12 +129,13 @@ public class SwaggerConfiguration {
 
     private List<ResponseMessage> customResponseMessage() {
         List<ResponseMessage> responseMessageList = new ArrayList<>();
-        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.SUCCESS.getCode()).message(ResultEnum.SUCCESS.getMessage()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.FAIL.getCode()).message(ResultEnum.FAIL.getMessage()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.UNAUTHORIZED.getCode()).message(ResultEnum.UNAUTHORIZED.getMessage()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.FORBIDDEN.getCode()).message(ResultEnum.FORBIDDEN.getMessage()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.NOT_FOUND.getCode()).message(ResultEnum.NOT_FOUND.getMessage()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.INTERNAL_SERVER_ERROR.getCode()).message(ResultEnum.INTERNAL_SERVER_ERROR.getMessage()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.OK.value()).message(HttpStatus.OK.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.BAD_REQUEST.value()).message(HttpStatus.BAD_REQUEST.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.UNAUTHORIZED.value()).message(HttpStatus.UNAUTHORIZED.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.FORBIDDEN.value()).message(HttpStatus.FORBIDDEN.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.NOT_FOUND.value()).message(HttpStatus.NOT_FOUND.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.INTERNAL_SERVER_ERROR.value()).message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).build());
         return responseMessageList;
     }
+
 }
