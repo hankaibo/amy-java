@@ -1,10 +1,10 @@
 package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
-import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
-import cn.mypandora.springboot.modular.system.model.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * ResourceMapper
@@ -15,10 +15,125 @@ import java.util.List;
 public interface ResourceMapper extends MyBaseMapper<Resource> {
 
     /**
-     * todo
+     * 获取整棵树（一次性全部加载，适合数据量少的情况）
      *
-     * @return list
+     * @param type 资源类型
+     * @return 整棵树
      */
-    List<RolePermRule> selectRoleRules();
+    List<Resource> loadFullTree(Integer type);
+
+    /**
+     * 获取某一层级节点。
+     *
+     * @param level 节点层级
+     * @return 指定层级的树
+     * TODO SQL未实现
+     */
+    List<Resource> loadTreeWithLevel(int level);
+
+    /**
+     * 获得本节点下面的所有后代节点
+     *
+     * @param params {id:前操作节点id,type 资源类型}
+     * @return 本节点下面的所有后代节点
+     */
+    List<Resource> getDescendant(Map params);
+
+    /**
+     * 获得本节点的孩子节点
+     *
+     * @param params {id:前操作节点id,type 资源类型}
+     * @return 本节点的孩子节点
+     */
+    List<Resource> getChild(Map params);
+
+    /**
+     * 获得本节点的父节点
+     *
+     * @param id 当前操作节点id
+     * @return 本节点的父节点
+     */
+    Resource getParent(Long id);
+
+    /**
+     * 获得本节点的祖先节点
+     *
+     * @param id 当前操作节点id
+     * @return 本节点的祖先节点
+     */
+    List<Resource> getAncestry(Long id);
+
+    /**
+     * 获得本节点的所有兄弟节点
+     *
+     * @param id 当前操作节点id
+     * @return 本节点的所有兄弟节点
+     */
+    List<Resource> getSiblings(Long id);
+
+    /**
+     * 左节点加2
+     *
+     * @param id 节点id
+     */
+    void lftPlus2(Long id);
+
+    /**
+     * 右节点加2
+     *
+     * @param id 节点id
+     */
+    void rgtPlus2(Long id);
+
+    /**
+     * 父右节点加2
+     *
+     * @param id 节点id
+     */
+    void parentRgtPlus2(Long id);
+
+    /**
+     * 左节点减2
+     *
+     * @param id 节点id
+     */
+    void lftMinus2(Long id);
+
+    /**
+     * 右节点减2
+     *
+     * @param id 节点id
+     */
+    void rgtMinus2(Long id);
+
+    /**
+     * 左右节点加2
+     *
+     * @param id 节点id
+     */
+    void bothPlus2(Long id);
+
+    /**
+     * 左右节点减2
+     *
+     * @param id 节点id
+     */
+    void bothMinus2(Long id);
+
+    /**
+     * 判断是否是第一个节点
+     *
+     * @param id 节点id
+     * @return 是第一个节点，返回真；反之，则假。
+     */
+    boolean isFirstNode(Long id);
+
+    /**
+     * 判断是否是最后一个节点
+     *
+     * @param id 节点id
+     * @return 是最后一个节点，返回真；反之，则假。
+     */
+    boolean isLastNode(Long id);
 
 }

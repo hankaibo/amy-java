@@ -17,11 +17,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+  jackson:
+    default-property-inclusion: non_null
 ###############################################################################
 ## mybatis
 mybatis:
   type-aliases-package: cn.mypandora.springboot.modular.system.model
-  mapper-locations: classpath:mybatis/mapper/**/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
 ###############################################################################
 ## mapper
 mapper:

@@ -4,12 +4,11 @@ import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.utils.IpUtil;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.Role;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.Message;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -82,7 +81,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         String roles = stringBuffer.toString();
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
-                        String newJwt = JsonWebTokenUtil.issuejwt(UUID.randomUUID().toString(),
+                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(),
                                 username,
                                 "token-server",
                                 refreshPeriodTime >> 1,

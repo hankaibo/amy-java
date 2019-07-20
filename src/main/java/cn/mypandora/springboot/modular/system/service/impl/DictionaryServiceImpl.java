@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.modular.system.mapper.DictionaryMapper;
-import cn.mypandora.springboot.modular.system.model.Dictionary;
+import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

@@ -9,13 +9,14 @@ import io.jsonwebtoken.impl.TextCodec;
 import io.jsonwebtoken.impl.compression.DefaultCompressionCodecResolver;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.lang.Strings;
-import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import javax.xml.bind.DatatypeConverter;
+import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.security.Key;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,91 +30,103 @@ import java.util.Set;
  */
 @NoArgsConstructor
 public class JsonWebTokenUtil {
-    public static final String SECRET_KEY = "i5j9ur(6w&VEE3V3vM=5y69-t.(dU9X*Gf<}C+t9.ot?P6h4q5F728j#'ZH<4'%U68nUq<\\5xy9\\5d%&M4u*ZD9EQ6iB[63jkYy:yvR2gcq]VxTUDFA2?VD<Fv%e5hm287=4H)5e@bEcDX}9=z>H>He2>\\s<[4}s46v\\dUx&:p%=2>E555Xo[M7#Eo";
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final int COUNT_2 = 2;
+    private static final int COUNT_3 = 3;
     private static CompressionCodecResolver codecResolver = new DefaultCompressionCodecResolver();
+    private static Key KEY = generalKey();
 
     /**
-     * json web token 签发
+     * 创建jwt.
      *
-     * @param id          令牌ID
-     * @param subject     用户ID
-     * @param issuer      签发人
-     * @param period      有效时间（毫秒）
-     * @param roles       访问主张-角色
-     * @param permissions 访问主张=权限
-     * @param algorithm   加密算法
-     * @return jwt
+     * @param id          令牌id
+     * @param issuer      header中该JWT的签发者
+     * @param subject     header中该JWT所面向的用户
+     *                    audience    header中接收该JWT的一方
+     * @param period      有效时间（毫秒），分解为以下两个
+     *                    iat         header中(issued at) 在什么时候签发的
+     *                    exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
+     * @param roles       payload中的角色信息
+     * @param permissions payload中的权限信息
+     * @param algorithm   Signature中的签名算法
+     * @return jws
      */
-    public static String issuejwt(String id, String subject, String issuer, Long period, String roles, String permissions, SignatureAlgorithm algorithm) {
-        // 当前时间戳
+    public static String createJwt(String id, String subject, String issuer, Long period, String roles, String permissions, SignatureAlgorithm algorithm) {
         Long currentTimeMillis = System.currentTimeMillis();
-        // 秘钥
-        byte[] secreKeyBytes = DatatypeConverter.parseBase64Binary(SECRET_KEY);
-//        String base64Key = Encoders.BASE64.encode(key.getEncoded());
 
         JwtBuilder jwtBuilder = Jwts.builder();
+        // 设置header相关信息
         if (StringUtils.isNotEmpty(id)) {
             jwtBuilder.setId(id);
-        }
-        if (StringUtils.isNotEmpty(subject)) {
-            jwtBuilder.setSubject(subject);
         }
         if (StringUtils.isNotEmpty(issuer)) {
             jwtBuilder.setIssuer(issuer);
         }
-        // 设置签发时间
+        if (StringUtils.isNotEmpty(subject)) {
+            jwtBuilder.setSubject(subject);
+        }
         jwtBuilder.setIssuedAt(new Date(currentTimeMillis));
-        // 设置到期时间
         if (null != period) {
             jwtBuilder.setExpiration(new Date(currentTimeMillis + period * 1000));
         }
+        // 设置payload相关信息
         if (StringUtils.isNotEmpty(roles)) {
             jwtBuilder.claim("roles", roles);
         }
         if (StringUtils.isNotEmpty(permissions)) {
             jwtBuilder.claim("perms", permissions);
         }
-        // 压缩，可选GZIP
-        jwtBuilder.compressWith(CompressionCodecs.DEFLATE);
-        // 加密设置
-        jwtBuilder.signWith(algorithm, secreKeyBytes);
+        jwtBuilder.compressWith(CompressionCodecs.GZIP);
+        jwtBuilder.signWith(generalKey());
 
         return jwtBuilder.compact();
     }
 
-    public static String parseJwtPayload(String jwt){
+    /**
+     * 解析jwt.
+     *
+     * @param jwt 签发的jwt
+     * @return JwtAccount
+     */
+    public static JwtAccount parseJwt(String jwt) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(generalKey())
+                .parseClaimsJws(jwt)
+                .getBody();
+        JwtAccount jwtAccount = new JwtAccount();
+        //令牌ID
+        jwtAccount.setTokenId(claims.getId());
+        // 签发者
+        jwtAccount.setIssuer(claims.getIssuer());
+        // 客户标识
+        jwtAccount.setAppId(claims.getSubject());
+        // 签发时间
+        jwtAccount.setIssuedAt(claims.getIssuedAt());
+        // 接收方
+        jwtAccount.setAudience(claims.getAudience());
+        // 访问主张-角色
+        jwtAccount.setRoles(claims.get("roles", String.class));
+        // 访问主张-权限
+        jwtAccount.setPerms(claims.get("perms", String.class));
+        return jwtAccount;
+    }
+
+    /**
+     * @param jwt
+     * @return
+     */
+    public static String parseJwtPayload(String jwt) {
         Assert.hasText(jwt, "JWT String argument cannot be null or empty.");
-        String base64UrlEncodedHeader = null;
-        String base64UrlEncodedPayload = null;
-        String base64UrlEncodedDigest = null;
-        int delimiterCount = 0;
-        StringBuilder stringBuilder = new StringBuilder(128);
-        for (char c : jwt.toCharArray()) {
-            if (c == '.') {
-                CharSequence tokenSeq = io.jsonwebtoken.lang.Strings.clean(stringBuilder);
-                String token = tokenSeq != null ? tokenSeq.toString() : null;
 
-                if (delimiterCount == 0) {
-                    base64UrlEncodedHeader = token;
-                } else if (delimiterCount == 1) {
-                    base64UrlEncodedPayload = token;
-                }
-
-                delimiterCount++;
-                stringBuilder.setLength(0);
-            } else {
-                stringBuilder.append(c);
-            }
-        }
-        if (delimiterCount != COUNT_2) {
-            String msg = "JWT strings must contain exactly 2 period characters. Found: " + delimiterCount;
+        String[] arr = jwt.split("\\.");
+        if (arr.length != COUNT_3) {
+            String msg = "JWT strings must contain exactly 2 period characters. Found: " + arr.length;
             throw new MalformedJwtException(msg);
         }
-        if (stringBuilder.length() > 0) {
-            base64UrlEncodedDigest = stringBuilder.toString();
-        }
+
+        String base64UrlEncodedHeader = arr[0];
+        String base64UrlEncodedPayload = arr[1];
+        String base64UrlEncodedSignature = arr[2];
+
         if (base64UrlEncodedPayload == null) {
             String msg = "JWT string '" + jwt + "' is missing a body/payload.";
             throw new MalformedJwtException(msg);
@@ -124,7 +137,7 @@ public class JsonWebTokenUtil {
         if (base64UrlEncodedHeader != null) {
             String origValue = TextCodec.BASE64URL.decodeToString(base64UrlEncodedHeader);
             Map<String, Object> m = readValue(origValue);
-            if (base64UrlEncodedDigest != null) {
+            if (base64UrlEncodedSignature != null) {
                 header = new DefaultJwsHeader(m);
             } else {
                 header = new DefaultHeader(m);
@@ -142,34 +155,11 @@ public class JsonWebTokenUtil {
         return payload;
     }
 
-    public static JwtAccount parseJwt(String jwt, String appKey) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
-        Claims claims = Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(appKey))
-                .parseClaimsJws(jwt)
-                .getBody();
-        JwtAccount jwtAccount = new JwtAccount();
-        //令牌ID
-        jwtAccount.setTokenId(claims.getId());
-        // 客户标识
-        jwtAccount.setAppId(claims.getSubject());
-        // 签发者
-        jwtAccount.setIssuer(claims.getIssuer());
-        // 签发时间
-        jwtAccount.setIssuedAt(claims.getIssuedAt());
-        // 接收方
-        jwtAccount.setAudience(claims.getAudience());
-        // 访问主张-角色
-        jwtAccount.setRoles(claims.get("roles", String.class));
-        // 访问主张-权限
-        jwtAccount.setPerms(claims.get("perms", String.class));
-        return jwtAccount;
-    }
-
     /**
      * description 从json数据中读取格式化map
      *
      * @param val 1
-     * @return java.util.Map<java.lang.String,java.lang.Object>
+     * @return java.util.Map<java.lang.String, java.lang.Object>
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> readValue(String val) {
@@ -192,4 +182,17 @@ public class JsonWebTokenUtil {
         set.addAll(CollectionUtils.arrayToList(str.split(",")));
         return set;
     }
+
+    /**
+     * 由字符串生成加密key
+     *
+     * @return
+     */
+    private static SecretKey generalKey() {
+        if (KEY == null) {
+            KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        }
+        return (SecretKey) KEY;
+    }
+
 }

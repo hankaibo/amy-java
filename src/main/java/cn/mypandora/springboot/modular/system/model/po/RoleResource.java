@@ -1,4 +1,4 @@
-package cn.mypandora.springboot.modular.system.model;
+package cn.mypandora.springboot.modular.system.model.po;
 
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;

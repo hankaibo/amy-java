@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.ResourceMapper">
+    <resultMap id="ResourceMap" type="cn.mypandora.springboot.modular.system.model.po.Resource">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="lft" jdbcType="BIGINT" property="lft"/>
+        <result column="rgt" jdbcType="BIGINT" property="rgt"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="uri" jdbcType="VARCHAR" property="uri"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="method" jdbcType="VARCHAR" property="method"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+    </resultMap>
+
+    <sql id="baseColumns">id,name,lft,rgt,level,code,status,uri,type,method,icon,parent_id,description,create_time,modify_time</sql>
+
+    <select id="loadFullTree" resultMap="ResourceMap" parameterType="int">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM sys_resource t
+        WHERE 1=1
+        AND t.type=#{type}
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="getDescendant" resultMap="ResourceMap" parameterType="Map">
+        SELECT
+        <include refid="baseColumns"/>
+        <![CDATA[
+            FROM sys_resource t
+            WHERE 1=1
+            AND t.type=#{type}
+            AND t.lft>(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            AND t.rgt<(
+                    SELECT s.rgt
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            ORDER BY t.lft ASC
+        ]]>
+    </select>
+
+    <select id="getChild" resultMap="ResourceMap" parameterType="Map">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM sys_resource t
+        WHERE 1=1
+        AND t.type=#{type}
+        AND t.parent_id=#{id}
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="getParent" resultMap="ResourceMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns"/>
+        <![CDATA[
+            FROM sys_resource t
+            WHERE t.id=(
+                    SELECT s.parent_id
+                    FROM sys_resource s
+                    WHERE s.id=#{id}
+                )
+        ]]>
+    </select>
+
+    <select id="getAncestry" resultMap="ResourceMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns"/>
+        <![CDATA[
+            FROM sys_resource t
+            WHERE t.lft<(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            AND t.rgt>(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            ORDER BY t.lft
+        ]]>
+    </select>
+
+    <select id="getSiblings" resultMap="ResourceMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns"/>
+        <![CDATA[
+        FROM sys_resource t
+        WHERE t.parent_id=(
+                SELECT parent_id
+                FROM sys_resource
+                WHERE id=#{id})
+        ORDER BY t.lft asc
+        ]]>
+    </select>
+
+    <update id="lftPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.lft=t.lft + 2
+        WHERE t.lft > f.rgt
+        ]]>
+    </update>
+
+    <update id="rgtPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.rgt=t.rgt + 2
+        WHERE t.rgt > f.rgt
+        ]]>
+    </update>
+
+    <update id="parentRgtPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t
+        SET t.rgt=t.rgt + 2
+        WHERE id = #{id, jdbcType=NUMERIC}
+        ]]>
+    </update>
+
+    <update id="lftMinus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.lft=t.lft - 2
+        WHERE t.lft > f.rgt
+        ]]>
+    </update>
+
+    <update id="rgtMinus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.rgt=t.rgt - 2
+        WHERE t.rgt > f.rgt
+        ]]>
+    </update>
+
+    <update id="bothMinus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t
+        SET t.lft=t.lft - 2,
+            t.rgt=t.rgt - 2
+        WHERE id = #{id}
+        ]]>
+    </update>
+
+    <update id="bothPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_resource t
+        SET t.lft=t.lft + 2,
+            t.rgt=t.rgt + 2
+        WHERE id = #{id}
+        ]]>
+    </update>
+
+    <select id="isFirstNode" resultType="boolean" parameterType="long">
+        SELECT count(*)
+        <![CDATA[
+        FROM sys_resource t
+        WHERE t.id = #{id}
+          AND t.lft - 1 = (
+            SELECT p.lft
+            FROM sys_resource p
+            WHERE p.id = t.parent_id
+        )
+        ]]>
+    </select>
+
+    <select id="isLastNode" resultType="boolean" parameterType="long">
+        SELECT count(*)
+        <![CDATA[
+        FROM sys_resource t
+        WHERE t.id = #{id}
+          AND t.rgt + 1 = (
+            SELECT p.rgt
+            FROM sys_resource p
+            WHERE p.id = t.parent_id
+        )
+        ]]>
+    </select>
+
+</mapper>

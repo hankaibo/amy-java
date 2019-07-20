@@ -27,7 +27,7 @@ public class JwtMatcher implements CredentialsMatcher {
         String jwt = (String) info.getCredentials();
         JwtAccount jwtAccount = null;
         try {
-            jwtAccount = JsonWebTokenUtil.parseJwt(jwt, JsonWebTokenUtil.SECRET_KEY);
+            jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         } catch (SignatureException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | ExpiredJwtException e) {
             throw new AuthenticationException("errJwt");
         } catch (Exception e) {

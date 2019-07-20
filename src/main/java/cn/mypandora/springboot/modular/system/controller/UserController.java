@@ -4,7 +4,7 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -47,7 +46,7 @@ public class UserController {
     @GetMapping("/info")
     public Result<User> userInfo(HttpServletRequest request) {
         String jwt = RequestResponseUtil.getHeader(request, "authorization");
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt, JsonWebTokenUtil.SECRET_KEY);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
 
         return ResultGenerator.success(user);
@@ -76,7 +75,10 @@ public class UserController {
     @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
     @GetMapping("/{id}")
     public Result<User> listById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        return ResultGenerator.success(userService.selectUserByIdOrName(id, null));
+        User user = userService.selectUserByIdOrName(id, null);
+        user.setPassword(null);
+        user.setSalt(null);
+        return ResultGenerator.success(user);
     }
 
     /**
@@ -140,16 +142,17 @@ public class UserController {
     /**
      * 启用|禁用用户。
      *
-     * @param id    用户主键id
-     * @param state 启用:1，禁用:0
+     * @param id     用户主键id
+     * @param status 启用:1，禁用:0
      * @return 启用成功与否。
      */
     @ApiOperation(value = "启用|禁用用户", notes = "根据用户id启用或禁用用户。")
     @PutMapping("/{id}")
     public Result enable(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                         @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer state) {
-        userService.enableUser(id, state);
-        return ResultGenerator.success();
+                         @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
+        Integer s = status.get("status");
+        boolean result = userService.enableUser(id, s);
+        return result ? ResultGenerator.success() : ResultGenerator.failure();
     }
 
 }

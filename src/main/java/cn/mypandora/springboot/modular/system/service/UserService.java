@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.modular.system.model.Role;
-import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -47,7 +47,6 @@ public interface UserService {
      */
     void deleteUser(Long id);
 
-
     /**
      * 批量删除用户。
      *
@@ -66,10 +65,10 @@ public interface UserService {
      * 启用禁用用户。 1:开启; 0:禁用。
      *
      * @param id    用户id
-     * @param state 启用(1),禁用(0)
+     * @param status 启用(1),禁用(0)
      * @return 是否成功
      */
-    boolean enableUser(Long id, Integer state);
+    boolean enableUser(Long id, Integer status);
 
     /**
      * 根据用户id或者名称查询用户的所有角色。
