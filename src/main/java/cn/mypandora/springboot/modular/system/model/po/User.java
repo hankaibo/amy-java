@@ -1,12 +1,13 @@
-package cn.mypandora.springboot.modular.system.model;
+package cn.mypandora.springboot.modular.system.model.po;
 
+import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import springfox.documentation.annotations.ApiIgnore;
-import tk.mybatis.mapper.annotation.KeySql;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
@@ -20,15 +21,9 @@ import java.util.List;
 @ApiModel(value = "用户对象", description = "用户信息")
 @Data
 @Table(name = "sys_user")
-public class User {
+public class User extends BaseEntity {
 
-    /**
-     * ID
-     */
-    @ApiModelProperty(value = "用户id")
-    @Id
-    @KeySql(useGeneratedKeys = true)
-    private Long id;
+    private static final long serialVersionUID = -8978557733419584026L;
 
     /**
      * 用户名
@@ -66,7 +61,7 @@ public class User {
      * 状态
      */
     @ApiModelProperty(value = "用户状态,1表示开启")
-    private Integer state;
+    private Integer status;
 
     /**
      * 头像
@@ -104,20 +99,6 @@ public class User {
     @ApiModelProperty(value = "用户最近登录时间", example = "1970-01-01:08:00:00")
     @Column(name = "last_login_time")
     private Date lastLoginTime;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(value = "用户创建时间", example = "1970-01-01:08:00:00")
-    @Column(name = "create_time")
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-    @ApiModelProperty(value = "用户修改时间", example = "1970-01-01:08:00:00")
-    @Column(name = "modify_time")
-    private Date modifyTime;
 
     /**
      * 角色列表

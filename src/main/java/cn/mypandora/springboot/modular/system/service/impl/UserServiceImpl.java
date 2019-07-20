@@ -2,11 +2,12 @@ package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
-import cn.mypandora.springboot.modular.system.model.Role;
-import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,10 @@ public class UserServiceImpl implements UserService {
     public PageInfo<User> selectUserList(int pageNum, int pageSize, User user) {
         PageHelper.startPage(pageNum, pageSize);
         List<User> userList = userMapper.selectByCondition(user);
+        userList.forEach(item -> {
+            item.setSalt(null);
+            item.setPassword(null);
+        });
         return new PageInfo<>(userList);
     }
 
@@ -51,11 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(User user) {
         Date now = new Date(System.currentTimeMillis());
-        // 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
-        String salt = BCrypt.gensalt();
-        user.setSalt(salt);
-        String password = BCrypt.hashpw(user.getPassword(), salt);
-        user.setPassword(password);
+        passwordHelper(user);
         user.setCreateTime(now);
         userMapper.insert(user);
     }
@@ -73,18 +74,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(User user) {
         Date now = new Date(System.currentTimeMillis());
+        passwordHelper(user);
         user.setModifyTime(now);
-        userMapper.updateByPrimaryKey(user);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Override
-    public boolean enableUser(Long id, Integer state) {
+    public boolean enableUser(Long id, Integer status) {
         User user = new User();
         user.setId(id);
+        user.setStatus(status);
 
-        User info = this.userMapper.selectOne(user);
-        info.setState(state);
-        int result = this.userMapper.updateByPrimaryKey(user);
+        int result = this.userMapper.updateByPrimaryKeySelective(user);
         return result > 0;
     }
 
@@ -96,5 +97,15 @@ public class UserServiceImpl implements UserService {
         roleList.add(role);
 
         return roleList;
+    }
+
+    private void passwordHelper(User user) {
+        // 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
+        String salt = BCrypt.gensalt();
+        user.setSalt(salt);
+        String originPassword = user.getPassword();
+        if (StringUtils.isNotBlank(originPassword)) {
+            user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
+        }
     }
 }

@@ -32,13 +32,6 @@ spring:
     port: 6379
     password: hankaibo
 
-  jedis:
-    pool:
-      max-active: 800
-      max-wait: 10000
-      max-idle: 20
-      min-idle: 2
-    timeout: 30000
   cache:
     type: redis
 

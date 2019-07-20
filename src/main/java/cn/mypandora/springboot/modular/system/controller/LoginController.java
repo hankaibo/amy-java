@@ -66,7 +66,7 @@ public class LoginController {
         String perms = null;
         // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
         long refreshPeriodTime = 36000L;
-        String jwt = JsonWebTokenUtil.issuejwt(
+        String jwt = JsonWebTokenUtil.createJwt(
                 UUID.randomUUID().toString(),
                 username, "token-server",
                 refreshPeriodTime >> 1,
@@ -87,7 +87,7 @@ public class LoginController {
     public Result logout(HttpServletRequest request) {
         SecurityUtils.getSubject().logout();
         String token = RequestResponseUtil.getHeader(request, "authorization");
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(token, JsonWebTokenUtil.SECRET_KEY);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(token);
         String appId = jwtAccount.getAppId();
         if (StringUtils.isEmpty(appId)) {
             return ResultGenerator.failure("用户无法登出。");

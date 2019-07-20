@@ -71,12 +71,12 @@ public class FilterChainManager {
         // anon 默认过滤器忽略的url
         List<String> defaultAnon = Arrays.asList(
                 "/css/**",
-                "/js/**",
-                "/swagger-resources/**",
-                "/swagger/**"
+                "/js/**"
+//                "/swagger-resources/**",
+//                "/swagger/**"
         );
         defaultAnon.forEach(ignored -> filterChainDefinitionMap.put(ignored, "anon"));
-        // auth
+        // auth 默认需要认证过滤器的URL 走auth--PasswordFilter
         List<String> defaultAuth = Arrays.asList("/api/v1/login", "/api/v1/register");
         defaultAuth.forEach(auth -> filterChainDefinitionMap.put(auth, "auth"));
         // dynamic 动态url

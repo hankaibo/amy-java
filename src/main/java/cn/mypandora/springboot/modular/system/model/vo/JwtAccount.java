@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
-import io.jsonwebtoken.lang.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

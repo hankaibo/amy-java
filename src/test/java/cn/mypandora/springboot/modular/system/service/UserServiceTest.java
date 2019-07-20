@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service;
 
 import cn.mypandora.springboot.SpringbootApplicationTest;
-import cn.mypandora.springboot.modular.system.model.User;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.core.enums.BooleanEnum;
 import com.github.pagehelper.PageInfo;
 import junit.framework.TestCase;
@@ -20,7 +20,7 @@ public class UserServiceTest extends SpringbootApplicationTest {
         user.setUsername("test");
         user.setPassword("test");
         user.setEmail("test@email.com");
-        user.setState(BooleanEnum.YES.getValue());
+        user.setStatus(BooleanEnum.YES.getValue());
         user.setMobile("13412345678");
 
         userService.addUser(user);
