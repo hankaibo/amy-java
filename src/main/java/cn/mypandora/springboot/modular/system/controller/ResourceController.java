@@ -106,13 +106,13 @@ public class ResourceController {
             resource.setRgt(2L);
             resource.setLevel(1L);
             resource.setType(TypeEnum.MENU.getValue());
-            resourceService.addResource(0L, resource);
+            resourceService.addResource(resource);
         } else {
             Resource info = resourceService.findResourceById(resource.getParentId());
             resource.setLft(info.getRgt());
             resource.setRgt(info.getRgt() + 1);
             resource.setLevel(info.getLevel() + 1);
-            resourceService.addResource(resource.getParentId(), resource);
+            resourceService.addResource(resource);
         }
         return ResultGenerator.success();
     }

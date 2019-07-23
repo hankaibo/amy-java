@@ -39,10 +39,12 @@
     <select id="getDescendant" resultMap="ResourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns"/>
-        <![CDATA[
-            FROM sys_resource t
-            WHERE 1=1
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type != null">
             AND t.type=#{type}
+        </if>
+        <![CDATA[
             AND t.lft>(
                     SELECT s.lft
                     FROM sys_resource s
@@ -91,7 +93,7 @@
                     SELECT s.lft
                     FROM sys_resource s
                     WHERE s.id=#{id})
-            ORDER BY t.lft
+            ORDER BY t.lft ASC
         ]]>
     </select>
 
@@ -104,7 +106,7 @@
                 SELECT parent_id
                 FROM sys_resource
                 WHERE id=#{id})
-        ORDER BY t.lft asc
+        ORDER BY t.lft ASC
         ]]>
     </select>
 
@@ -132,18 +134,18 @@
         ]]>
     </update>
 
-    <update id="lftMinus2" parameterType="long">
+    <update id="lftMinusN">
         <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.lft=t.lft - 2
+        SET t.lft= (t.lft - #{amount})
         WHERE t.lft > f.rgt
         ]]>
     </update>
 
-    <update id="rgtMinus2" parameterType="long">
+    <update id="rgtMinusN">
         <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.rgt=t.rgt - 2
+        SET t.rgt= (t.rgt - #{amount})
         WHERE t.rgt > f.rgt
         ]]>
     </update>

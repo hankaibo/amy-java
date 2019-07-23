@@ -103,6 +103,7 @@ public class UserServiceImpl implements UserService {
         return userRoleMapper.selectUserRole(id, username);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean giveUserRole(Long userId, Long[] roleListId) {
         // 删除旧的角色

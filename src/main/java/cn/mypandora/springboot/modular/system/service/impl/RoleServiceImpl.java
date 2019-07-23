@@ -102,6 +102,7 @@ public class RoleServiceImpl implements RoleService {
     /**
      * TODO 对数据库一知半解，找不出更好的方法。
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean giveRoleResource(Long roleId, Long[] resourceListId) {
         // 删除旧的资源

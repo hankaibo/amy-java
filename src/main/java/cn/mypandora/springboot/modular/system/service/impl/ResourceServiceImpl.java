@@ -4,13 +4,17 @@ import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ResourceServiceImpl
@@ -70,21 +74,41 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceMapper.getSiblings(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void addResource(Long id, Resource resource) {
-        resourceMapper.lftPlus2(id);
-        resourceMapper.rgtPlus2(id);
+    public void addResource(Resource resource) {
+        resourceMapper.lftPlus2(resource.getParentId());
+        resourceMapper.rgtPlus2(resource.getParentId());
         resourceMapper.insert(resource);
-        resourceMapper.parentRgtPlus2(id);
+        resourceMapper.parentRgtPlus2(resource.getParentId());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delResource(Long id) {
-        resourceMapper.lftMinus2(id);
-        resourceMapper.rgtMinus2(id);
-        resourceMapper.deleteByIds(id.toString());
+        Resource resource = new Resource();
+        resource.setId(id);
+        // 先求出要删除的节点的所有信息，利用左值与右值计算出要删除的节点数量。
+        // 删除节点数=(节点右值-节点左值+1)/2
+        Resource info = resourceMapper.selectByPrimaryKey(resource);
+        Long leftNode = info.getLft();
+        Long rightNode = info.getRgt();
+        Long deleteAmount = rightNode - leftNode + 1;
+        // 更新此节点之后的相关节点左右值
+        resourceMapper.lftMinusN(id, deleteAmount);
+        resourceMapper.rgtMinusN(id, deleteAmount);
+        // 求出要删除的节点所有子孙节点
+        Map<String, Number> map = new HashMap<>(2);
+        map.put("id", id);
+        List<Resource> willDelResourcList = resourceMapper.getDescendant(map);
+        List<Long> idList = willDelResourcList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        idList.add(id);
+        String ids = StringUtils.join(idList, ",");
+        // 批量删除节点及子孙节点
+        resourceMapper.deleteByIds(ids);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void moveUpResource(Long id, Long upId) {
         // 当前节点不是首节点
@@ -96,6 +120,7 @@ public class ResourceServiceImpl implements ResourceService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void moveDownResource(Long id, Long downId) {
         // 当前节点不是末节点

@@ -95,18 +95,20 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     void parentRgtPlus2(Long id);
 
     /**
-     * 左节点减2
+     * 左节点减N
      *
-     * @param id 节点id
+     * @param id     节点id
+     * @param amount 大于id左值的节点，左值要减去的数
      */
-    void lftMinus2(Long id);
+    void lftMinusN(@Param("id") Long id, @Param("amount") Long amount);
 
     /**
-     * 右节点减2
+     * 右节点减N
      *
-     * @param id 节点id
+     * @param id     节点id
+     * @param amount 大于id右值的节点，右值要减去的数
      */
-    void rgtMinus2(Long id);
+    void rgtMinusN(@Param("id") Long id, @Param("amount") Long amount);
 
     /**
      * 左右节点加2
@@ -140,8 +142,8 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
 
     /**
      * 查询所有的动态url，动态注册到过滤器链中。
-     * @return 资源
      *
+     * @return 资源
      * @see FilterChainManager L82
      */
     List<Resource> selectRolePermRules();
