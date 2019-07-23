@@ -139,14 +139,6 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     boolean isLastNode(Long id);
 
     /**
-     * 查询该角色所包含的资源。
-     *
-     * @param id 角色id
-     * @return 查询该角色所包含的资源
-     */
-    List<Resource> getResourceByRole(Long id);
-
-    /**
      * 查询所有的动态url，动态注册到过滤器链中。
      * @return 资源
      *

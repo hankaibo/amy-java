@@ -22,7 +22,7 @@ public interface RoleService {
      * @param role     角色条件
      * @return 角色列表
      */
-    PageInfo<Role> selectRoleList(int pageNum, int pageSize, Role role);
+    PageInfo<Role> selectRolePage(int pageNum, int pageSize, Role role);
 
     /**
      * 查询所有的角色。
@@ -51,9 +51,9 @@ public interface RoleService {
     /**
      * 删除角色。
      *
-     * @param roleId 角色id
+     * @param id 角色id
      */
-    void deleteRole(Long roleId);
+    void deleteRole(Long id);
 
     /**
      * 批量删除角色。
@@ -84,10 +84,10 @@ public interface RoleService {
      * @param id 角色主键id
      * @return 所有资源数据
      */
-    List<Resource> selectResourceByRole(Long id);
+    List<Resource> selectResourceById(Long id);
 
     /**
-     * 赋予某角色某资源。
+     * 赋予角色某资源。
      *
      * @param roleId         角色Id
      * @param resourceListId 资源Id集合

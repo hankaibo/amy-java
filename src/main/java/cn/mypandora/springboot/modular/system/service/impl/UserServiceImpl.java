@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,6 +72,7 @@ public class UserServiceImpl implements UserService {
         userRoleMapper.deleteUserRole(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteBatchUser(String ids) {
         userMapper.deleteByIds(ids);
@@ -95,8 +95,7 @@ public class UserServiceImpl implements UserService {
         user.setId(id);
         user.setStatus(status);
 
-        int result = this.userMapper.updateByPrimaryKeySelective(user);
-        return result > 0;
+        return this.userMapper.updateByPrimaryKeySelective(user) > 0;
     }
 
     @Override
@@ -109,8 +108,7 @@ public class UserServiceImpl implements UserService {
         // 删除旧的角色
         userRoleMapper.deleteUserRole(userId);
         // 添加新的角色
-        int result = userRoleMapper.giveUserRole(userId, roleListId);
-        return result > 0;
+        return userRoleMapper.giveUserRole(userId, roleListId) > 0;
     }
 
     /**

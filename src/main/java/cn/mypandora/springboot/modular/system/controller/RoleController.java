@@ -51,7 +51,7 @@ public class RoleController {
     @GetMapping
     public Result<PageInfo<Role>> listAll(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
                                           @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize) {
-        return ResultGenerator.success(roleService.selectRoleList(pageNum, pageSize, null));
+        return ResultGenerator.success(roleService.selectRolePage(pageNum, pageSize, null));
     }
 
     /**
@@ -62,7 +62,7 @@ public class RoleController {
      */
     @ApiOperation(value = "角色详情", notes = "根据角色id查询角色详情。")
     @GetMapping("/{id}")
-    public Result<Role> listById(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
+    public Result<Role> selectOneById(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
         Role role = roleService.selectRoleByIdOrName(id, null);
         return ResultGenerator.success(role);
     }
@@ -114,7 +114,7 @@ public class RoleController {
      * @return 更新结果
      */
     @ApiOperation(value = "更新角色", notes = "根据角色数据更新角色。")
-    @PutMapping
+    @PutMapping("/{id}")
     public Result update(@RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
         roleService.updateRole(role);
         return ResultGenerator.success();
@@ -128,7 +128,7 @@ public class RoleController {
      * @return 启用成功与否。
      */
     @ApiOperation(value = "启用|禁用角色", notes = "根据角色id启用或禁用角色。")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/status")
     public Result enable(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                          @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
@@ -142,17 +142,16 @@ public class RoleController {
      * @param id 角色主键id
      * @return 角色所包含的资源
      */
-    @ApiOperation(value = "查询某个角色的所有资源")
+    @ApiOperation(value = "查询角色的所有资源")
     @GetMapping("/{id}/resources")
     public Result<Map> list(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
         List<Resource> allResourceList = resourceService.loadFullResource(3);
-        List<Resource> roleResourceList = roleService.selectResourceByRole(id);
-
+        List<Resource> roleResourceList = roleService.selectResourceById(id);
         List<TreeNode> treeNodeList = TreeUtil.lr2Tree(allResourceList);
 
         Map<String, List> map = new HashMap<>(2);
-        map.put("all", treeNodeList);
-        map.put("selected", roleResourceList);
+        map.put("resTree", treeNodeList);
+        map.put("resSelected", roleResourceList);
         return ResultGenerator.success(map);
     }
 
@@ -163,7 +162,8 @@ public class RoleController {
      * @param ids 资源id数组
      * @return 成功与否
      */
-    @PostMapping("/{id}")
+    @ApiOperation(value = "赋予角色一些资源。")
+    @PostMapping("/{id}/resources")
     public Result giveRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                                    @RequestBody @ApiParam(value = "资源主键数组ids", required = true) Map<String, Long[]> ids) {
         Long[] idList = ids.get("ids");

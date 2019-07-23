@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper">
-    <resultMap id="RoleResourceMap" type="cn.mypandora.springboot.modular.system.model.po.RoleResource">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
-        <result column="resource_id" jdbcType="BIGINT" property="resourceId"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
-    </resultMap>
+
+    <select id="selectRoleResource" resultType="cn.mypandora.springboot.modular.system.model.po.Resource">
+        SELECT t.*
+        FROM sys_resource t
+            INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+            INNER JOIN sys_role role ON rr.role_id = role.id
+        WHERE 1 = 1
+          AND role.id = #{id}
+    </select>
 
     <insert id="giveRoleResource">
         INSERT INTO sys_role_resource( role_id, resource_id )
@@ -24,6 +26,15 @@
         delete t
         from sys_role_resource t
         where t.role_id = #{roleId}
+    </delete>
+
+    <delete id="deleteBatchRoleResource">
+        delete t
+        from sys_role_resource t
+        where t.role_id in
+        <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
     </delete>
 
 </mapper>

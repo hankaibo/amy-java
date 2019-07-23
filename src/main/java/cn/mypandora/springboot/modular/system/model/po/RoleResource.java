@@ -2,10 +2,10 @@ package cn.mypandora.springboot.modular.system.model.po;
 
 import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import lombok.Data;
-import tk.mybatis.mapper.annotation.KeySql;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
-import javax.persistence.*;
-import java.util.Date;
+import javax.persistence.Table;
 
 /**
  * RoleResource
@@ -15,6 +15,7 @@ import java.util.Date;
  */
 @Data
 @Table(name = "sys_role_resource")
+@NameStyle(Style.camelhumpAndLowercase)
 public class RoleResource extends BaseEntity {
 
     private static final long serialVersionUID = -6210390263936550568L;
@@ -22,13 +23,11 @@ public class RoleResource extends BaseEntity {
     /**
      * 角色ID
      */
-    @Column(name = "role_id")
     private Long roleId;
 
     /**
      * 资源ID
      */
-    @Column(name = "resource_id")
     private Long resourceId;
 
 }

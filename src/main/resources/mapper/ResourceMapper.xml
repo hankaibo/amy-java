@@ -192,15 +192,6 @@
         ]]>
     </select>
 
-    <select id="getResourceByRole" resultMap="ResourceMap" parameterType="long">
-        SELECT t.id
-        FROM sys_resource t
-                 INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
-                 INNER JOIN sys_role role ON rr.role_id = role.id
-        WHERE 1 = 1
-          AND role.id = #{id}
-    </select>
-
     <select id="selectRolePermRules" resultMap="rolePermRule">
         SELECT CONCAT(t.uri, "==", UPPER(t.method))   AS url,
                GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles

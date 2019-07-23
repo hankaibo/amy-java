@@ -2,9 +2,8 @@ package cn.mypandora.springboot.modular.system.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import javax.persistence.Column;
-import javax.validation.constraints.Max;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
 /**
  * BaseTree
@@ -14,6 +13,7 @@ import javax.validation.constraints.Max;
  * @see <a href="https://www.iteye.com/topic/602979">hierarchical-data</a>
  */
 @Data
+@NameStyle(Style.camelhumpAndLowercase)
 public abstract class BaseTree extends BaseEntity {
 
     private static final long serialVersionUID = -548775816575400157L;
@@ -42,6 +42,5 @@ public abstract class BaseTree extends BaseEntity {
     /**
      * 父节点
      */
-    @Column(name = "parent_id")
     protected Long parentId;
 }
