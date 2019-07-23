@@ -7,7 +7,6 @@ import cn.mypandora.springboot.core.utils.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
-import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -19,12 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static cn.mypandora.springboot.core.utils.TreeUtil.findChildren;
 
 /**
  * UserController
@@ -147,8 +143,7 @@ public class UserController {
      */
     @ApiOperation(value = "更新用户", notes = "根据用户数据更新用户。")
     @PutMapping("/{id}")
-    public Result update(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                         @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+    public Result update(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         userService.updateUser(user);
         return ResultGenerator.success();
     }
@@ -175,7 +170,7 @@ public class UserController {
      * @param id 角色主键id
      * @return 用户所包含的角色
      */
-    @ApiOperation(value = "查询某个用户的所有角色")
+    @ApiOperation(value = "查询用户的所有角色")
     @GetMapping("/{id}/roles")
     public Result<Map> selectUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         List<Role> roleList = roleService.selectRoleList();

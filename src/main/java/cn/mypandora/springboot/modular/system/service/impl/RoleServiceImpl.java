@@ -1,22 +1,20 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
-import cn.mypandora.springboot.modular.system.model.po.Role;
-import cn.mypandora.springboot.modular.system.model.po.RoleResource;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
-import cn.mypandora.springboot.modular.system.model.po.User;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * RoleServiceImpl
@@ -29,19 +27,17 @@ public class RoleServiceImpl implements RoleService {
 
     private RoleMapper roleMapper;
     private RoleResourceMapper roleResourceMapper;
-    private ResourceMapper resourceMapper;
 
     @Autowired
-    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper, ResourceMapper resourceMapper) {
+    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper) {
         this.roleMapper = roleMapper;
         this.roleResourceMapper = roleResourceMapper;
-        this.resourceMapper = resourceMapper;
     }
 
     @Override
-    public PageInfo<Role> selectRoleList(int pageNum, int pageSize, Role role) {
+    public PageInfo<Role> selectRolePage(int pageNum, int pageSize, Role role) {
         PageHelper.startPage(pageNum, pageSize);
-        List<Role> roleList = roleMapper.selectByCondition(role);
+        List<Role> roleList = roleMapper.select(role);
         return new PageInfo<>(roleList);
     }
 
@@ -65,14 +61,22 @@ public class RoleServiceImpl implements RoleService {
         roleMapper.insert(role);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteRole(Long roleId) {
-        roleMapper.deleteByIds(roleId.toString());
+    public void deleteRole(Long id) {
+        Role role = new Role();
+        role.setId(id);
+        roleMapper.delete(role);
+        roleResourceMapper.deleteRoleResource(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteBatchRole(String ids) {
         roleMapper.deleteByIds(ids);
+
+        Long[] idList = Stream.of(ids.split(",")).map(s -> Long.valueOf(s)).collect(Collectors.toList()).toArray(new Long[]{});
+        roleResourceMapper.deleteBatchRoleResource(idList);
     }
 
     @Override
@@ -91,8 +95,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Resource> selectResourceByRole(Long id) {
-        return resourceMapper.getResourceByRole(id);
+    public List<Resource> selectResourceById(Long id) {
+        return roleResourceMapper.selectRoleResource(id);
     }
 
     /**
@@ -103,8 +107,7 @@ public class RoleServiceImpl implements RoleService {
         // 删除旧的资源
         roleResourceMapper.deleteRoleResource(roleId);
         // 添加新的资源
-        int result = roleResourceMapper.giveRoleResource(roleId, resourceListId);
-        return result > 0;
+        return roleResourceMapper.giveRoleResource(roleId, resourceListId) > 0;
     }
 
 }

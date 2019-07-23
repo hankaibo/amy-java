@@ -3,6 +3,8 @@ package cn.mypandora.springboot.modular.system.model.po;
 import cn.mypandora.springboot.modular.system.model.BaseTree;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -15,6 +17,7 @@ import javax.persistence.Transient;
  */
 @Data
 @Table(name = "sys_resource")
+@NameStyle(Style.camelhumpAndLowercase)
 public class Resource extends BaseTree {
 
     private static final long serialVersionUID = -2978029310184453966L;

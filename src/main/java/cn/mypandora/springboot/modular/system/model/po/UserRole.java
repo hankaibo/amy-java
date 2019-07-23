@@ -2,8 +2,9 @@ package cn.mypandora.springboot.modular.system.model.po;
 
 import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
-import javax.persistence.Column;
 import javax.persistence.Table;
 
 /**
@@ -14,6 +15,7 @@ import javax.persistence.Table;
  */
 @Data
 @Table(name = "sys_user_role")
+@NameStyle(Style.camelhumpAndLowercase)
 public class UserRole extends BaseEntity {
 
     private static final long serialVersionUID = -8466855028083318498L;
@@ -21,13 +23,11 @@ public class UserRole extends BaseEntity {
     /**
      * 用户ID
      */
-    @Column(name = "user_id")
     private Long userId;
 
     /**
      * 角色ID
      */
-    @Column(name = "role_id")
     private Long roleId;
 
 }

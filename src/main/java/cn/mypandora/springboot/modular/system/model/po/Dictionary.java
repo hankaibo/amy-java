@@ -4,8 +4,9 @@ import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
-import javax.persistence.Column;
 import javax.persistence.Table;
 
 /**
@@ -17,6 +18,7 @@ import javax.persistence.Table;
 @ApiModel(value = "字典对象", description = "字典信息")
 @Data
 @Table(name = "sys_dict")
+@NameStyle(Style.camelhumpAndLowercase)
 public class Dictionary extends BaseEntity {
 
     private static final long serialVersionUID = -2023943502971950908L;
@@ -25,7 +27,6 @@ public class Dictionary extends BaseEntity {
      * 父级id
      */
     @ApiModelProperty(value = "字典父级id")
-    @Column(name = "parent_id")
     private Long parentId;
 
     /**
@@ -62,14 +63,12 @@ public class Dictionary extends BaseEntity {
      * 创建人
      */
     @ApiModelProperty(value = "字典创建人id")
-    @Column(name = "create_user")
     private Long createUser;
 
     /**
      * 修改人
      */
     @ApiModelProperty(value = "字典修改人id")
-    @Column(name = "modify_user")
     private Long modifyUser;
 
 }

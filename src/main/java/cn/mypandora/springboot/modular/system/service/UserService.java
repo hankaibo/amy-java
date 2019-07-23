@@ -88,4 +88,5 @@ public interface UserService {
      * @return 成功or失败
      */
     boolean giveUserRole(Long userId, Long[] roleListId);
+
 }
