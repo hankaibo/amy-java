@@ -72,10 +72,9 @@ public interface ResourceService {
     /**
      * 添加孩子资源（节点）
      *
-     * @param id       父资源（节点）的nodeId
      * @param resource 子资源（节点）的信息
      */
-    void addResource(Long id, Resource resource);
+    void addResource(Resource resource);
 
     /**
      * 删除资源（节点）
