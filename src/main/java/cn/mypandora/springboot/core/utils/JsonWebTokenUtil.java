@@ -47,10 +47,9 @@ public class JsonWebTokenUtil {
      *                    exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
      * @param roles       payload中的角色信息
      * @param permissions payload中的权限信息
-     * @param algorithm   Signature中的签名算法
      * @return jws
      */
-    public static String createJwt(String id, String subject, String issuer, Long period, String roles, String permissions, SignatureAlgorithm algorithm) {
+    public static String createJwt(String id, String issuer, String subject, Long period, String roles, String permissions) {
         Long currentTimeMillis = System.currentTimeMillis();
 
         JwtBuilder jwtBuilder = Jwts.builder();

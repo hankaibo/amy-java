@@ -23,7 +23,7 @@ public class RoleServiceTest extends SpringbootApplicationTest {
 
         roleService.addRole(role);
 
-        Role result = roleService.queryRoleByIdOrName(null, "admin");
+        Role result = roleService.selectRoleByIdOrName(null, "admin");
         log.info("------------------------------------------------------------");
         log.info("查询结果=> {}", result);
         log.info("------------------------------------------------------------");

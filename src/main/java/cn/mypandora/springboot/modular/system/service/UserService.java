@@ -22,7 +22,7 @@ public interface UserService {
      * @param user     用户条件
      * @return 用户列表
      */
-    PageInfo<User> selectUserList(int pageNum, int pageSize, User user);
+    PageInfo<User> selectUserPage(int pageNum, int pageSize, User user);
 
     /**
      * 根据用户Id或者名称查询用户。
@@ -54,6 +54,7 @@ public interface UserService {
      */
     void deleteBatchUser(String ids);
 
+
     /**
      * 更新用户。
      *
@@ -64,7 +65,7 @@ public interface UserService {
     /**
      * 启用禁用用户。 1:开启; 0:禁用。
      *
-     * @param id    用户id
+     * @param id     用户id
      * @param status 启用(1),禁用(0)
      * @return 是否成功
      */
@@ -77,5 +78,14 @@ public interface UserService {
      * @param username 用户名称
      * @return 角色列表
      */
-    List<Role> selectRoleList(Long id, String username);
+    List<Role> selectRoleByIdOrName(Long id, String username);
+
+    /**
+     * 赋予用户某角色。
+     *
+     * @param userId     用户Id
+     * @param roleListId 用色Id集合
+     * @return 成功or失败
+     */
+    boolean giveUserRole(Long userId, Long[] roleListId);
 }

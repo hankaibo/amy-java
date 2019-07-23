@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.UserRoleMapper">
+
+    <select id="selectUserRole" resultType="cn.mypandora.springboot.modular.system.model.po.Role">
+        SELECT t.*
+        FROM sys_role t
+                 JOIN sys_user_role ur ON t.id = ur.role_id
+                 JOIN sys_user u ON ur.user_id = u.id
+        WHERE 1 = 1
+            AND u.username = #{username}
+           OR u.id = #{userId}
+    </select>
+
+    <insert id="giveUserRole">
+        INSERT INTO sys_user_role( user_id, role_id )
+        VALUES
+        <foreach collection="roleListId" item="roleId" index="index" separator=",">
+            (
+            #{userId}
+            ,#{roleId}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteUserRole">
+        delete t
+        from sys_user_role t
+        where t.user_id = #{userId}
+    </delete>
+
+    <delete id="deleteBatchUserRole">
+        delete t
+        from sys_user_role t
+        where t.user_id in
+        <foreach collection="userListId" item="userId" index="index" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+</mapper>

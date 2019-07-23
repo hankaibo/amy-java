@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper">
+    <resultMap id="RoleResourceMap" type="cn.mypandora.springboot.modular.system.model.po.RoleResource">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="resource_id" jdbcType="BIGINT" property="resourceId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+    </resultMap>
+
+    <insert id="giveRoleResource">
+        INSERT INTO sys_role_resource( role_id, resource_id )
+        VALUES
+        <foreach collection="resourceListId" item="resourceId" index="index" separator=",">
+            (
+            #{roleId}
+            ,#{resourceId}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoleResource">
+        delete t
+        from sys_role_resource t
+        where t.role_id = #{roleId}
+    </delete>
+
+</mapper>

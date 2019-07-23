@@ -11,10 +11,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * UserServiceImpl
@@ -35,9 +38,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo<User> selectUserList(int pageNum, int pageSize, User user) {
+    public PageInfo<User> selectUserPage(int pageNum, int pageSize, User user) {
         PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userMapper.selectByCondition(user);
+        List<User> userList = userMapper.select(user);
         userList.forEach(item -> {
             item.setSalt(null);
             item.setPassword(null);
@@ -61,14 +64,21 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(user);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteUser(Long id) {
-        userMapper.deleteByIds(id.toString());
+        User user = new User();
+        user.setId(id);
+        userMapper.delete(user);
+        userRoleMapper.deleteUserRole(id);
     }
 
     @Override
     public void deleteBatchUser(String ids) {
         userMapper.deleteByIds(ids);
+
+        Long[] idList = Stream.of(ids.split(",")).map(s -> Long.valueOf(s)).collect(Collectors.toList()).toArray(new Long[]{});
+        userRoleMapper.deleteBatchUserRole(idList);
     }
 
     @Override
@@ -90,17 +100,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Role> selectRoleList(Long id, String username) {
-        Role role = new Role();
-        role.setName("admin");
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(role);
-
-        return roleList;
+    public List<Role> selectRoleByIdOrName(Long id, String username) {
+        return userRoleMapper.selectUserRole(id, username);
     }
 
+    @Override
+    public boolean giveUserRole(Long userId, Long[] roleListId) {
+        // 删除旧的角色
+        userRoleMapper.deleteUserRole(userId);
+        // 添加新的角色
+        int result = userRoleMapper.giveUserRole(userId, roleListId);
+        return result > 0;
+    }
+
+    /**
+     * 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
+     *
+     * @param user 加密的用户
+     */
     private void passwordHelper(User user) {
-        // 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
+        if (StringUtils.isEmpty(user.getPassword())) {
+            return;
+        }
         String salt = BCrypt.gensalt();
         user.setSalt(salt);
         String originPassword = user.getPassword();
@@ -108,4 +129,5 @@ public class UserServiceImpl implements UserService {
             user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
         }
     }
+
 }

@@ -4,8 +4,11 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
+import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
+import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -16,7 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static cn.mypandora.springboot.core.utils.TreeUtil.findChildren;
 
 /**
  * UserController
@@ -30,10 +38,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     /**
@@ -61,9 +71,9 @@ public class UserController {
      */
     @ApiOperation(value = "用户列表", notes = "查询用户列表")
     @GetMapping
-    public Result<PageInfo<User>> listAll(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                          @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize) {
-        return ResultGenerator.success(userService.selectUserList(pageNum, pageSize, null));
+    public Result<PageInfo<User>> selectPage(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+                                             @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize) {
+        return ResultGenerator.success(userService.selectUserPage(pageNum, pageSize, null));
     }
 
     /**
@@ -74,10 +84,13 @@ public class UserController {
      */
     @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
     @GetMapping("/{id}")
-    public Result<User> listById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+    public Result<User> selectOneById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         User user = userService.selectUserByIdOrName(id, null);
         user.setPassword(null);
         user.setSalt(null);
+        user.setLastLoginTime(null);
+        user.setCreateTime(null);
+        user.setModifyTime(null);
         return ResultGenerator.success(user);
     }
 
@@ -120,7 +133,7 @@ public class UserController {
      */
     @ApiOperation(value = "删除用户(批量)", notes = "根据用户Id批量删除用户。")
     @DeleteMapping
-    public Result remove(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
+    public Result removeBatch(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
         userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ","));
         return ResultGenerator.success();
     }
@@ -133,8 +146,9 @@ public class UserController {
      * @return 更新结果
      */
     @ApiOperation(value = "更新用户", notes = "根据用户数据更新用户。")
-    @PutMapping
-    public Result update(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+    @PutMapping("/{id}")
+    public Result update(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                         @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         userService.updateUser(user);
         return ResultGenerator.success();
     }
@@ -147,11 +161,46 @@ public class UserController {
      * @return 启用成功与否。
      */
     @ApiOperation(value = "启用|禁用用户", notes = "根据用户id启用或禁用用户。")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/status")
     public Result enable(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
                          @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
         boolean result = userService.enableUser(id, s);
+        return result ? ResultGenerator.success() : ResultGenerator.failure();
+    }
+
+    /**
+     * 查询该用户所包含的角色。
+     *
+     * @param id 角色主键id
+     * @return 用户所包含的角色
+     */
+    @ApiOperation(value = "查询某个用户的所有角色")
+    @GetMapping("/{id}/roles")
+    public Result<Map> selectUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+        List<Role> roleList = roleService.selectRoleList();
+        List<Role> roleSelected = userService.selectRoleByIdOrName(id, null);
+
+        Map<String, List> map = new HashMap<>(2);
+        map.put("roleList", roleList);
+        map.put("roleSelected", roleSelected);
+        return ResultGenerator.success(map);
+    }
+
+    /**
+     * 赋予某用户某角色。
+     *
+     * @param id  用户id
+     * @param ids 角色id数组
+     * @return 成功与否
+     */
+    @ApiOperation(value = "赋予用户一些角色。")
+    @PostMapping("/{id}/roles")
+    public Result giveUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                               @RequestBody @ApiParam(value = "角色主键数组ids", required = true) Map<String, Long[]> ids) {
+        Long[] idList = ids.get("ids");
+        boolean result = userService.giveUserRole(id, idList);
+
         return result ? ResultGenerator.success() : ResultGenerator.failure();
     }
 
