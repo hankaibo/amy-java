@@ -73,7 +73,7 @@ public class ResourceController {
      * @return 更新结果
      */
     @ApiOperation(value = "更新资源", notes = "根据资源数据更新资源。")
-    @PutMapping
+    @PutMapping("/{id}")
     public Result update(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
         resourceService.updateResource(resource);
         return ResultGenerator.success();
@@ -142,7 +142,7 @@ public class ResourceController {
      * @return ok
      */
     @ApiOperation(value = "移动资源", notes = "将当前资源上移或下移。")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/location")
     public Result moveUp(@PathVariable @ApiParam(value = "资源数据", required = true) Long id,
                          @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, Long> map) {
         Long step = map.get("step");

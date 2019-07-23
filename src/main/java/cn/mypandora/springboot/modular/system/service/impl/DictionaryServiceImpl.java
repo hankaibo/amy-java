@@ -5,6 +5,7 @@ import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public Dictionary selectDictionary(Long id) {
         Dictionary dictionary = new Dictionary();
         dictionary.setId(id);
-        return dictionaryMapper.selectOne(dictionary);
+        return dictionaryMapper.selectByPrimaryKey(dictionary);
     }
 
     @Override
@@ -50,7 +51,9 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void deleteDictionary(Long id) {
-        dictionaryMapper.deleteByIds(id.toString());
+        Dictionary dictionary = new Dictionary();
+        dictionary.setId(id);
+        dictionaryMapper.delete(dictionary);
     }
 
     @Override
@@ -62,11 +65,14 @@ public class DictionaryServiceImpl implements DictionaryService {
     public void updateDictionary(Dictionary dictionary) {
         Date now = new Date(System.currentTimeMillis());
         dictionary.setModifyTime(now);
-        dictionaryMapper.updateByPrimaryKey(dictionary);
+        dictionaryMapper.updateByPrimaryKeySelective(dictionary);
     }
 
     @Override
-    public boolean enableDictionary(Long id) {
-        return false;
+    public boolean enableDictionary(Long id, Integer status) {
+        Dictionary dictionary = new Dictionary();
+        dictionary.setId(id);
+        dictionary.setStatus(status);
+        return dictionaryMapper.updateByPrimaryKeySelective(dictionary) > 0;
     }
 }
