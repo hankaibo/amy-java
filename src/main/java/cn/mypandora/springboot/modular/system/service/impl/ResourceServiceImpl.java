@@ -29,19 +29,14 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<RolePermRule> rolePermRules() {
+    public List<RolePermRule> selectRolePermRules() {
         List<RolePermRule> rolePermRules = new ArrayList<>();
-
-        RolePermRule foo5 = new RolePermRule();
-        foo5.setUrl("/api/v1/users==GET");
-        foo5.setNeedRoles("admin,user");
-        rolePermRules.add(foo5);
-
-        RolePermRule foo4 = new RolePermRule();
-        foo4.setUrl("/api/v1/users/info==GET");
-        foo4.setNeedRoles("admin,user");
-        rolePermRules.add(foo4);
-
+        List<Resource> resourceList = resourceMapper.selectRolePermRules();
+        for (Resource resource : resourceList) {
+            RolePermRule rolePermRule = new RolePermRule();
+            rolePermRule.setUrl(resource.getUri());
+            rolePermRule.setNeedRoles(resource.getNeedRoles());
+        }
         return rolePermRules;
     }
 

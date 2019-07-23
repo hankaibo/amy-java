@@ -1,7 +1,9 @@
 package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
+import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param type 资源类型
      * @return 整棵树
      */
-    List<Resource> loadFullTree(Integer type);
+    List<Resource> loadFullTree(@Param(value = "type") Integer type);
 
     /**
      * 获取某一层级节点。
@@ -135,5 +137,21 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @return 是最后一个节点，返回真；反之，则假。
      */
     boolean isLastNode(Long id);
+
+    /**
+     * 查询该角色所包含的资源。
+     *
+     * @param id 角色id
+     * @return 查询该角色所包含的资源
+     */
+    List<Resource> getResourceByRole(Long id);
+
+    /**
+     * 查询所有的动态url，动态注册到过滤器链中。
+     * @return 资源
+     *
+     * @see FilterChainManager L82
+     */
+    List<Resource> selectRolePermRules();
 
 }

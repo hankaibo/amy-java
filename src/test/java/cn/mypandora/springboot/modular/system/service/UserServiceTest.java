@@ -50,7 +50,7 @@ public class UserServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void selectByPage() {
-        PageInfo<User> userList = userService.selectUserList(1, 10, null);
+        PageInfo<User> userList = userService.selectUserPage(1, 10, null);
         log.info("------------------------------------------------------------");
         log.info("查询结果=> {}", userList);
         log.info("------------------------------------------------------------");

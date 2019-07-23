@@ -59,7 +59,7 @@ public class TreeUtil {
         return result;
     }
 
-    private static TreeNode findChildren(TreeNode treeNode, List<TreeNode> treeNodeList) {
+    public static TreeNode findChildren(TreeNode treeNode, List<TreeNode> treeNodeList) {
         for (TreeNode it : treeNodeList) {
             if (treeNode.getId().equals(it.getParentId())) {
                 if (treeNode.getChildren() == null) {

@@ -4,23 +4,25 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -61,22 +63,20 @@ public class LoginController {
     public Result<Token> login(HttpServletRequest request) {
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
-        // TODO 根据用户id/姓名获取用户角色、权限
-        String roles = "admin";
+        List<Role> roleList = userService.selectRoleByIdOrName(null, username);
+        List<String> codeList = new ArrayList<>();
+        for (Role role : roleList) {
+            codeList.add(role.getCode());
+        }
+        String roles = String.join(",", codeList);
         String perms = null;
         // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
         long refreshPeriodTime = 36000L;
-        String jwt = JsonWebTokenUtil.createJwt(
-                UUID.randomUUID().toString(),
-                username, "token-server",
-                refreshPeriodTime >> 1,
-                roles,
-                perms,
-                SignatureAlgorithm.HS512);
-        // 将签发的JWT存储到Redis： {JWT-SESSION-{appID} , jwt}
-        redisTemplate.opsForValue().set("JWT-SESSION-" + username, jwt, refreshPeriodTime, TimeUnit.SECONDS);
+        String jws = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, perms);
+        // 将签发的JWS存储到Redis： {JWS-ID-{username} , jwt}
+        redisTemplate.opsForValue().set(StringUtils.upperCase("JWS-ID-" + username), jws, refreshPeriodTime, TimeUnit.SECONDS);
         Token token = new Token();
-        token.setToken(jwt);
+        token.setToken(jws);
         token.setRole(roles);
 
         return ResultGenerator.success(token);
@@ -86,17 +86,17 @@ public class LoginController {
     @PostMapping("/logout")
     public Result logout(HttpServletRequest request) {
         SecurityUtils.getSubject().logout();
-        String token = RequestResponseUtil.getHeader(request, "authorization");
+        String token = RequestResponseUtil.getHeader(request, "Authorization");
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(token);
-        String appId = jwtAccount.getAppId();
-        if (StringUtils.isEmpty(appId)) {
+        String username = jwtAccount.getAppId();
+        if (StringUtils.isEmpty(username)) {
             return ResultGenerator.failure("用户无法登出。");
         }
-        String jwt = redisTemplate.opsForValue().get("JWT-SESSION-" + appId);
-        if (StringUtils.isEmpty(jwt)) {
+        String jws = redisTemplate.opsForValue().get(StringUtils.upperCase("JWS-ID-" + username));
+        if (StringUtils.isEmpty(jws)) {
             return ResultGenerator.failure("用户无法登出。");
         }
-        redisTemplate.opsForValue().getOperations().delete("JWT-SESSION-" + appId);
+        redisTemplate.opsForValue().getOperations().delete(StringUtils.upperCase("JWS-ID-" + username));
         return ResultGenerator.success("用户登出成功。");
     }
 

@@ -4,13 +4,12 @@ import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
-import javax.persistence.Column;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 
 /**
  * User
@@ -21,6 +20,7 @@ import java.util.List;
 @ApiModel(value = "用户对象", description = "用户信息")
 @Data
 @Table(name = "sys_user")
+@NameStyle(Style.camelhumpAndLowercase)
 public class User extends BaseEntity {
 
     private static final long serialVersionUID = -8978557733419584026L;
@@ -42,7 +42,6 @@ public class User extends BaseEntity {
      * 真实名称
      */
     @ApiModelProperty(value = "用户真实姓名")
-    @Column(name = "real_name")
     private String realName;
 
     /**
@@ -97,21 +96,6 @@ public class User extends BaseEntity {
      * 最后登录时间
      */
     @ApiModelProperty(value = "用户最近登录时间", example = "1970-01-01:08:00:00")
-    @Column(name = "last_login_time")
     private Date lastLoginTime;
-
-    /**
-     * 角色列表
-     */
-    @ApiModelProperty(hidden = true)
-    @Transient
-    private List<Role> roleList;
-
-    /**
-     * 资源列表
-     */
-    @ApiModelProperty(hidden = true)
-    @Transient
-    private List<Resource> resourceList;
 
 }

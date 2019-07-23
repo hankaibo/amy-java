@@ -18,6 +18,11 @@
         <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
     </resultMap>
 
+    <resultMap id="rolePermRule" type="cn.mypandora.springboot.modular.system.model.po.Resource">
+        <result column="url" jdbcType="VARCHAR" property="uri"/>
+        <result column="needRoles" jdbcType="VARCHAR" property="needRoles"/>
+    </resultMap>
+
     <sql id="baseColumns">id,name,lft,rgt,level,code,status,uri,type,method,icon,parent_id,description,create_time,modify_time</sql>
 
     <select id="loadFullTree" resultMap="ResourceMap" parameterType="int">
@@ -25,11 +30,13 @@
         <include refid="baseColumns"/>
         FROM sys_resource t
         WHERE 1=1
-        AND t.type=#{type}
+        <if test="type != 3">
+            AND t.type=#{type}
+        </if>
         ORDER BY t.lft ASC
     </select>
 
-    <select id="getDescendant" resultMap="ResourceMap" parameterType="Map">
+    <select id="getDescendant" resultMap="ResourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns"/>
         <![CDATA[
@@ -48,7 +55,7 @@
         ]]>
     </select>
 
-    <select id="getChild" resultMap="ResourceMap" parameterType="Map">
+    <select id="getChild" resultMap="ResourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns"/>
         FROM sys_resource t
@@ -183,6 +190,26 @@
             WHERE p.id = t.parent_id
         )
         ]]>
+    </select>
+
+    <select id="getResourceByRole" resultMap="ResourceMap" parameterType="long">
+        SELECT t.id
+        FROM sys_resource t
+                 INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+                 INNER JOIN sys_role role ON rr.role_id = role.id
+        WHERE 1 = 1
+          AND role.id = #{id}
+    </select>
+
+    <select id="selectRolePermRules" resultMap="rolePermRule">
+        SELECT CONCAT(t.uri, "==", UPPER(t.method))   AS url,
+               GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
+        FROM sys_resource t
+                 INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+                 INNER JOIN sys_role role ON rr.role_id = role.id
+        WHERE 1 = 1
+          AND t.`type` = 2
+        GROUP BY t.uri, t.id
     </select>
 
 </mapper>

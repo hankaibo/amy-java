@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
+import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
 
@@ -14,14 +15,9 @@ import java.util.Date;
  */
 @Data
 @Table(name = "sys_role_resource")
-public class RoleResource {
+public class RoleResource extends BaseEntity {
 
-    /**
-     * 角色资源关系ID
-     */
-    @Id
-    @KeySql(useGeneratedKeys = true)
-    private Long id;
+    private static final long serialVersionUID = -6210390263936550568L;
 
     /**
      * 角色ID
@@ -34,17 +30,5 @@ public class RoleResource {
      */
     @Column(name = "resource_id")
     private Long resourceId;
-
-    /**
-     * 创建时间
-     */
-    @Column(name = "create_time")
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-    @Column(name = "modify_time")
-    private Date modifyTime;
 
 }

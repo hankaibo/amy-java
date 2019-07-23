@@ -15,11 +15,11 @@ import java.util.Map;
 public interface ResourceService {
 
     /**
-     * TODO 暂时使用RolePermRule对象。
+     * 查询所有的动态权限菜单。
      *
      * @return 权限菜单
      */
-    List<RolePermRule> rolePermRules();
+    List<RolePermRule> selectRolePermRules();
 
     /**
      * 获取所有资源（一次性全部加载，适合数据量少的情况）。

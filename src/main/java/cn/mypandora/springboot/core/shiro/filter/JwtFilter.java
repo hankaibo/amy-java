@@ -8,7 +8,6 @@ import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.Message;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -69,11 +68,11 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                     // TODO
                     String username = null;
                     String jwt = WebUtils.toHttp(servletRequest).getHeader("authorization");
-                    String refreshJwt = redisTemplate.opsForValue().get("JWT-SESSION-" + username);
+                    String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWS-ID-" + username));
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
                         // 重新申请新的JWT
                         // 根据 username 获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
-                        List<Role> roleList = userService.selectRoleList(null, username);
+                        List<Role> roleList = userService.selectRoleByIdOrName(null, username);
                         StringBuffer stringBuffer = new StringBuffer();
                         for (Role role : roleList) {
                             stringBuffer.append(role.getName());
@@ -81,16 +80,8 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         String roles = stringBuffer.toString();
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
-                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(),
-                                username,
-                                "token-server",
-                                refreshPeriodTime >> 1,
-                                roles,
-                                null,
-                                SignatureAlgorithm.HS512
-                        );
-                        // 将签发的JWT存储到Redis： {JWT-SESSION-{appID} , jwt}
-                        redisTemplate.opsForValue().set("JWT-SESSION-" + username, newJwt, refreshPeriodTime, TimeUnit.SECONDS);
+                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, null);
+                        redisTemplate.opsForValue().set(StringUtils.upperCase("JWS-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
                         Message message = new Message().ok(1005, "new jwt").addData("jwt", newJwt);
                         RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
                         return false;
@@ -139,7 +130,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     }
 
     private boolean isJwtSubmission(ServletRequest request) {
-        String jwt = RequestResponseUtil.getHeader(request, "authorization");
+        String jwt = RequestResponseUtil.getHeader(request, "Authorization");
         return (request instanceof HttpServletRequest) && StringUtils.isNotEmpty(jwt);
     }
 

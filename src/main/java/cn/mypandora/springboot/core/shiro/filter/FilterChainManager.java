@@ -72,8 +72,6 @@ public class FilterChainManager {
         List<String> defaultAnon = Arrays.asList(
                 "/css/**",
                 "/js/**"
-//                "/swagger-resources/**",
-//                "/swagger/**"
         );
         defaultAnon.forEach(ignored -> filterChainDefinitionMap.put(ignored, "anon"));
         // auth 默认需要认证过滤器的URL 走auth--PasswordFilter
@@ -81,10 +79,11 @@ public class FilterChainManager {
         defaultAuth.forEach(auth -> filterChainDefinitionMap.put(auth, "auth"));
         // dynamic 动态url
         if (resourceService != null) {
-            List<RolePermRule> rolePermRules = this.resourceService.rolePermRules();
+            List<RolePermRule> rolePermRules = this.resourceService.selectRolePermRules();
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {
                     StringBuilder chain = rule.toFilterChain();
+                    System.out.println(rule.toString());
                     if (null != chain) {
                         filterChainDefinitionMap.putIfAbsent(rule.getUrl(), chain.toString());
                     }

@@ -1,9 +1,11 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import cn.mypandora.springboot.modular.system.model.BaseTree;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Resource
@@ -51,5 +53,12 @@ public class Resource extends BaseTree {
      * 描述
      */
     private String description;
+
+    /**
+     * 冗余字段，方便转换显示，不存数据库。
+     */
+    @ApiModelProperty(hidden = true)
+    @Transient
+    private String needRoles;
 
 }
