@@ -56,7 +56,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "字典详情")
     @GetMapping("/{id}")
-    public Result<Dictionary> listById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
+    public Result<Dictionary> selectOneById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
         return ResultGenerator.success(dictionaryService.selectDictionary(id));
     }
 
@@ -106,10 +106,26 @@ public class DictionaryController {
      * @return 更新结果
      */
     @ApiOperation(value = "更新字典")
-    @PutMapping
+    @PutMapping("/{id}")
     public Result update(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.updateDictionary(dictionary);
         return ResultGenerator.success();
+    }
+
+    /**
+     * 启用|禁用字典。
+     *
+     * @param id     字典主键id
+     * @param status 启用:1，禁用:0
+     * @return 启用成功与否。
+     */
+    @ApiOperation(value = "启用|禁用字典", notes = "根据字典id启用或禁用。")
+    @PutMapping("/{id}/status")
+    public Result enable(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
+                         @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
+        Integer s = status.get("status");
+        boolean result = dictionaryService.enableDictionary(id, s);
+        return result ? ResultGenerator.success() : ResultGenerator.failure();
     }
 
 }

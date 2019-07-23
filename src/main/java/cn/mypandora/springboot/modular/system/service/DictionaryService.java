@@ -60,8 +60,9 @@ public interface DictionaryService {
     /**
      * 启用禁用字典。 1:开启; 0:禁用。
      *
-     * @param id 字典id
+     * @param id     字典id
+     * @param status 启用(1),禁用(0)
      * @return 启用禁用状态
      */
-    boolean enableDictionary(Long id);
+    boolean enableDictionary(Long id, Integer status);
 }
