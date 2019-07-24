@@ -83,7 +83,6 @@ public class FilterChainManager {
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {
                     StringBuilder chain = rule.toFilterChain();
-                    System.out.println(rule.toString());
                     if (null != chain) {
                         filterChainDefinitionMap.putIfAbsent(rule.getUrl(), chain.toString());
                     }
