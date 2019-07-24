@@ -84,20 +84,12 @@ public interface ResourceService {
     void delResource(Long id);
 
     /**
-     * 上移某个资源（节点）(同级叶子之间,即把弟弟资源（节点）移到哥哥资源（节点）之前)
+     * 平移某个资源（节点）
      *
-     * @param id   弟弟资源（节点）ID
-     * @param upId 哥哥资源（节点）ID
+     * @param sourceId 源（节点）ID
+     * @param targetId 目标（节点）ID
      */
-    void moveUpResource(Long id, Long upId);
-
-    /**
-     * 下移某个资源（节点）(同级叶子之间,即把哥哥资源（节点）移到弟弟资源（节点）之后)
-     *
-     * @param id     哥哥资源（节点）ID
-     * @param downId 弟弟资源（节点）ID
-     */
-    void moveDownResource(Long id, Long downId);
+    void moveResource(Long sourceId, Long targetId);
 
     /**
      * 查询一个资源。
