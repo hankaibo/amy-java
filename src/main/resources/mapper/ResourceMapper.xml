@@ -134,7 +134,7 @@
         ]]>
     </update>
 
-    <update id="lftMinusN">
+    <update id="lftMinus">
         <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft - #{amount})
@@ -142,7 +142,7 @@
         ]]>
     </update>
 
-    <update id="rgtMinusN">
+    <update id="rgtMinus">
         <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.rgt= (t.rgt - #{amount})
@@ -150,22 +150,14 @@
         ]]>
     </update>
 
-    <update id="bothMinus2" parameterType="long">
-        <![CDATA[
+    <update id="selfAndDescendant">
         UPDATE sys_resource t
-        SET t.lft=t.lft - 2,
-            t.rgt=t.rgt - 2
-        WHERE id = #{id}
-        ]]>
-    </update>
-
-    <update id="bothPlus2" parameterType="long">
-        <![CDATA[
-        UPDATE sys_resource t
-        SET t.lft=t.lft + 2,
-            t.rgt=t.rgt + 2
-        WHERE id = #{id}
-        ]]>
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount})
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 
     <select id="isFirstNode" resultType="boolean" parameterType="long">

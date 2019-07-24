@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  *
  * @author hankaibo
  * @date 2019/1/15
+ * @see <a href="http://www.spoofer.top/2017/07/14/%E5%9F%BA%E4%BA%8ENested-Sets%E7%9A%84%E6%A0%91%E5%BD%A2%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1">左右节点树操作</a>
  */
 @Service("ResourceService")
 public class ResourceServiceImpl implements ResourceService {
@@ -91,17 +92,15 @@ public class ResourceServiceImpl implements ResourceService {
         // 先求出要删除的节点的所有信息，利用左值与右值计算出要删除的节点数量。
         // 删除节点数=(节点右值-节点左值+1)/2
         Resource info = resourceMapper.selectByPrimaryKey(resource);
-        Long leftNode = info.getLft();
-        Long rightNode = info.getRgt();
-        Long deleteAmount = rightNode - leftNode + 1;
+        Long deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此节点之后的相关节点左右值
-        resourceMapper.lftMinusN(id, deleteAmount);
-        resourceMapper.rgtMinusN(id, deleteAmount);
+        resourceMapper.lftMinus(id, deleteAmount);
+        resourceMapper.rgtMinus(id, deleteAmount);
         // 求出要删除的节点所有子孙节点
         Map<String, Number> map = new HashMap<>(2);
         map.put("id", id);
-        List<Resource> willDelResourcList = resourceMapper.getDescendant(map);
-        List<Long> idList = willDelResourcList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        List<Resource> willDelResourceList = resourceMapper.getDescendant(map);
+        List<Long> idList = willDelResourceList.stream().map(item -> item.getId()).collect(Collectors.toList());
         idList.add(id);
         String ids = StringUtils.join(idList, ",");
         // 批量删除节点及子孙节点
@@ -110,26 +109,35 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void moveUpResource(Long id, Long upId) {
-        // 当前节点不是首节点
-        if (!resourceMapper.isFirstNode(id)) {
-            // 弟弟（自身）节点左右值减2
-            resourceMapper.bothMinus2(id);
-            // 哥哥节点左右值加去2
-            resourceMapper.bothPlus2(upId);
-        }
-    }
+    public void moveResource(Long sourceId, Long targetId) {
+        // 先取出源节点与目标节点两者的信息
+        Resource targetResource = new Resource();
+        Resource sourceResource = new Resource();
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void moveDownResource(Long id, Long downId) {
-        // 当前节点不是末节点
-        if (!resourceMapper.isLastNode(id)) {
-            // 哥哥节点（自身）左右值加2
-            resourceMapper.bothPlus2(id);
-            // 弟弟节点左右值减2
-            resourceMapper.bothMinus2(downId);
+        targetResource.setId(targetId);
+        sourceResource.setId(sourceId);
+
+        Resource targetInfo = resourceMapper.selectByPrimaryKey(targetResource);
+        Resource sourceInfo = resourceMapper.selectByPrimaryKey(sourceResource);
+
+        long targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
+        long sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
+
+        List<Long> sourceIdList = getDescendantId(sourceId);
+        List<Long> targetIdList = getDescendantId(targetId);
+
+        // 确定方向，目标大于源，下移；反之，上移。
+        if (targetInfo.getRgt() > sourceInfo.getRgt()) {
+            targetAmount *= 1;
+            sourceAmount *= -1;
+        } else {
+            targetAmount *= -1;
+            sourceAmount *= 1;
         }
+        // 源节点及子孙节点左右值 targetAmount
+        resourceMapper.selfAndDescendant(sourceIdList, targetAmount);
+        // 目标节点及子孙节点左右值 sourceAmount
+        resourceMapper.selfAndDescendant(targetIdList, sourceAmount);
     }
 
     @Override
@@ -144,6 +152,21 @@ public class ResourceServiceImpl implements ResourceService {
         Date now = new Date(System.currentTimeMillis());
         resource.setModifyTime(now);
         resourceMapper.updateByPrimaryKeySelective(resource);
+    }
+
+    /**
+     * 获取此节点及其子孙节点的id
+     *
+     * @param id 节点
+     * @return 节点集合
+     */
+    private List<Long> getDescendantId(Long id) {
+        Map<String, Number> params = new HashMap<>(1);
+        params.put("id", id);
+        List<Resource> resourceList = resourceMapper.getDescendant(params);
+        List<Long> idList = resourceList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        idList.add(id);
+        return idList;
     }
 
 }

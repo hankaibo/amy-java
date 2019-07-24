@@ -10,6 +10,7 @@ import cn.mypandora.springboot.modular.system.service.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/resources")
 public class ResourceController {
+
+    private final String UP = "UP";
+    private final String DOWN = "DOWN";
 
     private final ResourceService resourceService;
 
@@ -137,6 +141,8 @@ public class ResourceController {
     }
 
     /**
+     * 本功能只针对同层级节点的平移。
+     *
      * @param id  当前资源id
      * @param map 移动步数(1：上移，-1：下移）
      * @return ok
@@ -144,64 +150,46 @@ public class ResourceController {
     @ApiOperation(value = "移动资源", notes = "将当前资源上移或下移。")
     @PutMapping("/{id}/location")
     public Result moveUp(@PathVariable @ApiParam(value = "资源数据", required = true) Long id,
-                         @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, Long> map) {
-        Long step = map.get("step");
-        // 左资源升序，保证有序
+                         @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
+        String direction = map.get("direction");
+        // 获得同层级节点
         List<Resource> resourceList = resourceService.getResourceSibling(id);
-        // 上移与下移资源id
-        Long upId;
-        Long downId;
-        Map<String, Long> siblingId = getSiblingId(resourceList, id);
-        if (siblingId.isEmpty()) {
-            return ResultGenerator.failure("当前资源没有兄弟资源，不能移动。");
-        } else {
-            upId = siblingId.get("upId");
-            downId = siblingId.get("downId");
+        // 目标节点id
+        Long targetId = getTargetId(resourceList, id, direction);
+        if (null == targetId) {
+            return ResultGenerator.failure("当前资源不能移动。");
         }
-
-        if (step == 1L) {
-            resourceService.moveUpResource(id, upId);
-        }
-        if (step == -1L) {
-            resourceService.moveDownResource(id, downId);
-        }
+        resourceService.moveResource(id, targetId);
         return ResultGenerator.success();
     }
 
     /**
-     * 获得当前资源的兄弟资源的id。
+     * 获得目标节点的id。
      *
      * @param resourceList 当前资源所在的数组
-     * @param id           当前资源
+     * @param id           当前资源id
+     * @param direction    上移下移
      * @return 当前资源的兄弟资源id
      */
-    private Map<String, Long> getSiblingId(List<Resource> resourceList, Long id) {
-        Map<String, Long> result = new HashMap<>(2);
-        Long upId = null;
-        Long downId = null;
-
-        if (resourceList.size() == 0 || resourceList.size() == 1) {
-            return result;
+    private Long getTargetId(List<Resource> resourceList, Long id, String direction) {
+        int len = resourceList.size();
+        if (len == 0 || len == 1) {
+            return null;
         }
+        // 获得当前节点的索引
+        int index = 0;
         for (int i = 0; i < resourceList.size(); i++) {
             if (resourceList.get(i).getId().equals(id)) {
-                if (i == 0) {
-                    upId = -1L;
-                    downId = resourceList.get(i + 1).getId();
-                    break;
-                }
-                if (i == resourceList.size() - 1) {
-                    downId = -1L;
-                    upId = resourceList.get(i - 1).getId();
-                    break;
-                }
-                upId = resourceList.get(i - 1).getId();
-                downId = resourceList.get(i + 1).getId();
+                index = i;
+                break;
             }
         }
-        result.put("upId", upId);
-        result.put("downId", downId);
-        return result;
+        int targetIndex = StringUtils.equals(StringUtils.upperCase(direction), DOWN) ? index + 1 : index - 1;
+        // 顶节点上移，不操作；底节点下移，不操作
+        if (targetIndex < 0 || targetIndex >= len) {
+            return null;
+        }
+        return resourceList.get(targetIndex).getId();
     }
 
 }
