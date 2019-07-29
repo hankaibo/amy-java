@@ -33,8 +33,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    private final UserService userService;
-    private final RoleService roleService;
+    private UserService userService;
+    private RoleService roleService;
 
     @Autowired
     public UserController(UserService userService, RoleService roleService) {
@@ -51,9 +51,11 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息返回。")
     @GetMapping("/info")
     public Result<User> userInfo(HttpServletRequest request) {
-        String jwt = RequestResponseUtil.getHeader(request, "authorization");
+        String jwt = RequestResponseUtil.getHeader(request, "Authorization");
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
+        user.setPassword(null);
+        user.setSalt(null);
 
         return ResultGenerator.success(user);
     }

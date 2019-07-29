@@ -1,39 +1,30 @@
 package cn.mypandora.springboot.core.utils;
 
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.impl.DefaultHeader;
-import io.jsonwebtoken.impl.DefaultJwsHeader;
-import io.jsonwebtoken.impl.TextCodec;
-import io.jsonwebtoken.impl.compression.DefaultCompressionCodecResolver;
 import io.jsonwebtoken.lang.Assert;
-import io.jsonwebtoken.lang.Strings;
-import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.security.Key;
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * JsonWebTokenUtil
  *
  * @author hankaibo
  * @date 2019/6/18
+ * @see <a href="http://www.conyli.cc/archives/2617" />
  */
 @NoArgsConstructor
 public class JsonWebTokenUtil {
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final int COUNT_3 = 3;
-    private static CompressionCodecResolver codecResolver = new DefaultCompressionCodecResolver();
-    private static Key KEY = generalKey();
 
     /**
      * 创建jwt.
@@ -50,10 +41,10 @@ public class JsonWebTokenUtil {
      * @return jws
      */
     public static String createJwt(String id, String issuer, String subject, Long period, String roles, String permissions) {
-        Long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeMillis = System.currentTimeMillis();
 
         JwtBuilder jwtBuilder = Jwts.builder();
-        // 设置header相关信息
+        // 设置 Registered Claim 信息
         if (StringUtils.isNotEmpty(id)) {
             jwtBuilder.setId(id);
         }
@@ -67,15 +58,18 @@ public class JsonWebTokenUtil {
         if (null != period) {
             jwtBuilder.setExpiration(new Date(currentTimeMillis + period * 1000));
         }
-        // 设置payload相关信息
+        // 设置 Custom Claim 信息
         if (StringUtils.isNotEmpty(roles)) {
             jwtBuilder.claim("roles", roles);
         }
         if (StringUtils.isNotEmpty(permissions)) {
             jwtBuilder.claim("perms", permissions);
         }
-        jwtBuilder.compressWith(CompressionCodecs.GZIP);
+        // 使用密钥进行签名
+        // signWith(key)会让jjwt自动根据key的长度选择算法，在计算出签名的同时，会在header中写入alg键值对。
+        // signWith(key, SignatureAlgorithm.RS512)可以自行指定算法。
         jwtBuilder.signWith(generalKey());
+        jwtBuilder.compressWith(CompressionCodecs.GZIP);
 
         return jwtBuilder.compact();
     }
@@ -111,47 +105,24 @@ public class JsonWebTokenUtil {
 
     /**
      * @param jwt
-     * @return
+     * @return payload
      */
     public static String parseJwtPayload(String jwt) {
         Assert.hasText(jwt, "JWT String argument cannot be null or empty.");
+        Claims claims = Jwts.parser()
+                .setSigningKey(generalKey())
+                .parseClaimsJws(jwt)
+                .getBody();
+        Map<String, Object> map = new LinkedHashMap<>(7);
+        map.put("jti", claims.getId());
+        map.put("iss", claims.getIssuer());
+        map.put("sub", claims.getSubject());
+        map.put("iat", claims.getIssuedAt());
+        map.put("exp", claims.getExpiration());
+        map.put("roles", claims.get("roles"));
+        map.put("perms", claims.get("perms"));
 
-        String[] arr = jwt.split("\\.");
-        if (arr.length != COUNT_3) {
-            String msg = "JWT strings must contain exactly 2 period characters. Found: " + arr.length;
-            throw new MalformedJwtException(msg);
-        }
-
-        String base64UrlEncodedHeader = arr[0];
-        String base64UrlEncodedPayload = arr[1];
-        String base64UrlEncodedSignature = arr[2];
-
-        if (base64UrlEncodedPayload == null) {
-            String msg = "JWT string '" + jwt + "' is missing a body/payload.";
-            throw new MalformedJwtException(msg);
-        }
-        // Header
-        Header header = null;
-        CompressionCodec compressionCodec = null;
-        if (base64UrlEncodedHeader != null) {
-            String origValue = TextCodec.BASE64URL.decodeToString(base64UrlEncodedHeader);
-            Map<String, Object> m = readValue(origValue);
-            if (base64UrlEncodedSignature != null) {
-                header = new DefaultJwsHeader(m);
-            } else {
-                header = new DefaultHeader(m);
-            }
-            compressionCodec = codecResolver.resolveCompressionCodec(header);
-        }
-        // Body
-        String payload;
-        if (compressionCodec != null) {
-            byte[] decompressed = compressionCodec.decompress(TextCodec.BASE64URL.decode(base64UrlEncodedPayload));
-            payload = new String(decompressed, Strings.UTF_8);
-        } else {
-            payload = TextCodec.BASE64URL.decodeToString(base64UrlEncodedPayload);
-        }
-        return payload;
+        return JSON.toJSONString(map);
     }
 
     /**
@@ -185,13 +156,19 @@ public class JsonWebTokenUtil {
     /**
      * 由字符串生成加密key
      *
-     * @return
+     * @return key
      */
     private static SecretKey generalKey() {
-        if (KEY == null) {
-            KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        }
-        return (SecretKey) KEY;
+        // 一个字符串，相当于私钥，只有服务端知道
+        // 根据指定字符串生成Key，相同字符串生成的Key也相同的，这个字符串至少要有256bit长，推荐长一些，生成的密钥也会变长。
+        // 推荐这种做法，每次都会生成同样的一串Key来使用
+        String secretString = "uC4p(VGW_dNYJ<!RLjg)KF=22N76Pii7j5L9[kY}LFUM5-jSt&xC'}4NBW=9_336k8^z.d\\k-!29Y&8--#<j4dqT4g}<C";
+
+        // 本地的密码解码
+        byte[] encodedKey = Base64.getEncoder().encode(secretString.getBytes());
+
+        // 根据给定的字节数组使用HS512加密算法构造一个密钥
+        return new SecretKeySpec(encodedKey, 0, encodedKey.length, SignatureAlgorithm.HS512.getJcaName());
     }
 
 }

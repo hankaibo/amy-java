@@ -29,10 +29,9 @@ import java.util.Map;
 @RequestMapping("/api/v1/resources")
 public class ResourceController {
 
-    private final String UP = "UP";
     private final String DOWN = "DOWN";
 
-    private final ResourceService resourceService;
+    private ResourceService resourceService;
 
     @Autowired
     public ResourceController(ResourceService resourceService) {
@@ -46,7 +45,7 @@ public class ResourceController {
      */
     @ApiOperation(value = "查询资源", notes = "获取整棵资源树。")
     @GetMapping
-    public Result<List> list(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
+    public Result<List<TreeNode>> list(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
         List<Resource> resourceList = resourceService.loadFullResource(type);
 
         List<TreeNode> treeNodeList = TreeUtil.lr2Tree(resourceList);

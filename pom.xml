@@ -28,17 +28,25 @@
         <project.author.url>https://hankaibo.github.io/</project.author.url>
         <project.author.email>name@email.com</project.author.email>
         <!--jar版本-->
+        <!--mybatis,mapper,pagehelper,druid-->
         <mybatis-spring-boot-starter.version>2.0.1</mybatis-spring-boot-starter.version>
-        <druid-spring-boot-starter.version>1.1.16</druid-spring-boot-starter.version>
-        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
         <mapper-spring-boot-starter.version>2.1.5</mapper-spring-boot-starter.version>
         <pagehelper-spring-boot-starter.version>1.2.12</pagehelper-spring-boot-starter.version>
+        <druid-spring-boot-starter.version>1.1.16</druid-spring-boot-starter.version>
+        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
+        <!--jasypt-->
+        <jasypt-spring-boot-starter>2.1.1</jasypt-spring-boot-starter>
+        <!--shiro,token-->
         <shiro.version>1.4.0</shiro.version>
         <jjwt.version>0.10.7</jjwt.version>
+        <!--lombok-->
         <lombok.version>1.18.8</lombok.version>
+        <!--swagger-->
         <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
         <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+        <!--utils-->
         <commons-lang3.version>3.8.1</commons-lang3.version>
+        <!--兼容Java 11-->
         <jaxb-api.version>2.3.1</jaxb-api.version>
     </properties>
 
@@ -69,6 +77,11 @@
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>${druid-spring-boot-starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>${jasypt-spring-boot-starter}</version>
         </dependency>
 
         <!--mybatis, mapper, pagehelper-->
@@ -121,7 +134,7 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>${jjwt.version}</version>
-            <!--<scope>runtime</scope>-->
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

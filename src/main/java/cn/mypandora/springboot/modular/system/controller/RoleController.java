@@ -31,8 +31,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/roles")
 public class RoleController {
 
-    private final RoleService roleService;
-    private final ResourceService resourceService;
+    private RoleService roleService;
+    private ResourceService resourceService;
 
     @Autowired
     public RoleController(RoleService roleService, ResourceService resourceService) {
