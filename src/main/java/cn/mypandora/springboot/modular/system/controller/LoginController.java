@@ -38,8 +38,8 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/api/v1")
 public class LoginController {
 
-    private final UserService userService;
-    private final StringRedisTemplate redisTemplate;
+    private UserService userService;
+    private StringRedisTemplate redisTemplate;
 
     @Autowired
     public LoginController(UserService userService, StringRedisTemplate redisTemplate) {

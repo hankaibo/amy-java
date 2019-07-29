@@ -26,7 +26,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/dicts")
 public class DictionaryController {
 
-    private final DictionaryService dictionaryService;
+    private DictionaryService dictionaryService;
 
     @Autowired
     public DictionaryController(DictionaryService dictionaryService) {
