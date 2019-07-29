@@ -130,13 +130,13 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     }
 
     private boolean isJwtSubmission(ServletRequest request) {
-        String jwt = RequestResponseUtil.getHeader(request, "Authorization");
+        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
         return (request instanceof HttpServletRequest) && StringUtils.isNotEmpty(jwt);
     }
 
     private AuthenticationToken createJwtToken(ServletRequest request) {
         Map<String, String> maps = RequestResponseUtil.getRequestHeaders(request);
-        String jwt = maps.get("authorization");
+        String jwt = JsonWebTokenUtil.unBearer(maps.get("authorization"));
 
         return new JwtToken(jwt);
     }
