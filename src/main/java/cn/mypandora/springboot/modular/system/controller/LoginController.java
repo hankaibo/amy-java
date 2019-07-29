@@ -86,8 +86,8 @@ public class LoginController {
     @PostMapping("/logout")
     public Result logout(HttpServletRequest request) {
         SecurityUtils.getSubject().logout();
-        String token = RequestResponseUtil.getHeader(request, "Authorization");
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(token);
+        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         String username = jwtAccount.getAppId();
         if (StringUtils.isEmpty(username)) {
             return ResultGenerator.failure("用户无法登出。");

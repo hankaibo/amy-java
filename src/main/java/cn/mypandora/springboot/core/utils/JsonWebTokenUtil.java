@@ -154,6 +154,23 @@ public class JsonWebTokenUtil {
     }
 
     /**
+     * 从 Bearer Token 中提取出token。
+     *
+     * @param token Bearer token
+     * @return token
+     */
+    public static String unBearer(String token) {
+        if (StringUtils.isBlank(token)) {
+            throw new RuntimeException("token为空");
+        }
+        String[] arrToken = token.split(" ");
+        if (arrToken.length != 2) {
+            throw new RuntimeException("token格式不对。");
+        }
+        return arrToken[1];
+    }
+
+    /**
      * 由字符串生成加密key
      *
      * @return key
@@ -170,5 +187,6 @@ public class JsonWebTokenUtil {
         // 根据给定的字节数组使用HS512加密算法构造一个密钥
         return new SecretKeySpec(encodedKey, 0, encodedKey.length, SignatureAlgorithm.HS512.getJcaName());
     }
+
 
 }
