@@ -67,7 +67,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                     // 当存储在redis的JWT没有过期，即refresh time 没有过期
                     // TODO
                     String username = null;
-                    String jwt = WebUtils.toHttp(servletRequest).getHeader("Authorization");
+                    String jwt = JsonWebTokenUtil.unBearer(WebUtils.toHttp(servletRequest).getHeader("Authorization"));
                     String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWS-ID-" + username));
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
                         // 重新申请新的JWT

@@ -51,7 +51,7 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息返回。")
     @GetMapping("/info")
     public Result<User> userInfo(HttpServletRequest request) {
-        String jwt = RequestResponseUtil.getHeader(request, "Authorization");
+        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
@@ -69,7 +69,7 @@ public class UserController {
      */
     @ApiOperation(value = "用户列表", notes = "查询用户列表")
     @GetMapping
-    public Result<PageInfo<User>> selectPage(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+    public Result<PageInfo<User>> selectPage(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
                                              @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize) {
         return ResultGenerator.success(userService.selectUserPage(pageNum, pageSize, null));
     }
@@ -135,7 +135,6 @@ public class UserController {
         userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ","));
         return ResultGenerator.success();
     }
-
 
     /**
      * 更新用户。

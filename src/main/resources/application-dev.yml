@@ -31,6 +31,7 @@ spring:
     host: ENC(O57+uXQhIBDpBXkSo1TF2Hu8OycjE4Es)
     port: 6379
     password: ENC(FT8X6Os4IRMf5Q+vokK55u8gSzQykhwi)
+    timeout: 1000
 
   cache:
     type: redis
