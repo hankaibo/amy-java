@@ -155,6 +155,11 @@ public class ResourceServiceImpl implements ResourceService {
         resourceMapper.updateByPrimaryKeySelective(resource);
     }
 
+    @Override
+    public List<Resource> selectByUserId(Long userId) {
+        return resourceMapper.selectByUserId(userId);
+    }
+
     /**
      * 获取此节点及其子孙节点的id
      *

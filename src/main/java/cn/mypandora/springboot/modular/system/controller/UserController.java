@@ -4,9 +4,11 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
+import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -28,18 +30,20 @@ import java.util.Map;
  * @author hankaibo
  * @date 2019/6/14
  */
-@Api(tags = "用户管理", description = "用户相关接口")
+@Api(tags = "用户管理")
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
     private UserService userService;
     private RoleService roleService;
+    private ResourceService resourceService;
 
     @Autowired
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService, RoleService roleService, ResourceService resourceService) {
         this.userService = userService;
         this.roleService = roleService;
+        this.resourceService = resourceService;
     }
 
     /**
@@ -50,14 +54,18 @@ public class UserController {
      */
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息返回。")
     @GetMapping("/info")
-    public Result<User> userInfo(HttpServletRequest request) {
+    public Result<Map<String, Object>> userInfo(HttpServletRequest request) {
         String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        Map<String, Object> map = new HashMap<>();
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
         user.setSalt(null);
+        List<Resource> resourceList = resourceService.selectByUserId(user.getId());
+        map.put("user", user);
+        map.put("menu", resourceList);
 
-        return ResultGenerator.success(user);
+        return ResultGenerator.success(map);
     }
 
     /**
