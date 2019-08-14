@@ -21,7 +21,7 @@ import java.util.Map;
  * @author hankaibo
  * @date 2019/6/14
  */
-@Api(tags = "字典管理", description = "字典相关接口")
+@Api(tags = "字典管理")
 @RestController
 @RequestMapping("/api/v1/dicts")
 public class DictionaryController {

@@ -23,7 +23,9 @@
         <result column="needRoles" jdbcType="VARCHAR" property="needRoles"/>
     </resultMap>
 
-    <sql id="baseColumns">id,name,lft,rgt,level,code,status,uri,type,method,icon,parent_id,description,create_time,modify_time</sql>
+    <sql id="baseColumns">
+        id,name,lft,rgt,level,code,status,uri,type,method,icon,parent_id,description,create_time,modify_time
+    </sql>
 
     <select id="loadFullTree" resultMap="ResourceMap" parameterType="int">
         SELECT
@@ -187,14 +189,24 @@
     </select>
 
     <select id="selectRolePermRules" resultMap="rolePermRule">
-        SELECT CONCAT(t.uri, "==", UPPER(t.method))   AS url,
-               GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
+        SELECT CONCAT(t.uri, "==", UPPER(t.method)) AS url,
+        GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
         FROM sys_resource t
-                 INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
-                 INNER JOIN sys_role role ON rr.role_id = role.id
+        INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+        INNER JOIN sys_role role ON rr.role_id = role.id
         WHERE 1 = 1
-          AND t.`type` = 2
+        AND t.`type` = 2
         GROUP BY t.uri, t.id
     </select>
 
+    <select id="selectByUserId" resultMap="ResourceMap" parameterType="long">
+        SELECT re.*
+        FROM sys_user u
+        JOIN sys_user_role ur ON u.id=ur.user_id
+        JOIN sys_role r ON ur.role_id=r.id
+        JOIN sys_role_resource rr ON r.id= rr.role_id
+        JOIN sys_resource re ON rr.resource_id=re.id
+        WHERE u.id=#{userId}
+        AND re.type=1
+    </select>
 </mapper>

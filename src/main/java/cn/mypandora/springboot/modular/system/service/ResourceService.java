@@ -106,4 +106,12 @@ public interface ResourceService {
      */
     void updateResource(Resource resource);
 
+    /**
+     * 根据用户id查询其拥有的菜单
+     *
+     * @param userId 用户id
+     * @return 用户菜单
+     */
+    List<Resource> selectByUserId(Long userId);
+
 }

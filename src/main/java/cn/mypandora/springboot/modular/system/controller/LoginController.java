@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * @author hankaibo
  * @date 2019/6/19
  */
-@Api(tags = "登录管理", description = "登录登出相关接口")
+@Api(tags = "登录管理")
 @RestController
 @RequestMapping("/api/v1")
 public class LoginController {

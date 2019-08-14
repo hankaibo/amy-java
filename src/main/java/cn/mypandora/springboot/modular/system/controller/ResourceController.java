@@ -24,7 +24,7 @@ import java.util.Map;
  * @author hankaibo
  * @date 2019/7/17
  */
-@Api(tags = "资源管理", description = "资源相关接口")
+@Api(tags = "资源管理")
 @RestController
 @RequestMapping("/api/v1/resources")
 public class ResourceController {
