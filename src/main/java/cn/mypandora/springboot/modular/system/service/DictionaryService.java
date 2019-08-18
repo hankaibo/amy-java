@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service;
 
+import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
-import com.github.pagehelper.PageInfo;
 
 /**
  * DictionaryService
