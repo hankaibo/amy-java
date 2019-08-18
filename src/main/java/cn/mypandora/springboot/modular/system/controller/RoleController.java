@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.TreeUtil;
@@ -8,7 +9,6 @@ import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

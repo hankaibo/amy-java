@@ -1,10 +1,10 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

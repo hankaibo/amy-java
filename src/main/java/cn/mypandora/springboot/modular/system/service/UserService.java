@@ -1,8 +1,8 @@
 package cn.mypandora.springboot.modular.system.service;
 
+import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
-import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 

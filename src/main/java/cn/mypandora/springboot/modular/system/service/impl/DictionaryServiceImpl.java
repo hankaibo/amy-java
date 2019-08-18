@@ -1,11 +1,10 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.DictionaryMapper;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
