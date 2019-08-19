@@ -42,3 +42,11 @@ pagehelper:
 ## log
 logging:
   config: classpath:logback-spring.xml
+###############################################################################
+## actuator
+management:
+  endpoints:
+    web:
+      base-path: '/api/v1/actuator'
+      exposure:
+        include: '*'
