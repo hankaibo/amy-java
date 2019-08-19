@@ -3,6 +3,7 @@ package cn.mypandora.springboot.modular.system.controller;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
+import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.core.utils.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
@@ -33,11 +34,13 @@ public class RoleController {
 
     private RoleService roleService;
     private ResourceService resourceService;
+    private FilterChainManager filterChainManager;
 
     @Autowired
-    public RoleController(RoleService roleService, ResourceService resourceService) {
+    public RoleController(RoleService roleService, ResourceService resourceService, FilterChainManager filterChainManager) {
         this.roleService = roleService;
         this.resourceService = resourceService;
+        this.filterChainManager = filterChainManager;
     }
 
     /**
@@ -168,6 +171,7 @@ public class RoleController {
                                    @RequestBody @ApiParam(value = "资源主键数组ids", required = true) Map<String, Long[]> ids) {
         Long[] idList = ids.get("ids");
         boolean result = roleService.giveRoleResource(id, idList);
+        filterChainManager.reloadFilterChain();
 
         return result ? ResultGenerator.success() : ResultGenerator.failure();
     }
