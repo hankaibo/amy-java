@@ -197,6 +197,7 @@
         WHERE 1 = 1
         AND t.`type` = 2
         GROUP BY t.uri, t.id
+        ORDER BY url DESC
     </select>
 
     <select id="selectByUserId" resultMap="ResourceMap" parameterType="long">

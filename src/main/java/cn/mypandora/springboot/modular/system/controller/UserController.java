@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * UserController
@@ -61,9 +62,9 @@ public class UserController {
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
         user.setSalt(null);
-        List<Resource> resourceList = resourceService.selectByUserId(user.getId());
+        List<String> menuList = resourceService.selectByUserId(user.getId()).stream().map(item -> item.getCode()).collect(Collectors.toList());;
         map.put("user", user);
-        map.put("menu", resourceList);
+        map.put("menuList", menuList);
 
         return ResultGenerator.success(map);
     }
