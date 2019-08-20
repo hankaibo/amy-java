@@ -34,6 +34,7 @@ public class TreeUtil {
             // 列表字段
             treeNode.setStatus(resource.getStatus());
             treeNode.setUri(resource.getUri());
+            treeNode.setCode(resource.getCode());
             treeNode.setMethod(resource.getMethod());
             treeNode.setDescription(resource.getDescription());
             treeNodeList.add(treeNode);

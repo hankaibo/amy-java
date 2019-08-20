@@ -4,6 +4,7 @@ import cn.mypandora.springboot.config.shiro.RestPathMatchingFilterChainResolver;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.core.support.SpringContextHolder;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
+import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -31,16 +32,18 @@ import java.util.*;
 @Component
 public class FilterChainManager {
 
-    private final StringRedisTemplate redisTemplate;
     private final UserService userService;
+    private final RoleService roleService;
     private final ResourceService resourceService;
+    private final StringRedisTemplate redisTemplate;
 
     @Lazy
     @Autowired
-    public FilterChainManager(StringRedisTemplate redisTemplate, UserService userService, ResourceService resourceService) {
-        this.redisTemplate = redisTemplate;
+    public FilterChainManager(UserService userService, RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
         this.userService = userService;
+        this.roleService = roleService;
         this.resourceService = resourceService;
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -55,7 +58,7 @@ public class FilterChainManager {
         filters.put("auth", passwordFilter);
 
         // 配置token过滤器
-        JwtFilter jwtFilter = new JwtFilter(redisTemplate, userService);
+        JwtFilter jwtFilter = new JwtFilter(userService, roleService, resourceService, redisTemplate);
         filters.put("jwt", jwtFilter);
 
         return filters;

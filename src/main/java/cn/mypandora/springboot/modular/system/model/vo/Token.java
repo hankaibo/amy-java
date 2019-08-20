@@ -21,13 +21,16 @@ public class Token {
     /**
      * token
      */
-    @ApiModelProperty(value = "token值", example = "header.payload.xxx", required = true)
+    @ApiModelProperty(value = "token值", required = true)
     private String token;
 
     /**
      * 角色
      */
-    @ApiModelProperty(value = "角色值", example = "admin", required = true)
+    @ApiModelProperty(value = "角色值", required = true)
     private String role;
+
+    @ApiModelProperty(value = "资源", required = true)
+    private String resources;
 
 }

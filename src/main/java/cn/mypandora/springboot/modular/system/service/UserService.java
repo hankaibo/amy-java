@@ -1,10 +1,7 @@
 package cn.mypandora.springboot.modular.system.service;
 
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
-
-import java.util.List;
 
 /**
  * UserService
@@ -54,7 +51,6 @@ public interface UserService {
      */
     void deleteBatchUser(String ids);
 
-
     /**
      * 更新用户。
      *
@@ -70,15 +66,6 @@ public interface UserService {
      * @return 是否成功
      */
     boolean enableUser(Long id, Integer status);
-
-    /**
-     * 根据用户id或者名称查询用户的所有角色。
-     *
-     * @param id       用户id
-     * @param username 用户名称
-     * @return 角色列表
-     */
-    List<Role> selectRoleByIdOrName(Long id, String username);
 
     /**
      * 赋予用户某角色。

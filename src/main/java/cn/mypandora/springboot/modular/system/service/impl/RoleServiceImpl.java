@@ -3,7 +3,6 @@ package cn.mypandora.springboot.modular.system.service.impl;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import com.github.pagehelper.PageHelper;
@@ -94,11 +93,6 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.updateByPrimaryKeySelective(role) > 0;
     }
 
-    @Override
-    public List<Resource> selectResourceById(Long id) {
-        return roleResourceMapper.selectRoleResource(id);
-    }
-
     /**
      * TODO 对数据库一知半解，找不出更好的方法。
      */
@@ -111,4 +105,8 @@ public class RoleServiceImpl implements RoleService {
         return roleResourceMapper.giveRoleResource(roleId, resourceListId) > 0;
     }
 
+    @Override
+    public List<Role> selectRoleByUserIdOrName(Long userId, String username) {
+        return roleMapper.selectByUserIdOrName(userId, username);
+    }
 }

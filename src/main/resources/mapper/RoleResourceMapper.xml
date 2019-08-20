@@ -2,15 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper">
 
-    <select id="selectRoleResource" resultType="cn.mypandora.springboot.modular.system.model.po.Resource">
-        SELECT t.*
-        FROM sys_resource t
-            INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
-            INNER JOIN sys_role role ON rr.role_id = role.id
-        WHERE 1 = 1
-          AND role.id = #{id}
-    </select>
-
     <insert id="giveRoleResource">
         INSERT INTO sys_role_resource( role_id, resource_id )
         VALUES
@@ -23,15 +14,15 @@
     </insert>
 
     <delete id="deleteRoleResource">
-        delete t
-        from sys_role_resource t
-        where t.role_id = #{roleId}
+        DELETE t
+        FROM sys_role_resource t
+        WHERE t.role_id = #{roleId}
     </delete>
 
     <delete id="deleteBatchRoleResource">
-        delete t
-        from sys_role_resource t
-        where t.role_id in
+        DELETE t
+        FROM sys_role_resource t
+        WHERE t.role_id in
         <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
             #{roleId}
         </foreach>

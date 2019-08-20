@@ -107,11 +107,28 @@ public interface ResourceService {
     void updateResource(Resource resource);
 
     /**
-     * 根据用户id查询其拥有的菜单
+     * 查询角色所包含的所有资源。
+     *
+     * @param roleId 角色主键id
+     * @return 所有资源数据
+     */
+    List<Resource> selectResourceByRoleId(Long roleId);
+
+    /**
+     * 根据用户id查询其拥有的资源。
      *
      * @param userId 用户id
      * @return 用户菜单
      */
-    List<Resource> selectByUserId(Long userId);
+    List<Resource> selectResourceByUserId(Long userId);
+
+    /**
+     * 根据用户id或者名称查询用户的所有资源。
+     *
+     * @param userId   用户id
+     * @param username 用户名称
+     * @return 角色资源
+     */
+    List<Resource> selectResourceByUserIdOrName(Long userId, String username);
 
 }

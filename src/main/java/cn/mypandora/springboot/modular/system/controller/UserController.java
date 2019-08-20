@@ -5,7 +5,6 @@ import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
@@ -51,7 +50,7 @@ public class UserController {
      * 根据token获取用户信息。
      *
      * @param request request
-     * @return User
+     * @return 用户信息，用户权限对应的菜单信息
      */
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息返回。")
     @GetMapping("/info")
@@ -62,7 +61,7 @@ public class UserController {
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
         user.setSalt(null);
-        List<String> menuList = resourceService.selectByUserId(user.getId()).stream().map(item -> item.getCode()).collect(Collectors.toList());;
+        List<String> menuList = resourceService.selectResourceByUserId(user.getId()).stream().map(item -> item.getCode()).collect(Collectors.toList());
         map.put("user", user);
         map.put("menuList", menuList);
 
@@ -184,7 +183,7 @@ public class UserController {
     @GetMapping("/{id}/roles")
     public Result<Map> selectUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         List<Role> roleList = roleService.selectRoleList();
-        List<Role> roleSelected = userService.selectRoleByIdOrName(id, null);
+        List<Role> roleSelected = roleService.selectRoleByUserIdOrName(id, null);
 
         Map<String, List> map = new HashMap<>(2);
         map.put("roleList", roleList);

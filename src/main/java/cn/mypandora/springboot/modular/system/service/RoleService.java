@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.modular.system.service;
 
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 
 import java.util.List;
@@ -30,7 +29,6 @@ public interface RoleService {
      * @return 所有角色
      */
     List<Role> selectRoleList();
-
 
     /**
      * 根据角色Id或者名称查询角色。
@@ -79,14 +77,6 @@ public interface RoleService {
     boolean enableRole(Long id, Integer status);
 
     /**
-     * 查询该角色所包含的所有资源。
-     *
-     * @param id 角色主键id
-     * @return 所有资源数据
-     */
-    List<Resource> selectResourceById(Long id);
-
-    /**
      * 赋予角色某资源。
      *
      * @param roleId         角色Id
@@ -94,5 +84,14 @@ public interface RoleService {
      * @return 成功or失败
      */
     boolean giveRoleResource(Long roleId, Long[] resourceListId);
+
+    /**
+     * 根据用户id或者名称查询用户的所有角色。
+     *
+     * @param userId   用户id
+     * @param username 用户名称
+     * @return 角色列表
+     */
+    List<Role> selectRoleByUserIdOrName(Long userId, String username);
 
 }
