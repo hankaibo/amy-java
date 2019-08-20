@@ -3,7 +3,6 @@ package cn.mypandora.springboot.modular.system.service.impl;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
-import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageHelper;
@@ -96,11 +95,6 @@ public class UserServiceImpl implements UserService {
         user.setStatus(status);
 
         return this.userMapper.updateByPrimaryKeySelective(user) > 0;
-    }
-
-    @Override
-    public List<Role> selectRoleByIdOrName(Long id, String username) {
-        return userRoleMapper.selectUserRole(id, username);
     }
 
     @Transactional(rollbackFor = Exception.class)

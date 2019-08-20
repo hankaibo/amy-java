@@ -143,11 +143,28 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     List<Resource> selectRolePermRules();
 
     /**
+     * 根据角色id查询其所有资源信息。
+     *
+     * @param roleId 角色id
+     * @return 用户的所有角色
+     */
+    List<Resource> selectByRoleId(Long roleId);
+
+    /**
      * 根据用户id查询所拥有的菜单
      *
      * @param userId 用户主键id
      * @return 该用户拥有的菜单
      */
     List<Resource> selectByUserId(Long userId);
+
+    /**
+     * 根据用户id或名称查询其所有资源信息。
+     *
+     * @param userId   用户id
+     * @param username 用户名称
+     * @return 用户的所有资源
+     */
+    List<Resource> selectByUserIdOrName(@Param(value = "userId") Long userId, @Param(value = "username") String username);
 
 }

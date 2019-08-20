@@ -38,14 +38,14 @@ public class JwtRealm extends AuthorizingRealm {
         if (payload.startsWith(JWT) && payload.charAt(NUM_4) == LEFT && payload.charAt(payload.length() - 1) == RIGHT) {
             Map<String, Object> payloadMap = JsonWebTokenUtil.readValue(payload.substring(4));
             Set<String> roles = JsonWebTokenUtil.split((String) payloadMap.get("roles"));
-            Set<String> permissions = JsonWebTokenUtil.split((String) payloadMap.get("perms"));
+            Set<String> resources = JsonWebTokenUtil.split((String) payloadMap.get("resources"));
 
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             if (null != roles && !roles.isEmpty()) {
                 info.setRoles(roles);
             }
-            if (null != permissions && !permissions.isEmpty()) {
-                info.setStringPermissions(permissions);
+            if (null != resources && !resources.isEmpty()) {
+                info.setStringPermissions(resources);
             }
             return info;
         }

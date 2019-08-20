@@ -25,6 +25,6 @@ public class JwtAccount implements Serializable {
     private Date issuedAt;
     private String audience;
     private String roles;
-    private String perms;
+    private String resources;
     private String host;
 }

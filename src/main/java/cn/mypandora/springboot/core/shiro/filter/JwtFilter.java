@@ -4,12 +4,14 @@ import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.utils.IpUtil;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.Message;
+import cn.mypandora.springboot.modular.system.service.ResourceService;
+import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -36,13 +39,17 @@ import java.util.stream.Stream;
 public class JwtFilter extends AbstractPathMatchingFilter {
     private static final String STR_EXPIRED = "expiredJwt";
 
-    private StringRedisTemplate redisTemplate;
     private UserService userService;
+    private RoleService roleService;
+    private ResourceService resourceService;
+    private StringRedisTemplate redisTemplate;
 
     @Autowired
-    public JwtFilter(StringRedisTemplate redisTemplate, UserService userService) {
-        this.redisTemplate = redisTemplate;
+    public JwtFilter(UserService userService, RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
         this.userService = userService;
+        this.roleService = roleService;
+        this.resourceService = resourceService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -65,23 +72,20 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                     // refresh也过期则告知客户端JWT时间过期重新认证
 
                     // 当存储在redis的JWT没有过期，即refresh time 没有过期
-                    // TODO
-                    String username = null;
+                    String username = SecurityUtils.getSubject().getPrincipal().toString();
                     String jwt = JsonWebTokenUtil.unBearer(WebUtils.toHttp(servletRequest).getHeader("Authorization"));
-                    String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWS-ID-" + username));
+                    String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
                         // 重新申请新的JWT
                         // 根据 username 获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
-                        List<Role> roleList = userService.selectRoleByIdOrName(null, username);
-                        StringBuffer stringBuffer = new StringBuffer();
-                        for (Role role : roleList) {
-                            stringBuffer.append(role.getName());
-                        }
-                        String roles = stringBuffer.toString();
+                        List<String> roleList = roleService.selectRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
+                        String roles = String.join(",", roleList);
+                        List<String> resourceList = resourceService.selectResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
+                        String resources = String.join(",", resourceList);
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
-                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, null);
-                        redisTemplate.opsForValue().set(StringUtils.upperCase("JWS-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
+                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, resources);
+                        redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
                         Message message = new Message().ok(1005, "new jwt").addData("jwt", newJwt);
                         RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
                         return false;

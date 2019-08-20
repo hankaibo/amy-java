@@ -106,6 +106,12 @@ public class TreeNode {
     private String uri;
 
     /**
+     * 编码（标识符）
+     */
+    @ApiModelProperty(value = "code")
+    private String code;
+
+    /**
      * 方法
      */
     @ApiModelProperty(value = "方法")

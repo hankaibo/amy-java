@@ -30,18 +30,18 @@ public class JsonWebTokenUtil {
     /**
      * 创建jwt.
      *
-     * @param id          令牌id
-     * @param issuer      header中该JWT的签发者
-     * @param subject     header中该JWT所面向的用户
-     *                    audience    header中接收该JWT的一方
-     * @param period      有效时间（毫秒），分解为以下两个
-     *                    iat         header中(issued at) 在什么时候签发的
-     *                    exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
-     * @param roles       payload中的角色信息
-     * @param permissions payload中的权限信息
-     * @return jws
+     * @param id        令牌id
+     * @param issuer    header中该JWT的签发者
+     * @param subject   header中该JWT所面向的用户
+     *                  audience    header中接收该JWT的一方
+     * @param period    有效时间（毫秒），分解为以下两个
+     *                  iat         header中(issued at) 在什么时候签发的
+     *                  exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
+     * @param roles     payload中的角色信息
+     * @param resources payload中的资源信息
+     * @return jwt
      */
-    public static String createJwt(String id, String issuer, String subject, Long period, String roles, String permissions) {
+    public static String createJwt(String id, String issuer, String subject, Long period, String roles, String resources) {
         long currentTimeMillis = System.currentTimeMillis();
 
         JwtBuilder jwtBuilder = Jwts.builder();
@@ -63,8 +63,8 @@ public class JsonWebTokenUtil {
         if (StringUtils.isNotEmpty(roles)) {
             jwtBuilder.claim("roles", roles);
         }
-        if (StringUtils.isNotEmpty(permissions)) {
-            jwtBuilder.claim("perms", permissions);
+        if (StringUtils.isNotEmpty(resources)) {
+            jwtBuilder.claim("resources", resources);
         }
         // 使用密钥进行签名
         // signWith(key)会让jjwt自动根据key的长度选择算法，在计算出签名的同时，会在header中写入alg键值对。
@@ -100,7 +100,7 @@ public class JsonWebTokenUtil {
         // 访问主张-角色
         jwtAccount.setRoles(claims.get("roles", String.class));
         // 访问主张-权限
-        jwtAccount.setPerms(claims.get("perms", String.class));
+        jwtAccount.setResources(claims.get("resources", String.class));
         return jwtAccount;
     }
 
@@ -121,7 +121,7 @@ public class JsonWebTokenUtil {
         map.put("iat", claims.getIssuedAt());
         map.put("exp", claims.getExpiration());
         map.put("roles", claims.get("roles"));
-        map.put("perms", claims.get("perms"));
+        map.put("resources", claims.get("resources"));
 
         return JSON.toJSONString(map);
     }

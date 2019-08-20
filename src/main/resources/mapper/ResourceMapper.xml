@@ -200,6 +200,15 @@
         ORDER BY url DESC
     </select>
 
+    <select id="selectByRoleId" resultMap="ResourceMap" parameterType="long">
+        SELECT t.*
+        FROM sys_resource t
+        INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+        INNER JOIN sys_role role ON rr.role_id = role.id
+        WHERE 1 = 1
+        AND role.id = #{id}
+    </select>
+
     <select id="selectByUserId" resultMap="ResourceMap" parameterType="long">
         SELECT re.*
         FROM sys_user u
@@ -210,4 +219,17 @@
         WHERE u.id=#{userId}
         AND re.type=1
     </select>
+
+    <select id="selectByUserIdOrName" resultMap="ResourceMap">
+        SELECT t.*
+        FROM sys_resource t
+        JOIN sys_role_resource rr ON t.id=rr.resource_id
+        JOIN sys_role r ON rr.role_id=r.id
+        JOIN sys_user_role ur ON r.id = ur.role_id
+        JOIN sys_user u ON ur.user_id = u.id
+        WHERE 1 = 1
+        AND u.username = #{username}
+        OR u.id = #{userId}
+    </select>
+
 </mapper>
