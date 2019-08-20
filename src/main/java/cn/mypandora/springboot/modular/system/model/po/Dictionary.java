@@ -8,6 +8,8 @@ import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Dictionary
@@ -33,18 +35,21 @@ public class Dictionary extends BaseEntity {
      * 字典名称
      */
     @ApiModelProperty(value = "字典名称")
+    @NotBlank
     private String name;
 
     /**
      * 字典编码
      */
     @ApiModelProperty(value = "字典编码")
+    @NotBlank
     private String code;
 
     /**
      * 状态 1:开启，0:禁用
      */
     @ApiModelProperty(value = "字典状态")
+    @PositiveOrZero
     private Integer status;
 
     /**

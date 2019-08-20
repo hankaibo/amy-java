@@ -7,6 +7,8 @@ import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Role
@@ -25,18 +27,21 @@ public class Role extends BaseEntity {
      * 角色名
      */
     @ApiModelProperty(value = "角色名称")
+    @NotBlank
     private String name;
 
     /**
      * 角色编码
      */
     @ApiModelProperty(value = "角色编码")
+    @NotBlank
     private String code;
 
     /**
      * 状态
      */
     @ApiModelProperty(value = "角色状态")
+    @PositiveOrZero
     private Integer status;
 
     /**

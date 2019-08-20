@@ -8,7 +8,9 @@ import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Date;
 
 /**
@@ -28,8 +30,8 @@ public class User extends BaseEntity {
     /**
      * 用户名
      */
-    @NotNull
     @ApiModelProperty(value = "用户名称")
+    @NotBlank
     private String username;
 
     /**
@@ -48,18 +50,21 @@ public class User extends BaseEntity {
      * 密码
      */
     @ApiModelProperty(hidden = true)
+    @NotBlank
     private String password;
 
     /**
      * 盐
      */
     @ApiModelProperty(hidden = true)
+    @NotBlank
     private String salt;
 
     /**
      * 状态
      */
     @ApiModelProperty(value = "用户状态,1表示开启")
+    @PositiveOrZero
     private Integer status;
 
     /**
@@ -72,6 +77,7 @@ public class User extends BaseEntity {
      * Email
      */
     @ApiModelProperty(value = "用户邮箱")
+    @Email
     private String email;
 
     /**

@@ -8,6 +8,8 @@ import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * Resource
@@ -25,11 +27,13 @@ public class Resource extends BaseTree {
     /**
      * 资源编码
      */
+    @NotBlank
     private String code;
 
     /**
      * 状态
      */
+    @PositiveOrZero
     private Integer status;
 
     /**

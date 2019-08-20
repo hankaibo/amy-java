@@ -58,7 +58,7 @@ public class UserController {
     public Result<Map<String, Object>> userInfo(HttpServletRequest request) {
         String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         User user = userService.selectUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
         user.setSalt(null);
