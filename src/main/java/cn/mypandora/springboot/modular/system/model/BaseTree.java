@@ -5,6 +5,9 @@ import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 /**
  * BaseTree
  *
@@ -22,21 +25,25 @@ public abstract class BaseTree extends BaseEntity {
      * 节点名称
      */
     @ApiModelProperty(value = "名称")
+    @NotBlank
     protected String name;
 
     /**
      * 节点右值
      */
+    @Positive
     protected Long rgt;
 
     /**
      * 节点左值
      */
+    @Positive
     protected Long lft;
 
     /**
      * 层级
      */
+    @Positive
     protected Long level;
 
     /**

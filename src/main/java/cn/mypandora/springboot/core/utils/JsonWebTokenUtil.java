@@ -24,6 +24,7 @@ import java.util.*;
  */
 @NoArgsConstructor
 public class JsonWebTokenUtil {
+    private static final int BEARER_TOKEN_LENGTH = 2;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
@@ -164,7 +165,7 @@ public class JsonWebTokenUtil {
             throw new RuntimeException("token为空");
         }
         String[] arrToken = token.split(" ");
-        if (arrToken.length != 2) {
+        if (arrToken.length != BEARER_TOKEN_LENGTH) {
             throw new RuntimeException("token格式不对。");
         }
         return arrToken[1];
