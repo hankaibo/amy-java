@@ -22,7 +22,6 @@ myspringboot
 |   |    ├── exception -- 异常类 
 |   |    ├── shiro -- shiro扩展配置 
 |   |    ├── support -- XSS 过滤 
-|   |    ├── exception -- 异常类 
 |   |    └── utils -- 工具类  
 |   ├── modular -- 业务模块  
 |   |    ├── system -- 通用后台管理代码目录 
