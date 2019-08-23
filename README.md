@@ -1,9 +1,14 @@
-# myspringboot
+<h1 align="center">后端脚手架</h1>
 
-#### 项目介绍
-SpringBoot的简洁脚手架，前后端分离，Restful接口定义，Token 权限认证。
+## 项目特性
 
-#### 项目目录
+- :gem: **优雅美观**：基于 Spring Boot 体系精心设计
+- :rocket: **最新技术栈**：使用 Spring Boot,Shiro,MyBatis 等前沿和成熟的技术开发
+- :oauth: **安全认证**：基于 token 认证，实现按钮级别的权限认证
+- :gear: **最佳实践**：良好的工程实践助您持续产出高质量代码
+- :restful: **快速高效**：前后端分离，专注后端，快速实现 restful 接口定义
+
+## 项目目录
 ```
 myspringboot  
 ├── src/main/java/cn.mypandora.springboot 
@@ -32,7 +37,7 @@ myspringboot
     └── logback-spring.xml -- 日志配置文件  
 ```
 
-#### 技术选型
+## 技术选型
 
 [x] | 技术名 | 版本  
  :---: | :---: | :---:  
@@ -47,17 +52,17 @@ myspringboot
 [x] | Swagger2(springfox.swagger2) | 2.9.2  
 [x] | lombok | 1.18.8    
 
-#### 使用说明
+## 使用说明
 
 1. 项目使用了Lombok简化代码，请安装对应的IDE插件。
 
-#### 开发环境
+## 开发环境
 
 1. openjdk 11.0.4 2019-07-16
 2. 10.0.34-MariaDB-0ubuntu0.16.04.1
 3. Redis server v=3.0.6
 
-#### 快速开始
+## 快速开始
 1. 下载项目
     ```
    git clone https://github.com/hankaibo/myspringboot.git
@@ -83,7 +88,7 @@ myspringboot
 
     请参考前端项目[myantdpro](https://github.com/hankaibo/myantdpro)配置。
 
-#### 程序逻辑
+## 程序逻辑
   1. POST请求【用户名/密码】到 /api/v1/login 进行登入，如果成功返回一个加密 token,role及resources。
   
      token: 之后用户访问每一个需要权限的网址请求必须在 header 中添加 Authorization 字段，例如 Authorization: Bearer token。
