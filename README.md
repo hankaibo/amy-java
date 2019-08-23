@@ -81,7 +81,7 @@ myspringboot
 
 6. 启动前端项目
 
-    请参考前端项目配置。
+    请参考前端项目[myantdpro](https://github.com/hankaibo/myantdpro)配置。
 
 #### 程序逻辑
   1. POST请求【用户名/密码】到 /api/v1/login 进行登入，如果成功返回一个加密 token,role及resources。
