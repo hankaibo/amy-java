@@ -60,7 +60,7 @@ myspringboot
 #### 快速开始
 1. 下载项目
     ```
-   git clone https://github.com/zhaojun1998/Shiro-Action.git
+   git clone https://github.com/hankaibo/myspringboot.git
    ```
    
 2. 导入项目
