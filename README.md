@@ -4,9 +4,9 @@
 
 - :gem: **优雅美观**：基于 Spring Boot 体系精心设计
 - :rocket: **最新技术栈**：使用 Spring Boot,Shiro,MyBatis 等前沿和成熟的技术开发
-- :oauth: **安全认证**：基于 token 认证，实现按钮级别的权限认证
+- :closed_lock_with_key: **安全认证**：基于 token 认证，实现按钮级别的权限认证
 - :gear: **最佳实践**：良好的工程实践助您持续产出高质量代码
-- :restful: **快速高效**：前后端分离，专注后端，快速实现 restful 接口定义
+- :v: **快速高效**：前后端分离，专注后端，快速实现 restful 接口定义
 
 ## 项目目录
 ```
