@@ -91,7 +91,7 @@ myspringboot
      role：方便前端处理的角色信息。
   
      resources：用户对应的所有资源数据集合，对每个人的页面进行按钮等组件的动态显示与隐藏。
-  2. GET请求（携带token）到 /api/v1/users/info，获取当前登录用户的信息 user和menuList。
+  2. 登录成功之后，自动发起GET请求（携带token）到 /api/v1/users/info，获取当前登录用户的信息 user和menuList。
      
      user: 当前登录用户的个人信息。
      
