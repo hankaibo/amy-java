@@ -23,6 +23,8 @@ import java.util.List;
 @NoArgsConstructor
 public class PageInfo<T> extends PageSerializable<T> {
 
+    private static final long serialVersionUID = 8455756259444588945L;
+
     /**
      * 当前页码
      */
