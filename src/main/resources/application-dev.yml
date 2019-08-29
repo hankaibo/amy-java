@@ -49,7 +49,7 @@ swagger:
   enable: true
 
 ###############################################################################
-## jasypt
+## jasypt 真实环境下，请在命令行等安全地方使用 password
 jasypt:
   encryptor:
     password: aC){M3K?[kC6X&e/^)w5?Wa[5Y6o_3G

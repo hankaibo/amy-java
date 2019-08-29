@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.5.RELEASE</version>
+        <version>2.1.7.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -219,32 +219,11 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <!-- 热启动 -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <fork>true</fork>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <encoding>utf-8</encoding>
-                    <useDefaultDelimiters>true</useDefaultDelimiters>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>dev</id>
             <properties>
-                <spring.active>dev</spring.active>
+                <active.profile>dev</active.profile>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -253,9 +232,37 @@
         <profile>
             <id>prod</id>
             <properties>
-                <spring.active>prod</spring.active>
+                <active.profile>prod</active.profile>
             </properties>
         </profile>
     </profiles>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>application*.yml</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>application.yml</include>
+                    <include>application-${active.profile}.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
