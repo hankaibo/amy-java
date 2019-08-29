@@ -1,19 +1,19 @@
 ###############################################################################
 project:
-  name: ${name}
-  version: ${version}
-  description: ${description}
+  name: @name@
+  version: @version@
+  description: @description@
   author:
-    name: ${project.author.name}
-    url: ${project.author.url}
-    email: ${project.author.email}
+    name: @project.author.name@
+    url: @project.author.url@
+    email: @project.author.email@
 ## 服务配置
 server:
   port: 8080
   max-http-header-size: 10240
 spring:
   profiles:
-    active: @spring.active@
+    active: @active.profile@
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
@@ -22,7 +22,7 @@ spring:
 ###############################################################################
 ## mybatis
 mybatis:
-  type-aliases-package: cn.mypandora.springboot.modular.system.model
+  type-aliases-package: cn.mypandora.springboot.modular.system.model.po
   mapper-locations: classpath:mapper/**/*.xml
 ###############################################################################
 ## mapper
@@ -48,5 +48,3 @@ management:
   endpoints:
     web:
       base-path: '/api/v1/actuator'
-      exposure:
-        include: '*'
