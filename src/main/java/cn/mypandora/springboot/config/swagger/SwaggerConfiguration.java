@@ -1,9 +1,9 @@
 package cn.mypandora.springboot.config.swagger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.builders.*;
@@ -30,6 +30,7 @@ import java.util.List;
  * 当Spring发现某个类使用了@Configuration标注了，就去将该类下使用@Bean注解的方法创建bean并放入到容器中。
  * 2. @Conditional满足特定条件时才会创建一个Bean放入到IOC容器，@ConditionalOnXxx都是组合@Conditional元注解，
  * 使用了不同的条件Condition。@ConditionalOnProperty指定的属性是否有指定的值。
+ * 3. 使用更简洁的Profile代替Conditional判断是否开启swagger。
  *
  * @author hankaibo
  * @date 2019/1/14
@@ -37,7 +38,7 @@ import java.util.List;
  */
 @Configuration
 @EnableSwagger2
-@ConditionalOnProperty(prefix = "swagger", name = "enable", havingValue = "true")
+@Profile("dev")
 public class SwaggerConfiguration {
 
     private final ProjectProperties projectProperties;
