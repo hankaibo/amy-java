@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.ResourceMapper">
-    <resultMap id="ResourceMap" type="cn.mypandora.springboot.modular.system.model.po.Resource">
+    <resultMap id="ResourceMap" type="Resource">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="lft" jdbcType="BIGINT" property="lft"/>
@@ -18,7 +18,7 @@
         <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
     </resultMap>
 
-    <resultMap id="rolePermRule" type="cn.mypandora.springboot.modular.system.model.po.Resource">
+    <resultMap id="rolePermRule" type="Resource">
         <result column="url" jdbcType="VARCHAR" property="uri"/>
         <result column="needRoles" jdbcType="VARCHAR" property="needRoles"/>
     </resultMap>
