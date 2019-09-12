@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleMapper">
 
-    <select id="selectByUserIdOrName" resultType="cn.mypandora.springboot.modular.system.model.po.Role">
+    <select id="selectByUserIdOrName" resultType="Role">
         SELECT t.*
         FROM sys_role t
         JOIN sys_user_role ur ON t.id = ur.role_id
