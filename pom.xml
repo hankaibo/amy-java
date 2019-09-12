@@ -236,6 +236,12 @@
             </activation>
         </profile>
         <profile>
+            <id>docker</id>
+            <properties>
+                <active.profile>docker</active.profile>
+            </properties>
+        </profile>
+        <profile>
             <id>prod</id>
             <properties>
                 <active.profile>prod</active.profile>
@@ -244,28 +250,15 @@
     </profiles>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>application*.yml</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>application.yml</include>
-                    <include>application-${active.profile}.yml</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!--  step 1 -->
                     <fork>true</fork>
+                    <!-- step 2 Compiler/Build project automatically-->
+                    <!-- step 3 Registry/compiler.automake.allow.when.app.running-->
                 </configuration>
             </plugin>
         </plugins>
