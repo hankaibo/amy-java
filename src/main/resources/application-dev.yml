@@ -4,9 +4,9 @@
 ## 数据库
 spring:
   datasource:
-    url: ENC(7LS1g/7Q2hvZao79IEHuMzulZ5SulICDW0555Sx+ChqNeD+66ItcgBCeNY50KCimUWcBmIJIJrBIN4hb07WYxAhb6LrcQvT2YUq7RY0A26sDKWQsqtQmVyBE5Q3zs7Op8ixVJqb6OwEhT0LpdZe24XBzw9dCyGSYZxPRrFchgcpcP4/S1rH6gsg9+WXLs/jR/07qj6cEBAqXwJb2k69p3LALOnxtHbxf)
-    username: ENC(UOegF7eTF10SpoX6bXmfksl71aXKAcBc)
-    password: ENC(HrUbTQdWuctgm6A9yo2Q1wUyBrMvvxaI)
+    url: ENC(zf8L9G/F9a2ES4YtIali3nBi05ekl8jYS+F6Sm4gM9Rtuy1nhoeB+CDYU5A2xJ32N4yX7kftDltNm0uUiyyJx0z6MTw3scM60ICspq96sYU/A4zVCDNl+4y9kVCPuBtlVEgXhLQRlowtFnNW6fBKPR9/GZC9VOUbhd0gTetORnArQYLQK+kchmdltCJIHcFTNBldztDsdIfPoVswYtq7S9rwdea7bI+t)
+    username: ENC(Kc5spYBv8nlJxKhuEd85sA==)
+    password: ENC(hc9Y6EbUR1MpLpbatbawe4LwAd3+3pOxpZuVpqkp8H61n+UkIRWxlQ==)
     continue-on-error: true
     sql-script-encoding: utf-8
     druid:
@@ -28,10 +28,10 @@ spring:
   # redis
   redis:
     database: 0
-    host: ENC(O57+uXQhIBDpBXkSo1TF2Hu8OycjE4Es)
-    port: 6379
-    password: ENC(FT8X6Os4IRMf5Q+vokK55u8gSzQykhwi)
-    timeout: 1000
+    host: ENC(/vjSMBDHgD8zWZbR8KxtCZSNCjWbkE/Y)
+    port: ENC(iXTDCpb1hRjdw8ALp8qJNA==)
+    password: ENC(ojI7FUNUOvajLGYoU4r6OI8WYqDyMoJaBcPHF9WauaNYJFShZgn23w==)
+    timeout: 3000
 
   cache:
     type: redis
@@ -43,13 +43,9 @@ spring:
     restart:
       enabled: true
       exclude: application.yml
-###############################################################################
-## swagger配置
-swagger:
-  enable: true
 
 ###############################################################################
 ## jasypt 真实环境下，请在命令行等安全地方使用 password
 jasypt:
   encryptor:
-    password: aC){M3K?[kC6X&e/^)w5?Wa[5Y6o_3G
+    password: "你的密码"
