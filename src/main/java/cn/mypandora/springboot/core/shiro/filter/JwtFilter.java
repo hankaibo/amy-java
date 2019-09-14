@@ -1,10 +1,10 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
+import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.utils.IpUtil;
 import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.vo.Message;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
@@ -18,6 +18,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -53,7 +54,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     }
 
     @Override
-    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object mappedValue) throws Exception {
+    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object mappedValue) {
         Subject subject = getSubject(servletRequest, servletResponse);
 
         boolean isJwtPost = (null != subject && !subject.isAuthenticated()) && isJwtSubmission(servletRequest);
@@ -64,7 +65,6 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                 subject.login(token);
                 return this.checkRoles(subject, mappedValue);
             } catch (AuthenticationException e) {
-
                 // 如果是JWT过期
                 if (STR_EXPIRED.equals(e.getMessage())) {
                     // 这里初始方案先抛出令牌过期，之后设计为在Redis中查询当前appId对应令牌，其设置的过期时间是JWT的两倍，此作为JWT的refresh时间
@@ -86,34 +86,29 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         long refreshPeriodTime = 36000L;
                         String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, resources);
                         redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
-                        Message message = new Message().ok(1005, "new jwt").addData("jwt", newJwt);
-                        RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
+                        RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.success(HttpStatus.OK.getReasonPhrase())), servletResponse);
                         return false;
                     } else {
                         // jwt时间失效过期,jwt refresh time失效 返回jwt过期客户端重新登录
-                        Message message = new Message().error(1006, "expired jwt");
-                        RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
+                        RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
                         return false;
                     }
 
                 }
                 // 其他的判断为JWT错误无效
-                Message message = new Message().error(1007, "error Jwt");
-                RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
+                RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
                 return false;
 
             } catch (Exception e) {
                 // 其他错误
                 log.error(IpUtil.getIpFromRequest(WebUtils.toHttp(servletRequest)) + "--JWT认证失败" + e.getMessage(), e);
                 // 告知客户端JWT错误1005,需重新登录申请jwt
-                Message message = new Message().error(1007, "error jwt");
-                RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
+                RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
                 return false;
             }
         } else {
             // 请求未携带jwt 判断为无效请求
-            Message message = new Message().error(1111, "error request");
-            RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
+            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
             return false;
         }
     }
@@ -126,8 +121,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
         if (subject != null && subject.isAuthenticated()) {
             //  已经认证但未授权的情况
             // 告知客户端JWT没有权限访问此资源
-            Message message = new Message().error(1008, "no permission");
-            RequestResponseUtil.responseWrite(JSON.toJSONString(message), servletResponse);
+            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
         }
         // 过滤链终止
         return false;
