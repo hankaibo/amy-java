@@ -1,9 +1,8 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
-import cn.mypandora.springboot.core.base.Result;
+import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
 import cn.mypandora.springboot.core.utils.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.vo.Message;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
@@ -46,7 +45,7 @@ public class PasswordFilter extends AccessControlFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         Subject subject = getSubject(request, response);
         // 如果其已经登录，再此发送登录请求
-        //  拒绝，统一交给 onAccessDenied 处理
+        // 拒绝，统一交给 onAccessDenied 处理
         return null != subject && subject.isAuthenticated();
     }
 
@@ -65,11 +64,7 @@ public class PasswordFilter extends AccessControlFilter {
             authenticationToken = createPasswordToken(request);
         } catch (Exception e) {
             // response 告知无效请求
-            Message message = new Message().error(1111, "error request");
-            Result result = new Result();
-            result.setCode(HttpStatus.BAD_REQUEST.value());
-            result.setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
-            RequestResponseUtil.responseWrite(JSON.toJSONString(message), response);
+            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.BAD_REQUEST.value(),HttpStatus.BAD_REQUEST.getReasonPhrase())), response);
             return false;
         }
 
@@ -81,14 +76,12 @@ public class PasswordFilter extends AccessControlFilter {
         } catch (AuthenticationException e) {
             log.warn(authenticationToken.getPrincipal() + "::" + e.getMessage());
             // 返回response告诉客户端认证失败
-            Message message = new Message().error(1002, "login fail");
-            RequestResponseUtil.responseWrite(JSON.toJSONString(message), response);
+            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(),HttpStatus.UNAUTHORIZED.getReasonPhrase())), response);
             return false;
         } catch (Exception e) {
             log.error(authenticationToken.getPrincipal() + "::认证异常::" + e.getMessage(), e);
             // 返回response告诉客户端认证失败
-            Message message = new Message().error(1002, "login fail");
-            RequestResponseUtil.responseWrite(JSON.toJSONString(message), response);
+            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(),HttpStatus.UNAUTHORIZED.getReasonPhrase())), response);
             return false;
         }
     }
