@@ -39,15 +39,16 @@ myspringboot
 ## 技术选型
 
 [x] | 技术名 | 版本  
- :---: | :---: | :---:  
-[x] | SpringBoot | 2.1.5.RELEASE  
-[x] | Web(spring-boot-starter-web) | 2.1.5.RELEASE  
-[x] | Redis(spring-boot-starter-data-redis) | 2.1.5.RELEASE  
+ :---: | :--- | :---  
+[x] | SpringBoot | 2.1.7.RELEASE  
+[x] | Web(spring-boot-starter-web) | 2.1.7.RELEASE  
+[x] | Redis(spring-boot-starter-data-redis) | 2.1.7.RELEASE  
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.0.1  
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
 [x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.12 
 [x] | Druid(druid-spring-boot-starter) | 1.1.16  
 [x] | Shiro | 1.4.0 
+[x] | jasypt-spring-boot-starter | 2.1.2
 [x] | Swagger2(springfox.swagger2) | 2.9.2  
 [x] | lombok | 1.18.8    
 
@@ -57,9 +58,9 @@ myspringboot
 
 ## 开发环境
 
-1. openjdk 11.0.4 2019-07-16
-2. 10.0.34-MariaDB-0ubuntu0.16.04.1
-3. Redis server v=3.0.6
+1. openjdk 11
+2. MariaDB 10.4.7
+3. Redis 5.0
 
 ## 快速开始
 1. 下载项目
@@ -69,13 +70,13 @@ myspringboot
    
 2. 导入项目
     
-    使用自己的 IDE 导入, Eclipse 和 Intellij IDEA 均可。
+    使用自己的 IDE 导入, Intellij IDEA 社区版本。
 
-3. 导入数据库（可使用作者默认）
+3. 导入数据库
 
     执行 create.sql 文件；创建自己的 redis 数据库。
 
-4. 配置redis（可使用作者默认）
+4. 配置数据库
 
     打开 application-dev.yml 修改 MySQL 和 Redis 连接信息。
 
@@ -87,8 +88,8 @@ myspringboot
 
     请参考前端项目[myantdpro](https://github.com/hankaibo/myantdpro)配置。
 
-## 程序逻辑
-  1. POST请求【用户名/密码】到 /api/v1/login 进行登入，如果成功返回一个加密 token,role及resources。
+## 逻辑
+  1. POST请求【用户名/密码】到 /api/v1/login 接口进行登入，如果成功返回一个加密 token,role及resources。
   
      token: 之后用户访问每一个需要权限的网址请求必须在 header 中添加 Authorization 字段，例如 Authorization: Bearer token。
   
@@ -99,20 +100,15 @@ myspringboot
      
      user: 当前登录用户的个人信息。
      
-     menuList: 当前登录用户有权限要显示的菜单数据，与resources是相对应的。（菜单打开的页面包含资源，资源属于某个菜单对应的页面。）
-     
+     menuList: 当前登录用户的菜单数据（动态菜单数据），与登录成功返回的数据中resources是相对应的。（菜单打开的页面包含资源，资源属于某个菜单对应的页面。）
+  3. 之后单击页面相关按钮，触发相关请求，都会自动将 token 加入到 header 中，以保证有权限认证，可以成功请求到后台数据。
+  
+  ![Image text](./image/jwt.png)
 # 参考
-本文大量参考了bootshiro，特此感谢。
+本文大量参考了 [https://github.com/tomsun28/bootshiro](https://github.com/tomsun28/bootshiro)，特此感谢。
 1. [https://jinnianshilongnian.iteye.com/blog/2049092](https://jinnianshilongnian.iteye.com/blog/2049092)
 2. [https://github.com/tomsun28/bootshiro](https://github.com/tomsun28/bootshiro)
 3. [https://github.com/zhaojun1998/Shiro-Action](https://github.com/zhaojun1998/Shiro-Action)
 4. [https://github.com/Smith-Cruise/Spring-Boot-Shiro](https://github.com/Smith-Cruise/Spring-Boot-Shiro)
 5. [https://github.com/zzycreate/spring-boot-seed](https://github.com/zzycreate/spring-boot-seed)
 6. [https://github.com/stylefeng/Guns](https://github.com/stylefeng/Guns)
-
-# 注意
-本项目仅供学习使用，从未在生产环境得到检验，请小心使用。
-
-本项目仅供学习使用，从未在生产环境得到检验，请小心使用。
-
-本项目仅供学习使用，从未在生产环境得到检验，请小心使用。
