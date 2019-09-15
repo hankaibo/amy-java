@@ -11,6 +11,8 @@
 ## 项目目录
 ```
 myspringboot  
+├── logs -- 日志目录 
+├── sql -- sql脚本目录 
 ├── src/main/java/cn.mypandora.springboot 
 |   ├── config -- 通用配置  
 |   |    ├── druid -- 连接池配置文件  
@@ -40,14 +42,15 @@ myspringboot
 
 [x] | 技术名 | 版本  
  :---: | :--- | :---  
-[x] | SpringBoot | 2.1.7.RELEASE  
-[x] | Web(spring-boot-starter-web) | 2.1.7.RELEASE  
-[x] | Redis(spring-boot-starter-data-redis) | 2.1.7.RELEASE  
+[x] | SpringBoot | 2.1.7 
+[x] | Redis(spring-boot-starter-data-redis) | 2.1.7
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.0.1  
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
 [x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.12 
 [x] | Druid(druid-spring-boot-starter) | 1.1.16  
 [x] | Shiro | 1.4.0 
+[x] | jjwt | 0.10.7
+[x] | jBCrypt | 0.4.1
 [x] | jasypt-spring-boot-starter | 2.1.2
 [x] | Swagger2(springfox.swagger2) | 2.9.2  
 [x] | lombok | 1.18.8    
