@@ -29,7 +29,7 @@ import java.util.List;
  * 当Spring发现某个类使用了@Configuration标注了，就去将该类下使用@Bean注解的方法创建bean并放入到容器中。
  * 2. @Conditional满足特定条件时才会创建一个Bean放入到IOC容器，@ConditionalOnXxx都是组合@Conditional元注解，
  * 使用了不同的条件Condition。@ConditionalOnProperty指定的属性是否有指定的值。
- * 3. 使用更简洁的Profile代替Conditional判断是否开启swagger。
+ * 3. 使用更简洁的Profile代替Conditional判断是否开启swagger。(生产环境下报错，bean注册失败，故去掉。)
  *
  * @author hankaibo
  * @date 2019/1/14
