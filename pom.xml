@@ -36,7 +36,7 @@
         <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
         <commons-pool2.version>2.7.0</commons-pool2.version>
         <!-- jasypt -->
-        <jasypt-spring-boot-starter>2.1.1</jasypt-spring-boot-starter>
+        <jasypt-spring-boot-starter>2.1.2</jasypt-spring-boot-starter>
         <!-- shiro,token -->
         <shiro.version>1.4.0</shiro.version>
         <jjwt.version>0.10.7</jjwt.version>
