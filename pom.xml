@@ -40,6 +40,7 @@
         <!-- shiro,token -->
         <shiro.version>1.4.0</shiro.version>
         <jjwt.version>0.10.7</jjwt.version>
+        <jbcrypt.version>0.4.1</jbcrypt.version>
         <!-- lombok -->
         <lombok.version>1.18.8</lombok.version>
         <!-- swagger -->
@@ -130,7 +131,7 @@
         <dependency>
             <groupId>de.svenkubiak</groupId>
             <artifactId>jBCrypt</artifactId>
-            <version>0.4.1</version>
+            <version>${jbcrypt.version}</version>
         </dependency>
 
         <!-- jwt -->
