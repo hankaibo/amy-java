@@ -31,9 +31,9 @@ myspringboot
 |   └── SpringbootApplication.java -- 项目启动类  
 └── src/main/resources  
     ├── mapper -- Mybatis的Mapper.xml目录  
-    ├── sql -- sql脚本目录  
     ├── application.yml -- 项目默认配置文件  
-    ├── application-dev.yml -- 测试环境配置文件  
+    ├── application-dev.yml -- 开发环境配置文件  
+    ├── application-docker.yml -- docker环境配置文件  
     ├── application-prod.yml -- 生产环境配置文件  
     └── logback-spring.xml -- 日志配置文件  
 ```
@@ -73,11 +73,11 @@ myspringboot
    
 2. 导入项目
     
-    使用自己的 IDE 导入, Intellij IDEA 社区版本。
+    使用自己的 IDE 导入, Intellij IDEA 社区版本即可。
 
 3. 导入数据库
 
-    执行 create.sql 文件；创建自己的 redis 数据库。
+    执行 create.sql 文件，创建 MariaDB 数据库；安装 redis 创建 redis 数据库。
 
 4. 配置数据库
 
@@ -104,7 +104,7 @@ myspringboot
      user: 当前登录用户的个人信息。
      
      menuList: 当前登录用户的菜单数据（动态菜单数据），与登录成功返回的数据中resources是相对应的。（菜单打开的页面包含资源，资源属于某个菜单对应的页面。）
-  3. 之后单击页面相关按钮，触发相关请求，都会自动将 token 加入到 header 中，以保证有权限认证，可以成功请求到后台数据。
+  3. 之后单击页面相关按钮发送的请求，都会自动将 token 加入到 header 中，以保证有权限认证，可以成功请求到后台数据。
   
   ![Image text](./image/jwt.png)
 # 参考
