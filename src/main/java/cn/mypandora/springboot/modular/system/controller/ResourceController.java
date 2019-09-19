@@ -65,7 +65,7 @@ public class ResourceController {
         resource.setRgt(null);
         resource.setLft(null);
         resource.setLevel(null);
-        resource.setModifyTime(null);
+        resource.setUpdateTime(null);
         return ResultGenerator.success(resource);
     }
 
@@ -105,9 +105,9 @@ public class ResourceController {
     public Result insert(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
         // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是空的，level是1。
         if (resource.getParentId() == null) {
-            resource.setLft(1L);
-            resource.setRgt(2L);
-            resource.setLevel(1L);
+            resource.setLft(1);
+            resource.setRgt(2);
+            resource.setLevel(1);
             resource.setType(TypeEnum.MENU.getValue());
             resourceService.addResource(resource);
         } else {

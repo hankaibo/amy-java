@@ -63,7 +63,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     public void updateDictionary(Dictionary dictionary) {
         Date now = new Date(System.currentTimeMillis());
-        dictionary.setModifyTime(now);
+        dictionary.setUpdateTime(now);
         dictionaryMapper.updateByPrimaryKeySelective(dictionary);
     }
 

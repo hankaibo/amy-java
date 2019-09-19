@@ -96,7 +96,7 @@ public class UserController {
         user.setSalt(null);
         user.setLastLoginTime(null);
         user.setCreateTime(null);
-        user.setModifyTime(null);
+        user.setUpdateTime(null);
         return ResultGenerator.success(user);
     }
 

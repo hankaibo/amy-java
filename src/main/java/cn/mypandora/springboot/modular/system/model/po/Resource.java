@@ -44,6 +44,7 @@ public class Resource extends BaseTree {
     /**
      * 类型
      */
+    @PositiveOrZero
     private Integer type;
 
     /**

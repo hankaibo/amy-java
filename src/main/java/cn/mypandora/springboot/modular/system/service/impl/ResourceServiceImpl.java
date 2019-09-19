@@ -93,7 +93,7 @@ public class ResourceServiceImpl implements ResourceService {
         // 先求出要删除的节点的所有信息，利用左值与右值计算出要删除的节点数量。
         // 删除节点数=(节点右值-节点左值+1)/2
         Resource info = resourceMapper.selectByPrimaryKey(resource);
-        Long deleteAmount = info.getRgt() - info.getLft() + 1;
+        Integer deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此节点之后的相关节点左右值
         resourceMapper.lftMinus(id, deleteAmount);
         resourceMapper.rgtMinus(id, deleteAmount);
@@ -121,8 +121,8 @@ public class ResourceServiceImpl implements ResourceService {
         Resource targetInfo = resourceMapper.selectByPrimaryKey(targetResource);
         Resource sourceInfo = resourceMapper.selectByPrimaryKey(sourceResource);
 
-        long targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
-        long sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
+        int targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
+        int sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
 
         List<Long> sourceIdList = getDescendantId(sourceId);
         List<Long> targetIdList = getDescendantId(targetId);
@@ -151,7 +151,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public void updateResource(Resource resource) {
         Date now = new Date(System.currentTimeMillis());
-        resource.setModifyTime(now);
+        resource.setUpdateTime(now);
         resourceMapper.updateByPrimaryKeySelective(resource);
     }
 
