@@ -2,9 +2,9 @@ package cn.mypandora.springboot.core.shiro.filter;
 
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
-import cn.mypandora.springboot.core.utils.IpUtil;
-import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
-import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.core.util.IpUtil;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
+import cn.mypandora.springboot.core.util.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;

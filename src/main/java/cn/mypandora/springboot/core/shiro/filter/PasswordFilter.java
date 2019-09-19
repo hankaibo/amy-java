@@ -2,7 +2,7 @@ package cn.mypandora.springboot.core.shiro.filter;
 
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
-import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.core.util.RequestResponseUtil;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;

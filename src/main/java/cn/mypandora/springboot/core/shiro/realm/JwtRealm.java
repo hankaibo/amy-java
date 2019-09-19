@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.core.shiro.realm;
 
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
-import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import io.jsonwebtoken.MalformedJwtException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;

@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.core.support;
 
-import cn.mypandora.springboot.core.utils.XssUtil;
+import cn.mypandora.springboot.core.util.XssUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

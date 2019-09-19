@@ -4,7 +4,7 @@ import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
-import cn.mypandora.springboot.core.utils.TreeUtil;
+import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;

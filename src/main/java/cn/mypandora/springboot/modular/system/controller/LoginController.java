@@ -2,8 +2,8 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
-import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
-import cn.mypandora.springboot.core.utils.RequestResponseUtil;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
+import cn.mypandora.springboot.core.util.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.ResourceService;

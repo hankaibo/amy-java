@@ -1,4 +1,4 @@
-package cn.mypandora.springboot.core.utils;
+package cn.mypandora.springboot.core.util;
 
 
 import cn.mypandora.springboot.core.support.XssSqlHttpServletRequestWrapper;

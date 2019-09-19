@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.core.shiro.rule;
 
-import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,4 +1,4 @@
-package cn.mypandora.springboot.core.utils;
+package cn.mypandora.springboot.core.util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.StringTokenizer;
