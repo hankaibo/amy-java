@@ -7,8 +7,8 @@
         VALUES
         <foreach collection="roleListId" item="roleId" index="index" separator=",">
             (
-            #{userId}
-            ,#{roleId}
+            #{userId},
+            #{roleId}
             )
         </foreach>
     </insert>
