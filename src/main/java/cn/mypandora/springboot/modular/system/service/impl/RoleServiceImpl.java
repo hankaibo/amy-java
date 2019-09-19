@@ -81,7 +81,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void updateRole(Role role) {
         Date now = new Date(System.currentTimeMillis());
-        role.setModifyTime(now);
+        role.setUpdateTime(now);
         roleMapper.updateByPrimaryKeySelective(role);
     }
 

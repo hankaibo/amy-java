@@ -19,7 +19,7 @@ import javax.validation.constraints.PositiveOrZero;
  */
 @ApiModel(value = "字典对象", description = "字典信息")
 @Data
-@Table(name = "sys_dict")
+@Table(name = "sys_dictionary")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Dictionary extends BaseEntity {
 
@@ -29,6 +29,7 @@ public class Dictionary extends BaseEntity {
      * 父级id
      */
     @ApiModelProperty(value = "字典父级id")
+    @PositiveOrZero
     private Long parentId;
 
     /**
@@ -63,17 +64,5 @@ public class Dictionary extends BaseEntity {
      */
     @ApiModelProperty(value = "字典描述")
     private String description;
-
-    /**
-     * 创建人
-     */
-    @ApiModelProperty(value = "字典创建人id")
-    private Long createUser;
-
-    /**
-     * 修改人
-     */
-    @ApiModelProperty(value = "字典修改人id")
-    private Long modifyUser;
 
 }

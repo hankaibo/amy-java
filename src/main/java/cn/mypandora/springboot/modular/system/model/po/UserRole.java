@@ -6,7 +6,7 @@ import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * UserRole
@@ -24,13 +24,13 @@ public class UserRole extends BaseEntity {
     /**
      * 用户ID
      */
-    @Positive
+    @PositiveOrZero
     private Long userId;
 
     /**
      * 角色ID
      */
-    @Positive
+    @PositiveOrZero
     private Long roleId;
 
 }

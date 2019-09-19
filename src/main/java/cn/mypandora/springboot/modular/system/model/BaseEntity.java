@@ -8,7 +8,7 @@ import tk.mybatis.mapper.code.IdentityDialect;
 import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Id;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,7 +29,7 @@ public abstract class BaseEntity implements Serializable {
      */
     @ApiModelProperty(value = "主键id")
     @KeySql(dialect = IdentityDialect.MYSQL)
-    @Positive
+    @PositiveOrZero
     @Id
     protected Long id;
 
@@ -43,6 +43,6 @@ public abstract class BaseEntity implements Serializable {
      * 修改时间
      */
     @ApiModelProperty(value = "修改时间")
-    private Date modifyTime;
+    private Date updateTime;
 
 }

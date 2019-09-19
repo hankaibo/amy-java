@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     public void updateUser(User user) {
         Date now = new Date(System.currentTimeMillis());
         passwordHelper(user);
-        user.setModifyTime(now);
+        user.setUpdateTime(now);
         userMapper.updateByPrimaryKeySelective(user);
     }
 

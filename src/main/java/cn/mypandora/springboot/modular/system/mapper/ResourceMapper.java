@@ -100,7 +100,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param id     节点id
      * @param amount 大于id左值的节点，左值要减去的数
      */
-    void lftMinus(@Param("id") Long id, @Param("amount") Long amount);
+    void lftMinus(@Param("id") Long id, @Param("amount") Integer amount);
 
     /**
      * 右节点减N
@@ -108,7 +108,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param id     节点id
      * @param amount 大于id右值的节点，右值要减去的数
      */
-    void rgtMinus(@Param("id") Long id, @Param("amount") Long amount);
+    void rgtMinus(@Param("id") Long id, @Param("amount") Integer amount);
 
     /**
      * 当前节点集合都加上n
@@ -116,7 +116,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param idList 节点id集合
      * @param amount 节点及子孙都加上 amount
      */
-    void selfAndDescendant(@Param("idList") List<Long> idList, @Param("amount") Long amount);
+    void selfAndDescendant(@Param("idList") List<Long> idList, @Param("amount") Integer amount);
 
     /**
      * 判断是否是第一个节点

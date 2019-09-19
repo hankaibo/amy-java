@@ -7,6 +7,7 @@ import tk.mybatis.mapper.code.Style;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * BaseTree
@@ -32,22 +33,23 @@ public abstract class BaseTree extends BaseEntity {
      * 节点右值
      */
     @Positive
-    protected Long rgt;
+    protected Integer rgt;
 
     /**
      * 节点左值
      */
     @Positive
-    protected Long lft;
+    protected Integer lft;
 
     /**
      * 层级
      */
     @Positive
-    protected Long level;
+    protected Integer level;
 
     /**
      * 父节点
      */
+    @PositiveOrZero
     protected Long parentId;
 }
