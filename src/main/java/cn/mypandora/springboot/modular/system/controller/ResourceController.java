@@ -3,7 +3,7 @@ package cn.mypandora.springboot.modular.system.controller;
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.enums.TypeEnum;
-import cn.mypandora.springboot.core.utils.TreeUtil;
+import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
 import cn.mypandora.springboot.modular.system.service.ResourceService;

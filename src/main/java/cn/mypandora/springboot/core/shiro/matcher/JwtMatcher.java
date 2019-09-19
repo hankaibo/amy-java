@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.core.shiro.matcher;
 
-import cn.mypandora.springboot.core.utils.JsonWebTokenUtil;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
