@@ -78,7 +78,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
                         // 重新申请新的JWT
                         // 根据 username 获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
-                        List<String> roleList = roleService.selectRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
+                        List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
                         String roles = String.join(",", roleList);
                         List<String> resourceList = resourceService.selectResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
                         String resources = String.join(",", resourceList);
@@ -90,25 +90,24 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         return false;
                     } else {
                         // jwt时间失效过期,jwt refresh time失效 返回jwt过期客户端重新登录
-                        RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
+                        RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
                         return false;
                     }
 
                 }
                 // 其他的判断为JWT错误无效
-                RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
+                RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
                 return false;
-
             } catch (Exception e) {
                 // 其他错误
                 log.error(IpUtil.getIpFromRequest(WebUtils.toHttp(servletRequest)) + "--JWT认证失败" + e.getMessage(), e);
                 // 告知客户端JWT错误1005,需重新登录申请jwt
-                RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
+                RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
                 return false;
             }
         } else {
             // 请求未携带jwt 判断为无效请求
-            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
+            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
             return false;
         }
     }
