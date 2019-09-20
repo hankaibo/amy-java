@@ -69,7 +69,7 @@ public class PasswordRealm extends AuthorizingRealm {
         }
 
         String username = (String) token.getPrincipal();
-        User info = userService.selectUserByIdOrName(null, username);
+        User info = userService.getUserByIdOrName(null, username);
         if (info != null) {
             // 与新建用户时所采用的加密方法一致。
             ((PasswordToken) token).setPassword(BCrypt.hashpw(((PasswordToken) token).getPassword(), info.getSalt()));

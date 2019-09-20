@@ -21,14 +21,14 @@ public interface RoleService {
      * @param role     角色条件
      * @return 角色列表
      */
-    PageInfo<Role> selectRolePage(int pageNum, int pageSize, Role role);
+    PageInfo<Role> pageRole(int pageNum, int pageSize, Role role);
 
     /**
      * 查询所有的角色。
      *
      * @return 所有角色
      */
-    List<Role> selectRoleList();
+    List<Role> listRole();
 
     /**
      * 根据角色Id或者名称查询角色。
@@ -37,7 +37,7 @@ public interface RoleService {
      * @param name 角色名称
      * @return 角色信息
      */
-    Role selectRoleByIdOrName(Long id, String name);
+    Role getRoleByIdOrName(Long id, String name);
 
     /**
      * 新增角色。
@@ -83,7 +83,7 @@ public interface RoleService {
      * @param resourceListId 资源Id集合
      * @return 成功or失败
      */
-    boolean giveRoleResource(Long roleId, Long[] resourceListId);
+    boolean grantRoleResource(Long roleId, Long[] resourceListId);
 
     /**
      * 根据用户id或者名称查询用户的所有角色。
@@ -92,6 +92,6 @@ public interface RoleService {
      * @param username 用户名称
      * @return 角色列表
      */
-    List<Role> selectRoleByUserIdOrName(Long userId, String username);
+    List<Role> listRoleByUserIdOrName(Long userId, String username);
 
 }
