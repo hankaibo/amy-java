@@ -19,7 +19,7 @@ public interface UserService {
      * @param user     用户条件
      * @return 用户列表
      */
-    PageInfo<User> selectUserPage(int pageNum, int pageSize, User user);
+    PageInfo<User> pageUser(int pageNum, int pageSize, User user);
 
     /**
      * 根据用户Id或者名称查询用户。
@@ -28,7 +28,7 @@ public interface UserService {
      * @param username 用户名称
      * @return 用户信息
      */
-    User selectUserByIdOrName(Long id, String username);
+    User getUserByIdOrName(Long id, String username);
 
     /**
      * 添加用户。
@@ -74,6 +74,6 @@ public interface UserService {
      * @param roleListId 用色Id集合
      * @return 成功or失败
      */
-    boolean giveUserRole(Long userId, Long[] roleListId);
+    boolean grantUserRole(Long userId, Long[] roleListId);
 
 }

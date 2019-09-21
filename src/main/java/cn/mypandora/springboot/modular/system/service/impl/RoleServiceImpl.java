@@ -34,19 +34,19 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PageInfo<Role> selectRolePage(int pageNum, int pageSize, Role role) {
+    public PageInfo<Role> pageRole(int pageNum, int pageSize, Role role) {
         PageHelper.startPage(pageNum, pageSize);
         List<Role> roleList = roleMapper.select(role);
         return new PageInfo<>(roleList);
     }
 
     @Override
-    public List<Role> selectRoleList() {
+    public List<Role> listRole() {
         return roleMapper.selectAll();
     }
 
     @Override
-    public Role selectRoleByIdOrName(Long id, String name) {
+    public Role getRoleByIdOrName(Long id, String name) {
         Role role = new Role();
         role.setId(id);
         role.setName(name);
@@ -98,7 +98,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean giveRoleResource(Long roleId, Long[] resourceListId) {
+    public boolean grantRoleResource(Long roleId, Long[] resourceListId) {
         // 删除旧的资源
         roleResourceMapper.deleteRoleResource(roleId);
         // 添加新的资源
@@ -106,7 +106,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> selectRoleByUserIdOrName(Long userId, String username) {
+    public List<Role> listRoleByUserIdOrName(Long userId, String username) {
         return roleMapper.selectByUserIdOrName(userId, username);
     }
 }

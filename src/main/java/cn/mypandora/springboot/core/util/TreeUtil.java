@@ -53,7 +53,8 @@ public class TreeUtil {
         List<TreeNode> result = new ArrayList<>();
         List<TreeNode> treeNodeList = lr2Node(resourceList);
         for (TreeNode treeNode : treeNodeList) {
-            if (treeNode.getParentId() == null) {
+            // 因为设置了数据库主键不能为空，所以这里用0代替null进行判断。
+            if (treeNode.getParentId() == 0) {
                 result.add(findChildren(treeNode, treeNodeList));
             }
         }

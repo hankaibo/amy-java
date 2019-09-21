@@ -68,7 +68,7 @@ public class LoginController {
     public Result<Token> login(HttpServletRequest request) {
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
-        List<String> roleList = roleService.selectRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
+        List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
         String roles = String.join(",", roleList);
         List<String> resourceList = resourceService.selectResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
         String resources = String.join(",", resourceList);

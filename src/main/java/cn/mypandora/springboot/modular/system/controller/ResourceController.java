@@ -45,7 +45,7 @@ public class ResourceController {
      */
     @ApiOperation(value = "查询资源", notes = "获取整棵资源树。")
     @GetMapping
-    public Result<List<TreeNode>> list(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
+    public Result<List<TreeNode>> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
         List<Resource> resourceList = resourceService.loadFullResource(type);
 
         List<TreeNode> treeNodeList = TreeUtil.lr2Tree(resourceList);
@@ -60,7 +60,7 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源详情", notes = "根据资源id查询资源详情。")
     @GetMapping("/{id}")
-    public Result<Resource> listById(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
+    public Result<Resource> listResourceById(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
         Resource resource = resourceService.findResourceById(id);
         resource.setRgt(null);
         resource.setLft(null);
@@ -77,7 +77,7 @@ public class ResourceController {
      */
     @ApiOperation(value = "更新资源", notes = "根据资源数据更新资源。")
     @PutMapping("/{id}")
-    public Result update(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+    public Result updateResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
         resourceService.updateResource(resource);
         return ResultGenerator.success();
     }
@@ -90,7 +90,7 @@ public class ResourceController {
      */
     @ApiOperation(value = "删除资源", notes = "根据资源Id删除资源。")
     @DeleteMapping("/{id}")
-    public Result remove(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
+    public Result deleteResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
         resourceService.delResource(id);
         return ResultGenerator.success();
     }
@@ -102,7 +102,7 @@ public class ResourceController {
      */
     @ApiOperation(value = "新建资源", notes = "根据资源数据新建。")
     @PostMapping
-    public Result insert(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+    public Result addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
         // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是空的，level是1。
         if (resource.getParentId() == null) {
             resource.setLft(1);
@@ -128,8 +128,8 @@ public class ResourceController {
      */
     @ApiOperation(value = "查询子资源", notes = "根据主键id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
-    public Result<List> selectChildren(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                       @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type) {
+    public Result<List> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                             @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("id", id);
         map.put("type", type);

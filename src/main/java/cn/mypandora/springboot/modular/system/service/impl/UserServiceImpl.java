@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo<User> selectUserPage(int pageNum, int pageSize, User user) {
+    public PageInfo<User> pageUser(int pageNum, int pageSize, User user) {
         PageHelper.startPage(pageNum, pageSize);
         List<User> userList = userMapper.select(user);
         userList.forEach(item -> {
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectUserByIdOrName(Long id, String username) {
+    public User getUserByIdOrName(Long id, String username) {
         User user = new User();
         user.setId(id);
         user.setUsername(username);
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean giveUserRole(Long userId, Long[] roleListId) {
+    public boolean grantUserRole(Long userId, Long[] roleListId) {
         // 删除旧的角色
         userRoleMapper.deleteUserRole(userId);
         // 添加新的角色

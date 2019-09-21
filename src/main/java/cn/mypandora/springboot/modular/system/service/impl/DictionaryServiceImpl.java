@@ -28,7 +28,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public PageInfo<Dictionary> selectDictionaryList(int pageNum, int pageSize, Dictionary dictionary) {
+    public PageInfo<Dictionary> pageDictionary(int pageNum, int pageSize, Dictionary dictionary) {
         PageHelper.startPage(pageNum, pageSize);
         List<Dictionary> dictionaryList = dictionaryMapper.select(dictionary);
         return new PageInfo<>(dictionaryList);
