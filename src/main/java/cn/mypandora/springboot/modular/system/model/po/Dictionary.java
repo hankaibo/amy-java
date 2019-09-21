@@ -47,6 +47,13 @@ public class Dictionary extends BaseEntity {
     private String code;
 
     /**
+     * 字典值
+     */
+    @ApiModelProperty(value = "字典值")
+    @NotBlank
+    private String value;
+
+    /**
      * 状态 1:开启，0:禁用
      */
     @ApiModelProperty(value = "字典状态")
