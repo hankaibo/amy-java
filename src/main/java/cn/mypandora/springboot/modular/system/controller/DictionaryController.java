@@ -42,10 +42,10 @@ public class DictionaryController {
      */
     @ApiOperation(value = "字典列表", notes = "查询字典列表")
     @GetMapping
-    public Result<PageInfo> listAll(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                    @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
-                                    Dictionary dictionary) {
-        return ResultGenerator.success(dictionaryService.selectDictionaryList(pageNum, pageSize, dictionary));
+    public Result<PageInfo> pageDictionary(@RequestParam(value = "pageNum", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+                                           @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
+                                           Dictionary dictionary) {
+        return ResultGenerator.success(dictionaryService.pageDictionary(pageNum, pageSize, dictionary));
     }
 
     /**
@@ -56,7 +56,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "字典详情")
     @GetMapping("/{id}")
-    public Result<Dictionary> selectOneById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
+    public Result<Dictionary> getDictionaryById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
         return ResultGenerator.success(dictionaryService.selectDictionary(id));
     }
 
@@ -68,7 +68,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "新建字典")
     @PostMapping
-    public Result insert(@RequestBody @ApiParam(name = "dictionary", value = "字典数据", required = true) Dictionary dictionary) {
+    public Result addDictionary(@RequestBody @ApiParam(name = "dictionary", value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.addDictionary(dictionary);
         return ResultGenerator.success();
     }
@@ -81,7 +81,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "删除字典", notes = "根据字典Id删除")
     @DeleteMapping("/{id}")
-    public Result remove(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long dictId) {
+    public Result deleteDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long dictId) {
         dictionaryService.deleteDictionary(dictId);
         return ResultGenerator.success();
     }
@@ -94,7 +94,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "删除字典(批量)", notes = "根据字典Id批量删除")
     @DeleteMapping
-    public Result remove(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, Long[]> ids) {
+    public Result deleteBatchDictionary(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, Long[]> ids) {
         dictionaryService.deleteBatchDictionary(StringUtils.join(ids.get("ids"), ","));
         return ResultGenerator.success();
     }
@@ -107,7 +107,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "更新字典")
     @PutMapping("/{id}")
-    public Result update(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
+    public Result updateDictionary(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.updateDictionary(dictionary);
         return ResultGenerator.success();
     }
@@ -121,8 +121,8 @@ public class DictionaryController {
      */
     @ApiOperation(value = "启用|禁用字典", notes = "根据字典id启用或禁用。")
     @PutMapping("/{id}/status")
-    public Result enable(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
-                         @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
+    public Result enableDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
+                                   @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
         boolean result = dictionaryService.enableDictionary(id, s);
         return result ? ResultGenerator.success() : ResultGenerator.failure();

@@ -19,7 +19,7 @@ public interface DictionaryService {
      * @param dictionary 查询条件
      * @return 字典数据
      */
-    PageInfo<Dictionary> selectDictionaryList(int pageNum, int pageSize, Dictionary dictionary);
+    PageInfo<Dictionary> pageDictionary(int pageNum, int pageSize, Dictionary dictionary);
 
     /**
      * 根据主键查询字典详情。
