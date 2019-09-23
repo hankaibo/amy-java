@@ -42,7 +42,7 @@
         <logger name="cn.mypandora.springboot" level="INFO"/>
     </springProfile>
     <!-- 生产环境 -->
-    <springProfile name="prod">
+    <springProfile name="prod,docker">
         <logger name="cn.mypandora.springboot" level="ERROR"/>
     </springProfile>
 </configuration>
