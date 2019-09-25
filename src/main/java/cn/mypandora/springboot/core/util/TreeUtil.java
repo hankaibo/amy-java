@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.core.util;
 
+import cn.mypandora.springboot.modular.system.model.BaseTree;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
 
@@ -18,25 +19,26 @@ public class TreeUtil {
     /**
      * 将左右节点数据转换为父子节点数据。
      *
-     * @param resourceList 左右节点数据
+     * @param baseTreeList 左右节点数据
      * @return 父子节点数据(children无数据)
      */
-    public static List<TreeNode> lr2Node(List<Resource> resourceList) {
+    public static List<TreeNode> lr2Node(List<BaseTree> baseTreeList) {
         List<TreeNode> treeNodeList = new ArrayList<>();
 
-        for (Resource resource : resourceList) {
+        for (BaseTree baseTree : baseTreeList) {
             TreeNode treeNode = new TreeNode();
-            treeNode.setId(resource.getId());
-            treeNode.setKey(resource.getId());
-            treeNode.setValue(resource.getId().toString());
-            treeNode.setTitle(resource.getName());
-            treeNode.setParentId(resource.getParentId());
+            treeNode.setId(baseTree.getId());
+            treeNode.setKey(baseTree.getId());
+            treeNode.setValue(baseTree.getId().toString());
+            treeNode.setTitle(baseTree.getName());
+            treeNode.setParentId(baseTree.getParentId());
             // 列表字段
-            treeNode.setStatus(resource.getStatus());
-            treeNode.setUri(resource.getUri());
-            treeNode.setCode(resource.getCode());
-            treeNode.setMethod(resource.getMethod());
-            treeNode.setDescription(resource.getDescription());
+//            treeNode.setStatus(resource.getStatus());
+//            treeNode.setUri(resource.getUri());
+//            treeNode.setCode(resource.getCode());
+//            treeNode.setMethod(resource.getMethod());
+//            treeNode.setDescription(resource.getDescription());
+
             treeNodeList.add(treeNode);
         }
 
@@ -46,12 +48,12 @@ public class TreeUtil {
     /**
      * 将左右节点数据转换为父子节点树数据。
      *
-     * @param resourceList 左右节点数据
+     * @param baseTreeList 左右节点数据
      * @return 父子节点树数据(children有数据)
      */
-    public static List<TreeNode> lr2Tree(List<Resource> resourceList) {
+    public static List<TreeNode> lr2Tree(List<BaseTree> baseTreeList) {
         List<TreeNode> result = new ArrayList<>();
-        List<TreeNode> treeNodeList = lr2Node(resourceList);
+        List<TreeNode> treeNodeList = lr2Node(baseTreeList);
         for (TreeNode treeNode : treeNodeList) {
             // 因为设置了数据库主键不能为空，所以这里用0代替null进行判断。
             if (treeNode.getParentId() == 0) {

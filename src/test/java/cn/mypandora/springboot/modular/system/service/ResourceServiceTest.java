@@ -2,7 +2,6 @@ package cn.mypandora.springboot.modular.system.service;
 
 import cn.mypandora.springboot.SpringbootApplicationTest;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
-import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
