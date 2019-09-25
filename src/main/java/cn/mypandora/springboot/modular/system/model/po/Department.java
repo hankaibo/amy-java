@@ -1,0 +1,32 @@
+package cn.mypandora.springboot.modular.system.model.po;
+
+import cn.mypandora.springboot.modular.system.model.BaseTree;
+import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
+
+import javax.persistence.Table;
+import javax.validation.constraints.PositiveOrZero;
+
+/**
+ * Department
+ *
+ * @author hankaibo
+ * @date 2019/9/25
+ */
+@Data
+@Table(name = "sys_department")
+@NameStyle(Style.camelhumpAndLowercase)
+public class Department extends BaseTree {
+
+    /**
+     * 状态
+     */
+    @PositiveOrZero
+    private Integer status;
+
+    /**
+     * 描述
+     */
+    private String description;
+}
