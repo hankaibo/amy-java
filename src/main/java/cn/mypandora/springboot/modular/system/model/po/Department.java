@@ -19,6 +19,8 @@ import javax.validation.constraints.PositiveOrZero;
 @NameStyle(Style.camelhumpAndLowercase)
 public class Department extends BaseTree {
 
+    private static final long serialVersionUID = 1722519175716048416L;
+
     /**
      * 状态
      */
