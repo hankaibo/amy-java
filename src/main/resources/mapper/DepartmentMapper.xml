@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.DepartmentMapper">
+    <resultMap id="DepartmentMap" type="Department">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="lft" jdbcType="INTEGER" property="lft"/>
+        <result column="rgt" jdbcType="INTEGER" property="rgt"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+        ${alias}.id,
+        ${alias}.parent_id,
+        ${alias}.name,
+        ${alias}.lft,
+        ${alias}.rgt,
+        ${alias}.level,
+        ${alias}.status,
+        ${alias}.description,
+        ${alias}.create_time,
+        ${alias}.update_time
+    </sql>
+
+    <select id="loadFullTree" resultMap="DepartmentMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_department t
+        WHERE 1=1
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="getDescendant" resultMap="DepartmentMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_department t
+        WHERE 1=1
+        <![CDATA[
+            AND t.lft>(
+                    SELECT s.lft
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+            AND t.rgt<(
+                    SELECT s.rgt
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+            ORDER BY t.lft ASC
+        ]]>
+    </select>
+
+    <select id="getChild" resultMap="DepartmentMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_department t
+        WHERE 1=1
+        AND t.parent_id=#{id}
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="getParent" resultMap="DepartmentMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        <![CDATA[
+            FROM sys_department t
+            WHERE t.id=(
+                    SELECT s.parent_id
+                    FROM sys_department s
+                    WHERE s.id=#{id}
+                )
+        ]]>
+    </select>
+
+    <select id="getAncestry" resultMap="DepartmentMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        <![CDATA[
+            FROM sys_department t
+            WHERE t.lft<(
+                    SELECT s.lft
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+            AND t.rgt>(
+                    SELECT s.lft
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+            ORDER BY t.lft ASC
+        ]]>
+    </select>
+
+    <select id="getSiblings" resultMap="DepartmentMap" parameterType="long">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        <![CDATA[
+        FROM sys_department t
+        WHERE t.parent_id=(
+                SELECT parent_id
+                FROM sys_department
+                WHERE id=#{id})
+        ORDER BY t.lft ASC
+        ]]>
+    </select>
+
+    <update id="lftPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.lft=t.lft + 2
+        WHERE t.lft > f.rgt
+        ]]>
+    </update>
+
+    <update id="rgtPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.rgt=t.rgt + 2
+        WHERE t.rgt > f.rgt
+        ]]>
+    </update>
+
+    <update id="parentRgtPlus2" parameterType="long">
+        <![CDATA[
+        UPDATE sys_department t
+        SET t.rgt=t.rgt + 2
+        WHERE id = #{id, jdbcType=NUMERIC}
+        ]]>
+    </update>
+
+    <update id="lftMinus">
+        <![CDATA[
+        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.lft= (t.lft - #{amount})
+        WHERE t.lft > f.rgt
+        ]]>
+    </update>
+
+    <update id="rgtMinus">
+        <![CDATA[
+        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.rgt= (t.rgt - #{amount})
+        WHERE t.rgt > f.rgt
+        ]]>
+    </update>
+
+    <update id="selfAndDescendant">
+        UPDATE sys_department t
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount})
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="isFirstNode" resultType="boolean" parameterType="long">
+        SELECT count(*)
+        <![CDATA[
+        FROM sys_department t
+        WHERE t.id = #{id}
+          AND t.lft - 1 = (
+            SELECT p.lft
+            FROM sys_department p
+            WHERE p.id = t.parent_id
+        )
+        ]]>
+    </select>
+
+    <select id="isLastNode" resultType="boolean" parameterType="long">
+        SELECT count(*)
+        <![CDATA[
+        FROM sys_department t
+        WHERE t.id = #{id}
+          AND t.rgt + 1 = (
+            SELECT p.rgt
+            FROM sys_department p
+            WHERE p.id = t.parent_id
+        )
+        ]]>
+    </select>
+
+</mapper>

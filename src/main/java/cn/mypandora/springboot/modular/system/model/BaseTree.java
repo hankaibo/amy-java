@@ -50,6 +50,5 @@ public abstract class BaseTree extends BaseEntity {
     /**
      * 父节点
      */
-    @PositiveOrZero
     protected Long parentId;
 }

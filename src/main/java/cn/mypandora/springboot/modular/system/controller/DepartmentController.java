@@ -46,7 +46,7 @@ public class DepartmentController {
     public Result<List<TreeNode>> listDepartment() {
         List<Department> departmentList = departmentService.loadFullDepartment();
 
-        List<TreeNode> treeNodeList = TreeUtil.lr2Tree(departmentList);
+        List<TreeNode> treeNodeList = TreeUtil.department2Tree(departmentList);
         return ResultGenerator.success(treeNodeList);
     }
 
@@ -102,7 +102,7 @@ public class DepartmentController {
     @PostMapping
     public Result addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
         // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是0，level是1。
-        if (department.getParentId() == 0) {
+        if (department.getParentId() == null) {
             department.setLft(1);
             department.setRgt(2);
             department.setLevel(1);
@@ -128,7 +128,7 @@ public class DepartmentController {
     public Result<List> listChildrenDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id) {
         List<Department> departmentList = departmentService.getDepartmentChild(id);
 
-        List<TreeNode> treeNodeList = TreeUtil.lr2Node(departmentList);
+        List<TreeNode> treeNodeList = TreeUtil.department2Node(departmentList);
         return ResultGenerator.success(treeNodeList);
     }
 
