@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import cn.mypandora.springboot.modular.system.model.BaseTree;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
@@ -24,11 +25,13 @@ public class Department extends BaseTree {
     /**
      * 状态
      */
+    @ApiModelProperty(value = "状态")
     @PositiveOrZero
     private Integer status;
 
     /**
      * 描述
      */
+    @ApiModelProperty(value = "描述")
     private String description;
 }

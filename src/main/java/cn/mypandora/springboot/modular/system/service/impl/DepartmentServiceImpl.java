@@ -64,6 +64,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addDepartment(Department department) {
+        Date now = new Date(System.currentTimeMillis());
+        department.setCreateTime(now);
         departmentMapper.lftPlus2(department.getParentId());
         departmentMapper.rgtPlus2(department.getParentId());
         departmentMapper.insert(department);

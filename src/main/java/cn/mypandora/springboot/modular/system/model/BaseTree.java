@@ -32,23 +32,27 @@ public abstract class BaseTree extends BaseEntity {
     /**
      * 节点右值
      */
+    @ApiModelProperty(hidden = true)
     @Positive
     protected Integer rgt;
 
     /**
      * 节点左值
      */
+    @ApiModelProperty(hidden = true)
     @Positive
     protected Integer lft;
 
     /**
      * 层级
      */
+    @ApiModelProperty(hidden = true)
     @Positive
     protected Integer level;
 
     /**
      * 父节点
      */
+    @ApiModelProperty(value = "父节点id")
     protected Long parentId;
 }
