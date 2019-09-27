@@ -79,9 +79,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 删除节点数=(节点右值-节点左值+1)/2
         Department info = departmentMapper.selectByPrimaryKey(department);
         Integer deleteAmount = info.getRgt() - info.getLft() + 1;
-        // 更新此节点之后的相关节点左右值
-        departmentMapper.lftMinus(id, deleteAmount);
-        departmentMapper.rgtMinus(id, deleteAmount);
         // 求出要删除的节点所有子孙节点
         Map<String, Number> map = new HashMap<>(2);
         map.put("id", id);
@@ -89,6 +86,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<Long> idList = willDelDepartmentList.stream().map(item -> item.getId()).collect(Collectors.toList());
         idList.add(id);
         String ids = StringUtils.join(idList, ",");
+        // 更新此节点之后的相关节点左右值
+        departmentMapper.lftMinus(id, deleteAmount);
+        departmentMapper.rgtMinus(id, deleteAmount);
         // 批量删除节点及子孙节点
         departmentMapper.deleteByIds(ids);
     }

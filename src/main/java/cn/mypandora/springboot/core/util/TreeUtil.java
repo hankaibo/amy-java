@@ -28,7 +28,7 @@ public class TreeUtil {
         for (Resource resource : resourceList) {
             TreeNode treeNode = new TreeNode();
             treeNode.setId(resource.getId());
-            treeNode.setKey(resource.getId());
+            treeNode.setKey(resource.getId().toString());
             treeNode.setValue(resource.getId().toString());
             treeNode.setTitle(resource.getName());
             treeNode.setParentId(resource.getParentId());
@@ -92,7 +92,7 @@ public class TreeUtil {
         for (Department department : departmentList) {
             TreeNode treeNode = new TreeNode();
             treeNode.setId(department.getId());
-            treeNode.setKey(department.getId());
+            treeNode.setKey(department.getId().toString());
             treeNode.setValue(department.getId().toString());
             treeNode.setTitle(department.getName());
             treeNode.setParentId(department.getParentId());
