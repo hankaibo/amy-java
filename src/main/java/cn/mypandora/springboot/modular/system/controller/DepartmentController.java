@@ -63,6 +63,7 @@ public class DepartmentController {
         department.setRgt(null);
         department.setLft(null);
         department.setLevel(null);
+        department.setCreateTime(null);
         department.setUpdateTime(null);
         return ResultGenerator.success(department);
     }

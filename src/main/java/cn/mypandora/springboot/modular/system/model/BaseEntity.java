@@ -36,13 +36,13 @@ public abstract class BaseEntity implements Serializable {
     /**
      * 创建时间
      */
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @ApiModelProperty(value = "修改时间")
+    @ApiModelProperty(hidden = true)
     private Date updateTime;
 
 }
