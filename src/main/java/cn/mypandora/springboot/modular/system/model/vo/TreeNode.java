@@ -29,7 +29,7 @@ public class TreeNode {
      * 冗余字段，适配ant design tree组件。
      */
     @ApiModelProperty(value = "key")
-    private Long key;
+    private String key;
 
     /**
      * tree-select 默认根据此属性值进行筛选（其值在整个树范围内唯一）
