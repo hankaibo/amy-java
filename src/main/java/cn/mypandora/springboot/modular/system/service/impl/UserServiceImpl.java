@@ -1,8 +1,10 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
+import cn.mypandora.springboot.modular.system.model.po.DepartmentUser;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import com.github.pagehelper.PageHelper;
@@ -28,21 +30,19 @@ public class UserServiceImpl implements UserService {
 
     private UserMapper userMapper;
     private UserRoleMapper userRoleMapper;
+    private DepartmentUserMapper departmentUserMapper;
 
     @Autowired
-    public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper) {
+    public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper, DepartmentUserMapper departmentUserMapper) {
         this.userMapper = userMapper;
         this.userRoleMapper = userRoleMapper;
+        this.departmentUserMapper = departmentUserMapper;
     }
 
     @Override
     public PageInfo<User> pageUser(int pageNum, int pageSize, User user) {
         PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userMapper.select(user);
-        userList.forEach(item -> {
-            item.setSalt(null);
-            item.setPassword(null);
-        });
+        List<User> userList = userMapper.pageUser(user);
         return new PageInfo<>(userList);
     }
 
@@ -55,11 +55,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserById(Long id) {
+        return this.userMapper.getUser(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
     public void addUser(User user) {
         Date now = new Date(System.currentTimeMillis());
-        passwordHelper(user);
         user.setCreateTime(now);
+        passwordHelper(user);
+
+        DepartmentUser departmentUser = new DepartmentUser();
+        departmentUser.setDepartmentId(user.getDepartmentId());
+        departmentUser.setUserId(user.getId());
+        departmentUser.setCreateTime(now);
+
         userMapper.insert(user);
+        departmentUserMapper.insert(departmentUser);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -67,8 +80,10 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         User user = new User();
         user.setId(id);
+
         userMapper.delete(user);
         userRoleMapper.deleteUserRole(id);
+        departmentUserMapper.deleteByUserId(id);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -78,14 +93,17 @@ public class UserServiceImpl implements UserService {
 
         Long[] idList = Stream.of(ids.split(",")).map(s -> Long.valueOf(s)).collect(Collectors.toList()).toArray(new Long[]{});
         userRoleMapper.deleteBatchUserRole(idList);
+        departmentUserMapper.deleteBatchByUserIds(idList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUser(User user) {
         Date now = new Date(System.currentTimeMillis());
-        passwordHelper(user);
         user.setUpdateTime(now);
+
         userMapper.updateByPrimaryKeySelective(user);
+        departmentUserMapper.updateByUserId(user.getId(), user.getDepartmentId());
     }
 
     @Override

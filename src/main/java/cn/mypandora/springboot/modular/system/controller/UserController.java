@@ -83,7 +83,8 @@ public class UserController {
                                            @RequestParam(value = "phone", required = false) @ApiParam(value = "电话") String phone,
                                            @RequestParam(value = "mobile", required = false) @ApiParam(value = "手机") String mobile,
                                            @RequestParam(value = "sex", required = false) @ApiParam(value = "性别") Byte sex,
-                                           @RequestParam(value = "status", required = false) @ApiParam(value = "性别") Integer status
+                                           @RequestParam(value = "status", required = false) @ApiParam(value = "性别") Integer status,
+                                           @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId
     ) {
         User user = new User();
         if (StringUtils.isNotBlank(username)) {
@@ -101,6 +102,9 @@ public class UserController {
         if (status != null) {
             user.setStatus(status);
         }
+        if (departmentId != null) {
+            user.setDepartmentId(departmentId);
+        }
         return ResultGenerator.success(userService.pageUser(pageNum, pageSize, user));
     }
 
@@ -113,9 +117,7 @@ public class UserController {
     @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
     @GetMapping("/{id}")
     public Result<User> getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        User user = userService.getUserByIdOrName(id, null);
-        user.setPassword(null);
-        user.setSalt(null);
+        User user = userService.getUserById(id);
         user.setLastLoginTime(null);
         user.setCreateTime(null);
         user.setUpdateTime(null);

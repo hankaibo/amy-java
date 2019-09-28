@@ -31,6 +31,14 @@ public interface UserService {
     User getUserByIdOrName(Long id, String username);
 
     /**
+     * 根据用户Id查询用户。
+     *
+     * @param id 用户Id
+     * @return 用户信息
+     */
+    User getUserById(Long id);
+
+    /**
      * 添加用户。
      *
      * @param user 用户
