@@ -63,16 +63,20 @@ public class DruidConfiguration {
         dataSource.setMinIdle(properties.getDruid().getMinIdle());
         dataSource.setMaxActive(properties.getDruid().getMaxActive());
         dataSource.setMaxWait(properties.getDruid().getMaxWait());
-        dataSource.setTimeBetweenEvictionRunsMillis(properties.getDruid().getTimeBetweenEvictionRunsMillis());
-        dataSource.setMinEvictableIdleTimeMillis(properties.getDruid().getMinEvictableIdleTimeMillis());
+
         dataSource.setValidationQuery(properties.getDruid().getValidationQuery());
-        dataSource.setTestWhileIdle(properties.getDruid().isTestWhileIdle());
         dataSource.setTestOnBorrow(properties.getDruid().isTestOnBorrow());
         dataSource.setTestOnReturn(properties.getDruid().isTestOnReturn());
+        dataSource.setTestWhileIdle(properties.getDruid().isTestWhileIdle());
+
+        dataSource.setTimeBetweenEvictionRunsMillis(properties.getDruid().getTimeBetweenEvictionRunsMillis());
+        dataSource.setMinEvictableIdleTimeMillis(properties.getDruid().getMinEvictableIdleTimeMillis());
+
         dataSource.setPoolPreparedStatements(properties.getDruid().isPoolPreparedStatements());
         dataSource.setMaxPoolPreparedStatementPerConnectionSize(properties.getDruid().getMaxPoolPreparedStatementPerConnectionSize());
-        dataSource.setConnectionProperties(properties.getDruid().getConnectionProperties());
+
         dataSource.setUseGlobalDataSourceStat(properties.getDruid().isUseGlobalDataSourceStat());
+        dataSource.setConnectionProperties(properties.getDruid().getConnectionProperties());
         try {
             dataSource.setFilters(properties.getDruid().getFilters());
         } catch (SQLException e) {
@@ -90,12 +94,12 @@ public class DruidConfiguration {
      */
     @Bean
     public ServletRegistrationBean<StatViewServlet> druidStatViewServlet() {
-        ServletRegistrationBean<StatViewServlet> servletRegistrationBean = new ServletRegistrationBean<>(new StatViewServlet(), "/druid/*");
+        ServletRegistrationBean<StatViewServlet> servletRegistrationBean = new ServletRegistrationBean<>(new StatViewServlet(), properties.getDruid().getStatViewServlet().getUrlPattern());
         // 控制台管理用户
-        servletRegistrationBean.addInitParameter("loginUsername", properties.getUsername());
-        servletRegistrationBean.addInitParameter("loginPassword", properties.getPassword());
+        servletRegistrationBean.addInitParameter("loginUsername", properties.getDruid().getStatViewServlet().getLoginUsername());
+        servletRegistrationBean.addInitParameter("loginPassword", properties.getDruid().getStatViewServlet().getLoginPassword());
         // 是否能够重置数据，禁用html页面上的"reset all'功能
-        servletRegistrationBean.addInitParameter("resetEnable", "true");
+        servletRegistrationBean.addInitParameter("resetEnable", properties.getDruid().getStatViewServlet().getResetEnable());
         return servletRegistrationBean;
     }
 
@@ -107,8 +111,8 @@ public class DruidConfiguration {
     @Bean
     public FilterRegistrationBean druidStatFilter() {
         FilterRegistrationBean<WebStatFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>(new WebStatFilter());
-        filterFilterRegistrationBean.addUrlPatterns("/*");
-        filterFilterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+        filterFilterRegistrationBean.addUrlPatterns(properties.getDruid().getWebStatFilter().getUrlPattern());
+        filterFilterRegistrationBean.addInitParameter("exclusions", properties.getDruid().getWebStatFilter().getExclusions());
         return filterFilterRegistrationBean;
     }
 

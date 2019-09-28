@@ -60,17 +60,38 @@ class DataSourceProperties {
         private int minIdle;
         private int maxActive;
         private int maxWait;
-        private int timeBetweenEvictionRunsMillis;
-        private int minEvictableIdleTimeMillis;
         private String validationQuery;
-        private boolean testWhileIdle;
         private boolean testOnBorrow;
         private boolean testOnReturn;
+        private boolean testWhileIdle;
+        private int timeBetweenEvictionRunsMillis;
+        private int minEvictableIdleTimeMillis;
         private boolean poolPreparedStatements;
         private int maxPoolPreparedStatementPerConnectionSize;
-        private String connectionProperties;
         private boolean useGlobalDataSourceStat;
         private String filters;
+        private String connectionProperties;
+        private int timeBetweenLogStatsMillis;
+        private DruidWebStatFilter webStatFilter;
+        private DruidStatViewServlet statViewServlet;
+    }
+
+    @Data
+    static class DruidWebStatFilter {
+        private boolean enabled;
+        private String urlPattern;
+        private String exclusions;
+    }
+
+    @Data
+    static class DruidStatViewServlet {
+        private boolean enabled;
+        private String urlPattern;
+        private String allow;
+        private String resetEnable;
+        private String loginUsername;
+        private String loginPassword;
+
     }
 
 }
