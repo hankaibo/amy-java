@@ -8,6 +8,7 @@ import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
@@ -103,5 +104,13 @@ public class User extends BaseEntity {
      */
     @ApiModelProperty(value = "用户最近登录时间", example = "1970-01-01:08:00:00")
     private Date lastLoginTime;
+
+    /**
+     * 用户所在部门主键ID
+     * 方便转换显示，不存数据库
+     */
+    @ApiModelProperty(value = "用户部门id")
+    @Transient
+    private Long departmentId;
 
 }
