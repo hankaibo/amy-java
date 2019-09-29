@@ -27,7 +27,7 @@
         ${alias}.update_time
     </sql>
 
-    <select id="loadFullTree" resultMap="DepartmentMap">
+    <select id="listAll" resultMap="DepartmentMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -37,7 +37,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="getDescendant" resultMap="DepartmentMap" parameterType="long">
+    <select id="listDescendants" resultMap="DepartmentMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -57,7 +57,7 @@
         ]]>
     </select>
 
-    <select id="getChild" resultMap="DepartmentMap" parameterType="long">
+    <select id="listChildren" resultMap="DepartmentMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -83,7 +83,7 @@
         ]]>
     </select>
 
-    <select id="getAncestry" resultMap="DepartmentMap" parameterType="long">
+    <select id="listAncestries" resultMap="DepartmentMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -102,7 +102,7 @@
         ]]>
     </select>
 
-    <select id="getSiblings" resultMap="DepartmentMap" parameterType="long">
+    <select id="listSiblings" resultMap="DepartmentMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -117,42 +117,26 @@
         ]]>
     </select>
 
-    <update id="lftPlus2" parameterType="long">
-        <![CDATA[
-        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.lft=t.lft + 2
-        WHERE t.lft > f.rgt
-        ]]>
-    </update>
-
-    <update id="rgtPlus2" parameterType="long">
-        <![CDATA[
-        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.rgt=t.rgt + 2
-        WHERE t.rgt > f.rgt
-        ]]>
-    </update>
-
-    <update id="parentRgtPlus2" parameterType="long">
+    <update id="parentRgtAdd">
         <![CDATA[
         UPDATE sys_department t
-        SET t.rgt=t.rgt + 2
+        SET t.rgt=t.rgt + #{amount}
         WHERE id = #{id, jdbcType=NUMERIC}
         ]]>
     </update>
 
-    <update id="lftMinus">
+    <update id="lftAdd">
         <![CDATA[
         UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.lft= (t.lft - #{amount})
+        SET t.lft= (t.lft + #{amount})
         WHERE t.lft > f.rgt
         ]]>
     </update>
 
-    <update id="rgtMinus">
+    <update id="rgtAdd">
         <![CDATA[
         UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.rgt= (t.rgt - #{amount})
+        SET t.rgt= (t.rgt + #{amount})
         WHERE t.rgt > f.rgt
         ]]>
     </update>

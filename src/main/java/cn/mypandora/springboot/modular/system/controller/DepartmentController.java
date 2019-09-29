@@ -2,6 +2,7 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.Result;
 import cn.mypandora.springboot.core.base.ResultGenerator;
+import cn.mypandora.springboot.core.exception.NotFountException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
@@ -11,6 +12,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,35 +40,77 @@ public class DepartmentController {
     }
 
     /**
-     * 获取整个部门树。
+     * 获取整棵部门树。
      *
      * @return 获取整个部门树
      */
     @ApiOperation(value = "查询部门", notes = "获取整棵部门树。")
     @GetMapping
-    public Result<List<TreeNode>> listDepartment() {
-        List<Department> departmentList = departmentService.loadFullDepartment();
+    public List<TreeNode> listDepartment() {
+        List<Department> departmentList = departmentService.listAll();
 
         List<TreeNode> treeNodeList = TreeUtil.department2Tree(departmentList);
-        return ResultGenerator.success(treeNodeList);
+        return treeNodeList;
     }
 
     /**
-     * 查询部门详细数据。
+     * 查询子部门。
+     *
+     * @param id 主键id
+     * @return 某个部门的所有直接子部门
+     */
+    @ApiOperation(value = "查询子部门", notes = "根据主键id查询其下的所有直接子部门。")
+    @GetMapping("/{id}/children")
+    public List<TreeNode> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id) {
+        List<Department> departmentList = departmentService.listChildren(id);
+
+        return TreeUtil.department2Node(departmentList);
+    }
+
+    /**
+     * 查询部门。
      *
      * @param id 部门主键id
      * @return 数据
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
-    public Result<Department> listDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
-        Department department = departmentService.findDepartmentById(id);
+    public ResponseEntity<Department> Department listDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+        Department department = departmentService.getDepartmentById(id);
+        HttpStatus status = department != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        if(department == null){
+            throw new NotFountException();
+        }
         department.setRgt(null);
         department.setLft(null);
         department.setLevel(null);
         department.setCreateTime(null);
         department.setUpdateTime(null);
-        return ResultGenerator.success(department);
+        return new ResponseEntity<Department>(department,status);
+    }
+
+    /**
+     * 添加部门
+     *
+     * @return 添加部门
+     */
+    @ApiOperation(value = "新建部门", notes = "根据部门数据新建。")
+    @PostMapping
+    public Result addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
+        // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是0，level是1。
+        if (department.getParentId() == null) {
+            department.setLft(1);
+            department.setRgt(2);
+            department.setLevel(1);
+            departmentService.addDepartment(department);
+        } else {
+            Department info = departmentService.getDepartmentById(department.getParentId());
+            department.setLft(info.getRgt());
+            department.setRgt(info.getRgt() + 1);
+            department.setLevel(info.getLevel() + 1);
+            departmentService.addDepartment(department);
+        }
+        return ResultGenerator.success();
     }
 
     /**
@@ -90,51 +135,12 @@ public class DepartmentController {
     @ApiOperation(value = "删除部门", notes = "根据部门Id删除部门。")
     @DeleteMapping("/{id}")
     public Result deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
-        departmentService.delDepartment(id);
+        departmentService.deleteDepartment(id);
         return ResultGenerator.success();
     }
 
     /**
-     * 添加部门
-     *
-     * @return 添加部门
-     */
-    @ApiOperation(value = "新建部门", notes = "根据部门数据新建。")
-    @PostMapping
-    public Result addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是0，level是1。
-        if (department.getParentId() == null) {
-            department.setLft(1);
-            department.setRgt(2);
-            department.setLevel(1);
-            departmentService.addDepartment(department);
-        } else {
-            Department info = departmentService.findDepartmentById(department.getParentId());
-            department.setLft(info.getRgt());
-            department.setRgt(info.getRgt() + 1);
-            department.setLevel(info.getLevel() + 1);
-            departmentService.addDepartment(department);
-        }
-        return ResultGenerator.success();
-    }
-
-    /**
-     * 查询子部门
-     *
-     * @param id 主键id
-     * @return 某个部门的所有直接子部门
-     */
-    @ApiOperation(value = "查询子部门", notes = "根据主键id查询其下的所有直接子部门。")
-    @GetMapping("/{id}/children")
-    public Result<List> listChildrenDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id) {
-        List<Department> departmentList = departmentService.getDepartmentChild(id);
-
-        List<TreeNode> treeNodeList = TreeUtil.department2Node(departmentList);
-        return ResultGenerator.success(treeNodeList);
-    }
-
-    /**
-     * 本功能只针对同层级节点的平移。
+     * 同层级部门的平移。
      *
      * @param id  当前部门id
      * @param map 移动步数(1：上移，-1：下移）
@@ -142,11 +148,11 @@ public class DepartmentController {
      */
     @ApiOperation(value = "移动部门", notes = "将当前部门上移或下移。")
     @PutMapping("/{id}/location")
-    public Result moveUp(@PathVariable @ApiParam(value = "部门数据", required = true) Long id,
-                         @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
+    public Result move(@PathVariable @ApiParam(value = "部门数据", required = true) Long id,
+                       @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
         String direction = map.get("direction");
         // 获得同层级节点
-        List<Department> departmentList = departmentService.getDepartmentSibling(id);
+        List<Department> departmentList = departmentService.listSiblings(id);
         // 目标节点id
         Long targetId = getTargetId(departmentList, id, direction);
         if (null == targetId) {
