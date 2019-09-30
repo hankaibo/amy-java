@@ -10,8 +10,10 @@ import org.jasypt.util.text.BasicTextEncryptor;
  * @note System.getenv()为获取当前系统的变量，使用时请先在系统变量中设置。考虑到缓存问题，有可能要重启才能正常使用。
  */
 public class JasyptUtil {
+
+    private final static String SALT = System.getenv("JASYPT_ENCRYPTOR_PASSWORD");
+
     public static void encrypt() {
-        String SALT = System.getenv("JASYPT_ENCRYPTOR_PASSWORD");
         BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
         // 加密所需的salt(盐)
         basicTextEncryptor.setPassword(SALT);
@@ -32,7 +34,6 @@ public class JasyptUtil {
     }
 
     public static void decrypt() {
-        String SALT = System.getenv("JASYPT_ENCRYPTOR_PASSWORD");
         BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
         // 加密所需的salt(盐)
         basicTextEncryptor.setPassword(SALT);
