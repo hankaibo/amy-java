@@ -1,8 +1,6 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.base.Result;
-import cn.mypandora.springboot.core.base.ResultGenerator;
-import cn.mypandora.springboot.core.exception.NotFountException;
+import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
@@ -75,18 +73,17 @@ public class DepartmentController {
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
-    public ResponseEntity<Department> Department listDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+    public Department listDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
         Department department = departmentService.getDepartmentById(id);
-        HttpStatus status = department != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
-        if(department == null){
-            throw new NotFountException();
+        if (department == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
         }
         department.setRgt(null);
         department.setLft(null);
         department.setLevel(null);
         department.setCreateTime(null);
         department.setUpdateTime(null);
-        return new ResponseEntity<Department>(department,status);
+        return department;
     }
 
     /**
@@ -96,7 +93,7 @@ public class DepartmentController {
      */
     @ApiOperation(value = "新建部门", notes = "根据部门数据新建。")
     @PostMapping
-    public Result addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
+    public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
         // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是0，level是1。
         if (department.getParentId() == null) {
             department.setLft(1);
@@ -110,7 +107,7 @@ public class DepartmentController {
             department.setLevel(info.getLevel() + 1);
             departmentService.addDepartment(department);
         }
-        return ResultGenerator.success();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -121,9 +118,9 @@ public class DepartmentController {
      */
     @ApiOperation(value = "更新部门", notes = "根据部门数据更新部门。")
     @PutMapping("/{id}")
-    public Result updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
+    public ResponseEntity<Void> updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
         departmentService.updateDepartment(department);
-        return ResultGenerator.success();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -134,9 +131,9 @@ public class DepartmentController {
      */
     @ApiOperation(value = "删除部门", notes = "根据部门Id删除部门。")
     @DeleteMapping("/{id}")
-    public Result deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+    public ResponseEntity<Void> deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
         departmentService.deleteDepartment(id);
-        return ResultGenerator.success();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -148,18 +145,18 @@ public class DepartmentController {
      */
     @ApiOperation(value = "移动部门", notes = "将当前部门上移或下移。")
     @PutMapping("/{id}/location")
-    public Result move(@PathVariable @ApiParam(value = "部门数据", required = true) Long id,
-                       @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
+    public ResponseEntity<Void> move(@PathVariable @ApiParam(value = "部门数据", required = true) Long id,
+                                     @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
         String direction = map.get("direction");
         // 获得同层级节点
         List<Department> departmentList = departmentService.listSiblings(id);
         // 目标节点id
         Long targetId = getTargetId(departmentList, id, direction);
         if (null == targetId) {
-            return ResultGenerator.failure("当前部门不能移动。");
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
         departmentService.moveDepartment(id, targetId);
-        return ResultGenerator.success();
+        return ResponseEntity.ok().build();
     }
 
     /**
