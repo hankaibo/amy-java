@@ -73,7 +73,8 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     /**
      * 父右节点加N
      *
-     * @param id 节点id
+     * @param id     节点id
+     * @param amount 大于id左值的节点，操作的数（正数相当于加，负数相当于减）
      */
     void parentRgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
 
@@ -81,7 +82,7 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * 左节点加N
      *
      * @param id     节点id
-     * @param amount 大于id左值的节点，左值要减去的数
+     * @param amount 大于id左值的节点，操作的数（正数相当于加，负数相当于减）
      */
     void lftAdd(@Param("id") Long id, @Param("amount") Integer amount);
 
@@ -89,7 +90,7 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * 右节点加N
      *
      * @param id     节点id
-     * @param amount 大于id右值的节点，右值要减去的数
+     * @param amount 大于id右值的节点，操作的数（正数相当于加，负数相当于减）
      */
     void rgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
 
