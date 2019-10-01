@@ -1,6 +1,8 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.modular.system.mapper.DepartmentMapper;
+import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
+import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
 import org.apache.commons.lang3.StringUtils;
@@ -20,14 +22,16 @@ import java.util.stream.Collectors;
  * @author hankaibo
  * @date 2019/9/25
  */
-@Service("Department")
+@Service("DepartmentService")
 public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentMapper departmentMapper;
+    private DepartmentUserMapper departmentUserMapper;
 
     @Autowired
-    public DepartmentServiceImpl(DepartmentMapper departmentMapper) {
+    public DepartmentServiceImpl(DepartmentMapper departmentMapper, DepartmentUserMapper departmentUserMapper) {
         this.departmentMapper = departmentMapper;
+        this.departmentUserMapper = departmentUserMapper;
     }
 
     @Override
@@ -81,10 +85,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department info = departmentMapper.selectByPrimaryKey(department);
         Integer deleteAmount = info.getRgt() - info.getLft() + 1;
         // 求出要删除的节点所有子孙节点
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", id);
         List<Department> willDelDepartmentList = departmentMapper.listDescendants(id);
-        List<Long> idList = willDelDepartmentList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        List<Long> idList = willDelDepartmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         String ids = StringUtils.join(idList, ",");
         // 更新此节点之后的相关节点左右值
@@ -141,6 +143,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentMapper.updateByPrimaryKeySelective(department);
     }
 
+    @Override
+    public int countUserById(Long id) {
+        return departmentUserMapper.countUserByDepartmentId(id);
+    }
+
     /**
      * 获取此节点及其子孙节点的id
      *
@@ -149,7 +156,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     private List<Long> getDescendantId(Long id) {
         List<Department> departmentList = departmentMapper.listDescendants(id);
-        List<Long> idList = departmentList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        List<Long> idList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;
     }

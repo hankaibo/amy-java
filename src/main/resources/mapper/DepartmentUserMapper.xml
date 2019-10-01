@@ -23,4 +23,10 @@
         </foreach>
     </delete>
 
+    <select id="countUserByDepartmentId" resultType="int" parameterType="long">
+        SELECT count(*)
+        FROM sys_department_user t
+        WHERE t.department_id = #{departmentId}
+    </select>
+
 </mapper>

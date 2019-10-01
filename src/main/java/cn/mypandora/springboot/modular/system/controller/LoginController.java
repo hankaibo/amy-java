@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,7 +67,7 @@ public class LoginController {
             @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")
     })
     @PostMapping("/login")
-    public Result<Token> login(HttpServletRequest request) {
+    public Token login(HttpServletRequest request) {
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
         List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
@@ -82,25 +84,25 @@ public class LoginController {
         token.setRole(roles);
         token.setResources(resources);
 
-        return ResultGenerator.success(token);
+        return token;
     }
 
     @ApiOperation(value = "用户登出", notes = "带token。")
     @PostMapping("/logout")
-    public Result logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request) {
         SecurityUtils.getSubject().logout();
         String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         String username = jwtAccount.getAppId();
         if (StringUtils.isEmpty(username)) {
-            return ResultGenerator.failure("用户无法登出。");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("用户为空。");
         }
         String jwtInRedis = redisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
         if (StringUtils.isEmpty(jwtInRedis)) {
-            return ResultGenerator.failure("用户无法登出。");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("用户为空。");
         }
         redisTemplate.opsForValue().getOperations().delete(StringUtils.upperCase("JWT-ID-" + username));
-        return ResultGenerator.success("用户登出成功。");
+        return ResponseEntity.ok().body("成功");
     }
 
 }

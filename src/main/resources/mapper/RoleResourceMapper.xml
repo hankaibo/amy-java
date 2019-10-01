@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper">
 
-    <insert id="giveRoleResource">
+    <insert id="grantRoleResource">
         INSERT INTO sys_role_resource( role_id, resource_id )
         VALUES
         <foreach collection="resourceListId" item="resourceId" index="index" separator=",">
@@ -13,18 +13,43 @@
         </foreach>
     </insert>
 
-    <delete id="deleteRoleResource">
+    <delete id="deleteRoleSomeResource">
+        DELETE t
+        FROM sys_role_resource t
+        WHERE t.role_id = #{roleId}
+        AND t.resource_id in
+        <foreach collection="resourceListId" item="resourceId" index="index" open="(" separator="," close=")">
+            #{resourceId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleAllResource">
         DELETE t
         FROM sys_role_resource t
         WHERE t.role_id = #{roleId}
     </delete>
 
-    <delete id="deleteBatchRoleResource">
+    <delete id="deleteBatchRoleAllResource">
         DELETE t
         FROM sys_role_resource t
         WHERE t.role_id in
         <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
             #{roleId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteResourceAllRole">
+        DELETE t
+        FROM sys_role_resource t
+        WHERE t.resource_id = #{resourceId}
+    </delete>
+
+    <delete id="deleteBatchRoleAllUser">
+        DELETE t
+        FROM sys_role_resource t
+        WHERE t.resource_id in
+        <foreach collection="resourceListId" item="resourceId" index="index" open="(" separator="," close=")">
+            #{resourceId}
         </foreach>
     </delete>
 

@@ -1,10 +1,10 @@
 package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.core.base.Result;
-import cn.mypandora.springboot.core.base.ResultGenerator;
+import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,18 +55,18 @@ public class UserController {
      */
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息返回。")
     @GetMapping("/info")
-    public Result<Map<String, Object>> getUserAndMenu(HttpServletRequest request) {
+    public Map<String, Object> getUserAndMenu(HttpServletRequest request) {
         String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
         user.setSalt(null);
-        List<String> menuList = resourceService.selectResourceByUserId(user.getId()).stream().map(item -> item.getCode()).collect(Collectors.toList());
+        List<String> menuList = resourceService.selectResourceByUserId(user.getId()).stream().map(Resource::getCode).collect(Collectors.toList());
         map.put("user", user);
         map.put("menuList", menuList);
 
-        return ResultGenerator.success(map);
+        return map;
     }
 
     /**
@@ -77,14 +78,14 @@ public class UserController {
      */
     @ApiOperation(value = "用户列表", notes = "查询用户列表")
     @GetMapping
-    public Result<PageInfo<User>> pageUser(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                           @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
-                                           @RequestParam(value = "username", required = false) @ApiParam(value = "用户名称") String username,
-                                           @RequestParam(value = "phone", required = false) @ApiParam(value = "电话") String phone,
-                                           @RequestParam(value = "mobile", required = false) @ApiParam(value = "手机") String mobile,
-                                           @RequestParam(value = "sex", required = false) @ApiParam(value = "性别") Byte sex,
-                                           @RequestParam(value = "status", required = false) @ApiParam(value = "性别") Integer status,
-                                           @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId
+    public PageInfo<User> pageUser(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+                                   @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
+                                   @RequestParam(value = "username", required = false) @ApiParam(value = "用户名称") String username,
+                                   @RequestParam(value = "phone", required = false) @ApiParam(value = "电话") String phone,
+                                   @RequestParam(value = "mobile", required = false) @ApiParam(value = "手机") String mobile,
+                                   @RequestParam(value = "sex", required = false) @ApiParam(value = "性别") Byte sex,
+                                   @RequestParam(value = "status", required = false) @ApiParam(value = "性别") Integer status,
+                                   @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId
     ) {
         User user = new User();
         if (StringUtils.isNotBlank(username)) {
@@ -105,7 +106,7 @@ public class UserController {
         if (departmentId != null) {
             user.setDepartmentId(departmentId);
         }
-        return ResultGenerator.success(userService.pageUser(pageNum, pageSize, user));
+        return userService.pageUser(pageNum, pageSize, user);
     }
 
     /**
@@ -116,69 +117,64 @@ public class UserController {
      */
     @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
     @GetMapping("/{id}")
-    public Result<User> getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+    public User getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         User user = userService.getUserById(id);
+        if (user == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+        }
         user.setLastLoginTime(null);
         user.setCreateTime(null);
         user.setUpdateTime(null);
-        return ResultGenerator.success(user);
+        return user;
     }
 
     /**
      * 新建用户。
      *
      * @param user 用户数据
-     * @return 新建结果
      */
     @ApiOperation(value = "新建用户", notes = "根据用户数据新建用户。")
     @PostMapping
-    public Result addUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+    public void addUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         // 管理员新建用户时，如果密码为空，则统一使用默认密码。
         if (StringUtils.isBlank(user.getPassword())) {
             String defaultPassword = "123456";
             user.setPassword(defaultPassword);
         }
         userService.addUser(user);
-        return ResultGenerator.success();
     }
 
     /**
      * 删除用户。
      *
      * @param id 用户主键id
-     * @return 删除结果
      */
     @ApiOperation(value = "删除用户", notes = "根据用户Id删除用户。")
     @DeleteMapping("/{id}")
-    public Result deleteUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+    public void deleteUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         userService.deleteUser(id);
-        return ResultGenerator.success();
     }
 
     /**
      * 批量删除用户。
      *
      * @param ids 用户id数组
-     * @return 删除结果
      */
     @ApiOperation(value = "删除用户(批量)", notes = "根据用户Id批量删除用户。")
     @DeleteMapping
-    public Result deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
+    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
         userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ","));
-        return ResultGenerator.success();
     }
 
     /**
      * 更新用户。
      *
      * @param user 用户数据
-     * @return 更新结果
      */
     @ApiOperation(value = "更新用户", notes = "根据用户数据更新用户。")
     @PutMapping("/{id}")
-    public Result updateUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+    public void updateUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         userService.updateUser(user);
-        return ResultGenerator.success();
     }
 
     /**
@@ -186,15 +182,13 @@ public class UserController {
      *
      * @param id     用户主键id
      * @param status 启用:1，禁用:0
-     * @return 启用成功与否。
      */
     @ApiOperation(value = "启用|禁用用户", notes = "根据用户id启用或禁用用户。")
     @PutMapping("/{id}/status")
-    public Result enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                             @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
+    public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                              @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
-        boolean result = userService.enableUser(id, s);
-        return result ? ResultGenerator.success() : ResultGenerator.failure();
+        userService.enableUser(id, s);
     }
 
     /**
@@ -205,31 +199,32 @@ public class UserController {
      */
     @ApiOperation(value = "查询用户的所有角色")
     @GetMapping("/{id}/roles")
-    public Result<Map> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+    public Map<String, List<Role>> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         List<Role> roleList = roleService.listRole();
-        List<Role> roleSelected = roleService.listRoleByUserIdOrName(id, null);
+        List<Role> roleSelectedList = roleService.listRoleByUserIdOrName(id, null);
 
-        Map<String, List> map = new HashMap<>(2);
+        Map<String, List<Role>> map = new HashMap<>(2);
         map.put("roleList", roleList);
-        map.put("roleSelected", roleSelected);
-        return ResultGenerator.success(map);
+        map.put("roleSelectedList", roleSelectedList);
+        return map;
     }
 
     /**
      * 赋予某用户某角色。
      *
-     * @param id  用户id
-     * @param ids 角色id数组
-     * @return 成功与否
+     * @param id     用户id
+     * @param params 增加和删除的角色对象
      */
     @ApiOperation(value = "赋予用户一些角色。")
     @PostMapping("/{id}/roles")
-    public Result grantUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                                @RequestBody @ApiParam(value = "角色主键数组ids", required = true) Map<String, Long[]> ids) {
-        Long[] idList = ids.get("ids");
-        boolean result = userService.grantUserRole(id, idList);
+    public void grantUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                              @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) Map<String, List<Long>> params) {
 
-        return result ? ResultGenerator.success() : ResultGenerator.failure();
+        List<Long> plusRole = params.get("plusRole");
+        List<Long> minusRole = params.get("minusRole");
+        long[] a = plusRole.stream().distinct().mapToLong(it -> it).toArray();
+        long[] b = minusRole.stream().distinct().mapToLong(it -> it).toArray();
+        userService.grantUserRole(id, a, b);
     }
 
 }

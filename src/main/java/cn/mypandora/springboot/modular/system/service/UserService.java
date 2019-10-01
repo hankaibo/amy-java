@@ -71,17 +71,16 @@ public interface UserService {
      *
      * @param id     用户id
      * @param status 启用(1),禁用(0)
-     * @return 是否成功
      */
-    boolean enableUser(Long id, Integer status);
+    void enableUser(Long id, Integer status);
 
     /**
      * 赋予用户某角色。
      *
-     * @param userId     用户Id
-     * @param roleListId 用色Id集合
-     * @return 成功or失败
+     * @param userId  用户Id
+     * @param plusId  增加用色Id集合
+     * @param minusId 删除用色Id集合
      */
-    boolean grantUserRole(Long userId, Long[] roleListId);
+    void grantUserRole(Long userId, long[] plusId, long[] minusId);
 
 }

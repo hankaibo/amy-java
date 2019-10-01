@@ -3,6 +3,7 @@ package cn.mypandora.springboot.modular.system.service.impl;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
+import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import com.github.pagehelper.PageHelper;
@@ -26,11 +27,13 @@ public class RoleServiceImpl implements RoleService {
 
     private RoleMapper roleMapper;
     private RoleResourceMapper roleResourceMapper;
+    private UserRoleMapper userRoleMapper;
 
     @Autowired
-    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper) {
+    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper, UserRoleMapper userRoleMapper) {
         this.roleMapper = roleMapper;
         this.roleResourceMapper = roleResourceMapper;
+        this.userRoleMapper = userRoleMapper;
     }
 
     @Override
@@ -66,7 +69,8 @@ public class RoleServiceImpl implements RoleService {
         Role role = new Role();
         role.setId(id);
         roleMapper.delete(role);
-        roleResourceMapper.deleteRoleResource(id);
+        roleResourceMapper.deleteRoleAllResource(id);
+        userRoleMapper.deleteRoleAllUser(id);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -74,8 +78,9 @@ public class RoleServiceImpl implements RoleService {
     public void deleteBatchRole(String ids) {
         roleMapper.deleteByIds(ids);
 
-        Long[] idList = Stream.of(ids.split(",")).map(s -> Long.valueOf(s)).collect(Collectors.toList()).toArray(new Long[]{});
-        roleResourceMapper.deleteBatchRoleResource(idList);
+        Long[] idList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()).toArray(new Long[]{});
+        roleResourceMapper.deleteBatchRoleAllResource(idList);
+        userRoleMapper.deleteBatchRoleAllUser(idList);
     }
 
     @Override
@@ -86,23 +91,24 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public boolean enableRole(Long id, Integer status) {
+    public void enableRole(Long id, Integer status) {
         Role role = new Role();
         role.setId(id);
         role.setStatus(status);
-        return roleMapper.updateByPrimaryKeySelective(role) > 0;
+        roleMapper.updateByPrimaryKeySelective(role);
     }
 
-    /**
-     * TODO 对数据库一知半解，找不出更好的方法。
-     */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean grantRoleResource(Long roleId, Long[] resourceListId) {
+    public void grantRoleResource(Long roleId, long[] plusId, long[] minusId) {
         // 删除旧的资源
-        roleResourceMapper.deleteRoleResource(roleId);
+        if (minusId.length > 0) {
+            roleResourceMapper.deleteRoleSomeResource(roleId, minusId);
+        }
         // 添加新的资源
-        return roleResourceMapper.giveRoleResource(roleId, resourceListId) > 0;
+        if (plusId.length > 0) {
+            roleResourceMapper.grantRoleResource(roleId, plusId);
+        }
     }
 
     @Override
