@@ -72,18 +72,17 @@ public interface RoleService {
      *
      * @param id     角色id
      * @param status 启用(1),禁用(0)
-     * @return 是否成功
      */
-    boolean enableRole(Long id, Integer status);
+    void enableRole(Long id, Integer status);
 
     /**
      * 赋予角色某资源。
      *
-     * @param roleId         角色Id
-     * @param resourceListId 资源Id集合
-     * @return 成功or失败
+     * @param roleId  角色Id
+     * @param plusId  增加资源Id集合
+     * @param minusId 删除资源Id集合
      */
-    boolean grantRoleResource(Long roleId, Long[] resourceListId);
+    void grantRoleResource(Long roleId, long[] plusId, long[] minusId);
 
     /**
      * 根据用户id或者名称查询用户的所有角色。

@@ -13,18 +13,43 @@
         </foreach>
     </insert>
 
-    <delete id="deleteUserRole">
+    <delete id="deleteUserSomeRole">
+        DELETE t
+        FROM sys_user_role t
+        WHERE t.user_id = #{userId}
+        AND t.role_id in
+        <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteUserAllRole">
         DELETE t
         FROM sys_user_role t
         WHERE t.user_id = #{userId}
     </delete>
 
-    <delete id="deleteBatchUserRole">
+    <delete id="deleteBatchUserAllRole">
         DELETE t
         FROM sys_user_role t
         WHERE t.user_id in
         <foreach collection="userListId" item="userId" index="index" open="(" separator="," close=")">
             #{userId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleAllUser">
+        DELETE t
+        FROM sys_user_role t
+        WHERE t.role_id = #{roleId}
+    </delete>
+
+    <delete id="deleteBatchRoleAllUser">
+        DELETE t
+        FROM sys_user_role t
+        WHERE t.role_id in
+        <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
+            #{roleId}
         </foreach>
     </delete>
 

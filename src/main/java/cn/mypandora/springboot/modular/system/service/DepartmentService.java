@@ -96,4 +96,12 @@ public interface DepartmentService {
      */
     void updateDepartment(Department department);
 
+    /**
+     * 根据部门Id查询用户数量。
+     *
+     * @param id 部门Id
+     * @return 用户数量
+     */
+    int countUserById(Long id);
+
 }

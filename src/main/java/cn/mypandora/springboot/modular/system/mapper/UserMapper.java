@@ -16,16 +16,16 @@ public interface UserMapper extends MyBaseMapper<User> {
     /**
      * 根据部门id等条件查的用户。
      *
-     * @param user
-     * @return
+     * @param user 查询条件
+     * @return 带分页用户数据集
      */
     List<User> pageUser(User user);
 
     /**
      * 根据用户id查询用户信息，带部门id。
      *
-     * @param id
-     * @return
+     * @param id 用户Id
+     * @return 带部门的用户信息
      */
     User getUser(Long id);
 }

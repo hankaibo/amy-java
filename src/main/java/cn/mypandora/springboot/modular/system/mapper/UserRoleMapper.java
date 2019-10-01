@@ -17,22 +17,43 @@ public interface UserRoleMapper extends MyBaseMapper<UserRole> {
      *
      * @param userId     用户Id
      * @param roleListId 角色id集合
-     * @return 成功与否
      */
-    int giveUserRole(@Param(value = "userId") Long userId, @Param(value = "roleListId") Long[] roleListId);
+    void grantUserRole(@Param(value = "userId") Long userId, @Param(value = "roleListId") long[] roleListId);
 
     /**
-     * 删除用户角色。
+     * 删除用户某些角色。
+     *
+     * @param userId     用户Id
+     * @param roleListId 角色id集合
+     */
+    void deleteUserSomeRole(@Param(value = "userId") Long userId, @Param(value = "roleListId") long[] roleListId);
+
+    /**
+     * 删除用户所有角色。
      *
      * @param userId 用户Id
      */
-    void deleteUserRole(Long userId);
+    void deleteUserAllRole(Long userId);
 
     /**
      * 批量删除用户角色。
      *
      * @param userListId 用户Id
      */
-    void deleteBatchUserRole(@Param(value = "userListId") Long[] userListId);
+    void deleteBatchUserAllRole(@Param(value = "userListId") Long[] userListId);
+
+    /**
+     * 删除角色所有用户。
+     *
+     * @param roleId 角色Id
+     */
+    void deleteRoleAllUser(Long roleId);
+
+    /**
+     * 批量删除用户角色。
+     *
+     * @param roleListId 角色Id集合
+     */
+    void deleteBatchRoleAllUser(@Param(value = "roleListId") Long[] roleListId);
 
 }

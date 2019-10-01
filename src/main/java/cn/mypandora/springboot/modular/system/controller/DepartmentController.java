@@ -47,8 +47,7 @@ public class DepartmentController {
     public List<TreeNode> listDepartment() {
         List<Department> departmentList = departmentService.listAll();
 
-        List<TreeNode> treeNodeList = TreeUtil.department2Tree(departmentList);
-        return treeNodeList;
+        return TreeUtil.department2Tree(departmentList);
     }
 
     /**
@@ -132,6 +131,10 @@ public class DepartmentController {
     @ApiOperation(value = "删除部门", notes = "根据部门Id删除部门。")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+        int count = departmentService.countUserById(id);
+        if (count > 0) {
+            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门有关联用户，不可以删除。");
+        }
         departmentService.deleteDepartment(id);
         return ResponseEntity.ok().build();
     }

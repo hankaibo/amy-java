@@ -66,12 +66,12 @@ public class UserServiceImpl implements UserService {
         user.setCreateTime(now);
         passwordHelper(user);
 
+        userMapper.insert(user);
+
         DepartmentUser departmentUser = new DepartmentUser();
         departmentUser.setDepartmentId(user.getDepartmentId());
         departmentUser.setUserId(user.getId());
         departmentUser.setCreateTime(now);
-
-        userMapper.insert(user);
         departmentUserMapper.insert(departmentUser);
     }
 
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
         user.setId(id);
 
         userMapper.delete(user);
-        userRoleMapper.deleteUserRole(id);
+        userRoleMapper.deleteUserAllRole(id);
         departmentUserMapper.deleteByUserId(id);
     }
 
@@ -91,8 +91,8 @@ public class UserServiceImpl implements UserService {
     public void deleteBatchUser(String ids) {
         userMapper.deleteByIds(ids);
 
-        Long[] idList = Stream.of(ids.split(",")).map(s -> Long.valueOf(s)).collect(Collectors.toList()).toArray(new Long[]{});
-        userRoleMapper.deleteBatchUserRole(idList);
+        Long[] idList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()).toArray(new Long[]{});
+        userRoleMapper.deleteBatchUserAllRole(idList);
         departmentUserMapper.deleteBatchByUserIds(idList);
     }
 
@@ -107,21 +107,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean enableUser(Long id, Integer status) {
+    public void enableUser(Long id, Integer status) {
         User user = new User();
         user.setId(id);
         user.setStatus(status);
 
-        return this.userMapper.updateByPrimaryKeySelective(user) > 0;
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean grantUserRole(Long userId, Long[] roleListId) {
-        // 删除旧的角色
-        userRoleMapper.deleteUserRole(userId);
+    public void grantUserRole(Long userId, long[] plusId, long[] minusId) {
+        // 删除角色
+        if(minusId.length>0){
+            userRoleMapper.deleteUserSomeRole(userId, minusId);
+        }
         // 添加新的角色
-        return userRoleMapper.giveUserRole(userId, roleListId) > 0;
+        if(plusId.length>0){
+            userRoleMapper.grantUserRole(userId, plusId);
+        }
     }
 
     /**
