@@ -26,7 +26,20 @@
     <select id="countUserByDepartmentId" resultType="int" parameterType="long">
         SELECT count(*)
         FROM sys_department_user t
-        WHERE t.department_id = #{departmentId}
+        WHERE t.department_id in (
+        SELECT t.id
+        FROM sys_department t
+        WHERE 1=1
+        <![CDATA[
+            AND t.lft>=(
+                    SELECT s.lft
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+            AND t.rgt<=(
+                    SELECT s.rgt
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+        ]]>)
     </select>
 
 </mapper>

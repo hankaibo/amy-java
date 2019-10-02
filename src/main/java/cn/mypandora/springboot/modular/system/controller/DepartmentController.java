@@ -133,7 +133,7 @@ public class DepartmentController {
     public ResponseEntity<Void> deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
         int count = departmentService.countUserById(id);
         if (count > 0) {
-            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门有关联用户，不可以删除。");
+            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以删除。");
         }
         departmentService.deleteDepartment(id);
         return ResponseEntity.ok().build();
