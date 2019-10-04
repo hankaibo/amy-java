@@ -1,7 +1,5 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.base.Result;
-import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
@@ -72,7 +70,7 @@ public class LoginController {
         String username = params.get("username");
         List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
         String roles = String.join(",", roleList);
-        List<String> resourceList = resourceService.selectResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
+        List<String> resourceList = resourceService.listResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
         String resources = String.join(",", resourceList);
         // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
         long refreshPeriodTime = 36000L;

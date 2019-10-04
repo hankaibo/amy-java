@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -84,14 +82,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 删除节点数=(节点右值-节点左值+1)/2
         Department info = departmentMapper.selectByPrimaryKey(department);
         Integer deleteAmount = info.getRgt() - info.getLft() + 1;
+        // 更新此节点之后的相关节点左右值
+        departmentMapper.lftAdd(id, -deleteAmount);
+        departmentMapper.rgtAdd(id, -deleteAmount);
         // 求出要删除的节点所有子孙节点
         List<Department> willDelDepartmentList = departmentMapper.listDescendants(id);
         List<Long> idList = willDelDepartmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         String ids = StringUtils.join(idList, ",");
-        // 更新此节点之后的相关节点左右值
-        departmentMapper.lftAdd(id, -deleteAmount);
-        departmentMapper.rgtAdd(id, -deleteAmount);
         // 批量删除节点及子孙节点
         departmentMapper.deleteByIds(ids);
     }

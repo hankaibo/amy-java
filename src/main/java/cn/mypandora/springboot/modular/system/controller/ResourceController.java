@@ -1,8 +1,7 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.base.Result;
-import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.enums.TypeEnum;
+import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
@@ -12,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -45,11 +46,10 @@ public class ResourceController {
      */
     @ApiOperation(value = "查询资源", notes = "获取整棵资源树。")
     @GetMapping
-    public Result<List<TreeNode>> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
-        List<Resource> resourceList = resourceService.loadFullResource(type);
+    public List<TreeNode> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
+        List<Resource> resourceList = resourceService.listAll(type);
 
-        List<TreeNode> treeNodeList = TreeUtil.lr2Tree(resourceList);
-        return ResultGenerator.success(treeNodeList);
+        return TreeUtil.lr2Tree(resourceList);
     }
 
     /**
@@ -60,49 +60,46 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源详情", notes = "根据资源id查询资源详情。")
     @GetMapping("/{id}")
-    public Result<Resource> listResourceById(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
-        Resource resource = resourceService.findResourceById(id);
+    public Resource listResourceById(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
+        Resource resource = resourceService.getResourceById(id);
+        if (resource == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+        }
         resource.setRgt(null);
         resource.setLft(null);
         resource.setLevel(null);
         resource.setUpdateTime(null);
-        return ResultGenerator.success(resource);
+        return resource;
     }
 
     /**
      * 更新资源。
      *
      * @param resource 资源数据
-     * @return 更新结果
      */
     @ApiOperation(value = "更新资源", notes = "根据资源数据更新资源。")
     @PutMapping("/{id}")
-    public Result updateResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+    public void updateResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
         resourceService.updateResource(resource);
-        return ResultGenerator.success();
     }
 
     /**
      * 删除资源。
      *
      * @param id 资源主键id
-     * @return 删除结果
      */
     @ApiOperation(value = "删除资源", notes = "根据资源Id删除资源。")
     @DeleteMapping("/{id}")
-    public Result deleteResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
-        resourceService.delResource(id);
-        return ResultGenerator.success();
+    public void deleteResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
+        resourceService.deleteResource(id);
     }
 
     /**
      * 添加资源
-     *
-     * @return 添加资源
      */
     @ApiOperation(value = "新建资源", notes = "根据资源数据新建。")
     @PostMapping
-    public Result addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+    public void addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
         // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是空的，level是1。
         if (resource.getParentId() == null) {
             resource.setLft(1);
@@ -111,13 +108,12 @@ public class ResourceController {
             resource.setType(TypeEnum.MENU.getValue());
             resourceService.addResource(resource);
         } else {
-            Resource info = resourceService.findResourceById(resource.getParentId());
+            Resource info = resourceService.getResourceById(resource.getParentId());
             resource.setLft(info.getRgt());
             resource.setRgt(info.getRgt() + 1);
             resource.setLevel(info.getLevel() + 1);
             resourceService.addResource(resource);
         }
-        return ResultGenerator.success();
     }
 
     /**
@@ -128,15 +124,14 @@ public class ResourceController {
      */
     @ApiOperation(value = "查询子资源", notes = "根据主键id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
-    public Result<List> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                             @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type) {
+    public List<TreeNode> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                               @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("id", id);
         map.put("type", type);
-        List<Resource> resourceList = resourceService.getResourceChild(map);
+        List<Resource> resourceList = resourceService.listChildren(map);
 
-        List<TreeNode> treeNodeList = TreeUtil.lr2Node(resourceList);
-        return ResultGenerator.success(treeNodeList);
+        return TreeUtil.lr2Node(resourceList);
     }
 
     /**
@@ -148,18 +143,18 @@ public class ResourceController {
      */
     @ApiOperation(value = "移动资源", notes = "将当前资源上移或下移。")
     @PutMapping("/{id}/location")
-    public Result moveUp(@PathVariable @ApiParam(value = "资源数据", required = true) Long id,
-                         @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
+    public ResponseEntity<Void> moveUp(@PathVariable @ApiParam(value = "资源数据", required = true) Long id,
+                                       @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
         String direction = map.get("direction");
         // 获得同层级节点
-        List<Resource> resourceList = resourceService.getResourceSibling(id);
+        List<Resource> resourceList = resourceService.listSiblings(id);
         // 目标节点id
         Long targetId = getTargetId(resourceList, id, direction);
         if (null == targetId) {
-            return ResultGenerator.failure("当前资源不能移动。");
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
         resourceService.moveResource(id, targetId);
-        return ResultGenerator.success();
+        return ResponseEntity.ok().build();
     }
 
     /**
