@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.UserRoleMapper">
 
-    <insert id="giveUserRole">
+    <insert id="grantUserRole">
         INSERT INTO sys_user_role( user_id, role_id )
         VALUES
         <foreach collection="roleListId" item="roleId" index="index" separator=",">
