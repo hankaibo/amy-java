@@ -35,7 +35,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public Dictionary selectDictionary(Long id) {
+    public Dictionary getDictionary(Long id) {
         Dictionary dictionary = new Dictionary();
         dictionary.setId(id);
         return dictionaryMapper.selectByPrimaryKey(dictionary);
@@ -68,10 +68,10 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public boolean enableDictionary(Long id, Integer status) {
+    public void enableDictionary(Long id, Integer status) {
         Dictionary dictionary = new Dictionary();
         dictionary.setId(id);
         dictionary.setStatus(status);
-        return dictionaryMapper.updateByPrimaryKeySelective(dictionary) > 0;
+        dictionaryMapper.updateByPrimaryKeySelective(dictionary);
     }
 }
