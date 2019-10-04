@@ -22,7 +22,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param type 资源类型
      * @return 整棵树
      */
-    List<Resource> loadFullTree(@Param(value = "type") Integer type);
+    List<Resource> listAll(@Param(value = "type") Integer type);
 
     /**
      * 获取某一层级节点。
@@ -31,7 +31,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @return 指定层级的树
      * TODO SQL未实现
      */
-    List<Resource> loadTreeWithLevel(int level);
+    List<Resource> listByLevel(int level);
 
     /**
      * 获得本节点下面的所有后代节点
@@ -39,7 +39,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param params {id:前操作节点id,type 资源类型}
      * @return 本节点下面的所有后代节点
      */
-    List<Resource> getDescendant(Map params);
+    List<Resource> listDescendants(Map params);
 
     /**
      * 获得本节点的孩子节点
@@ -47,7 +47,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param params {id:前操作节点id,type 资源类型}
      * @return 本节点的孩子节点
      */
-    List<Resource> getChild(Map params);
+    List<Resource> listChildren(Map params);
 
     /**
      * 获得本节点的父节点
@@ -63,7 +63,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param id 当前操作节点id
      * @return 本节点的祖先节点
      */
-    List<Resource> getAncestry(Long id);
+    List<Resource> getAncestries(Long id);
 
     /**
      * 获得本节点的所有兄弟节点
@@ -71,44 +71,31 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param id 当前操作节点id
      * @return 本节点的所有兄弟节点
      */
-    List<Resource> getSiblings(Long id);
+    List<Resource> listSiblings(Long id);
 
     /**
-     * 左节点加2
-     *
-     * @param id 节点id
-     */
-    void lftPlus2(Long id);
-
-    /**
-     * 右节点加2
-     *
-     * @param id 节点id
-     */
-    void rgtPlus2(Long id);
-
-    /**
-     * 父右节点加2
-     *
-     * @param id 节点id
-     */
-    void parentRgtPlus2(Long id);
-
-    /**
-     * 左节点减N
+     * 父右节点加N
      *
      * @param id     节点id
-     * @param amount 大于id左值的节点，左值要减去的数
+     * @param amount 大于id左值的节点，操作的数（正数相当于加，负数相当于减）
      */
-    void lftMinus(@Param("id") Long id, @Param("amount") Integer amount);
+    void parentRgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
 
     /**
-     * 右节点减N
+     * 左节点加N
      *
      * @param id     节点id
-     * @param amount 大于id右值的节点，右值要减去的数
+     * @param amount 大于id左值的节点，操作的数（正数相当于加，负数相当于减）
      */
-    void rgtMinus(@Param("id") Long id, @Param("amount") Integer amount);
+    void lftAdd(@Param("id") Long id, @Param("amount") Integer amount);
+
+    /**
+     * 右节点加N
+     *
+     * @param id     节点id
+     * @param amount 大于id右值的节点，操作的数（正数相当于加，负数相当于减）
+     */
+    void rgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
 
     /**
      * 当前节点集合都加上n
@@ -140,7 +127,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @return 资源
      * @see FilterChainManager L82
      */
-    List<Resource> selectRolePermRules();
+    List<Resource> listRolePermRules();
 
     /**
      * 根据角色id查询其所有资源信息。
@@ -148,7 +135,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param roleId 角色id
      * @return 用户的所有角色
      */
-    List<Resource> selectByRoleId(Long roleId);
+    List<Resource> listByRoleId(Long roleId);
 
     /**
      * 根据用户id查询所拥有的菜单
@@ -156,7 +143,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param userId 用户主键id
      * @return 该用户拥有的菜单
      */
-    List<Resource> selectByUserId(Long userId);
+    List<Resource> listByUserId(Long userId);
 
     /**
      * 根据用户id或名称查询其所有资源信息。
@@ -165,6 +152,6 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param username 用户名称
      * @return 用户的所有资源
      */
-    List<Resource> selectByUserIdOrName(@Param(value = "userId") Long userId, @Param(value = "username") String username);
+    List<Resource> listByUserIdOrName(@Param(value = "userId") Long userId, @Param(value = "username") String username);
 
 }

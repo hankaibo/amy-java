@@ -42,9 +42,11 @@
         ${alias}.update_time
     </sql>
 
-    <select id="loadFullTree" resultMap="ResourceMap" parameterType="int">
+    <select id="listAll" resultMap="ResourceMap" parameterType="int">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         FROM sys_resource t
         WHERE 1=1
         <if test="type != 3">
@@ -53,9 +55,11 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="getDescendant" resultMap="ResourceMap" parameterType="map">
+    <select id="listDescendants" resultMap="ResourceMap" parameterType="map">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         FROM sys_resource t
         WHERE 1=1
         <if test="type != null">
@@ -74,9 +78,11 @@
         ]]>
     </select>
 
-    <select id="getChild" resultMap="ResourceMap" parameterType="map">
+    <select id="listChildren" resultMap="ResourceMap" parameterType="map">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         FROM sys_resource t
         WHERE 1=1
         AND t.type=#{type}
@@ -86,7 +92,9 @@
 
     <select id="getParent" resultMap="ResourceMap" parameterType="long">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         <![CDATA[
             FROM sys_resource t
             WHERE t.id=(
@@ -97,9 +105,11 @@
         ]]>
     </select>
 
-    <select id="getAncestry" resultMap="ResourceMap" parameterType="long">
+    <select id="listAncestries" resultMap="ResourceMap" parameterType="long">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         <![CDATA[
             FROM sys_resource t
             WHERE t.lft<(
@@ -114,9 +124,11 @@
         ]]>
     </select>
 
-    <select id="getSiblings" resultMap="ResourceMap" parameterType="long">
+    <select id="listSiblings" resultMap="ResourceMap" parameterType="long">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         <![CDATA[
         FROM sys_resource t
         WHERE t.parent_id=(
@@ -127,42 +139,26 @@
         ]]>
     </select>
 
-    <update id="lftPlus2" parameterType="long">
-        <![CDATA[
-        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.lft=t.lft + 2
-        WHERE t.lft > f.rgt
-        ]]>
-    </update>
-
-    <update id="rgtPlus2" parameterType="long">
-        <![CDATA[
-        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.rgt=t.rgt + 2
-        WHERE t.rgt > f.rgt
-        ]]>
-    </update>
-
-    <update id="parentRgtPlus2" parameterType="long">
+    <update id="parentRgtAdd" parameterType="long">
         <![CDATA[
         UPDATE sys_resource t
-        SET t.rgt=t.rgt + 2
+        SET t.rgt=t.rgt + #{amount}
         WHERE id = #{id, jdbcType=NUMERIC}
         ]]>
     </update>
 
-    <update id="lftMinus">
+    <update id="lftAdd">
         <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.lft= (t.lft - #{amount})
+        SET t.lft= (t.lft + #{amount})
         WHERE t.lft > f.rgt
         ]]>
     </update>
 
-    <update id="rgtMinus">
+    <update id="rgtAdd">
         <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.rgt= (t.rgt - #{amount})
+        SET t.rgt= (t.rgt + #{amount})
         WHERE t.rgt > f.rgt
         ]]>
     </update>
@@ -203,7 +199,7 @@
         ]]>
     </select>
 
-    <select id="selectRolePermRules" resultMap="rolePermRule">
+    <select id="listRolePermRules" resultMap="rolePermRule">
         SELECT CONCAT(t.uri, "==", UPPER(t.method)) AS url,
         GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
         FROM sys_resource t
@@ -215,9 +211,11 @@
         ORDER BY url DESC
     </select>
 
-    <select id="selectByRoleId" resultMap="ResourceMap" parameterType="long">
+    <select id="listByRoleId" resultMap="ResourceMap" parameterType="long">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         FROM sys_resource t
         INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
         INNER JOIN sys_role role ON rr.role_id = role.id
@@ -225,9 +223,11 @@
         AND role.id = #{id}
     </select>
 
-    <select id="selectByUserId" resultMap="ResourceMap" parameterType="long">
+    <select id="listByUserId" resultMap="ResourceMap" parameterType="long">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="re"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="re"/>
+        </include>
         FROM sys_user u
         JOIN sys_user_role ur ON u.id=ur.user_id
         JOIN sys_role r ON ur.role_id=r.id
@@ -237,9 +237,11 @@
         AND re.type=1
     </select>
 
-    <select id="selectByUserIdOrName" resultMap="ResourceMap">
+    <select id="listByUserIdOrName" resultMap="ResourceMap">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         FROM sys_resource t
         JOIN sys_role_resource rr ON t.id=rr.resource_id
         JOIN sys_role r ON rr.role_id=r.id

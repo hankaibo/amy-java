@@ -14,7 +14,7 @@ public class ResourceServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void selectRolePermRules() {
-        List<RolePermRule> rolePermRuleList = resourceService.selectRolePermRules();
+        List<RolePermRule> rolePermRuleList = resourceService.listRolePermRules();
         System.out.println(rolePermRuleList);
     }
 
@@ -48,7 +48,7 @@ public class ResourceServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void delResource() {
-        resourceService.delResource(132L);
+        resourceService.deleteResource(132L);
     }
 
     @Test

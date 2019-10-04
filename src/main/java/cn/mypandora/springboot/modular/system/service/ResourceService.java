@@ -19,7 +19,7 @@ public interface ResourceService {
      *
      * @return 权限菜单
      */
-    List<RolePermRule> selectRolePermRules();
+    List<RolePermRule> listRolePermRules();
 
     /**
      * 获取所有资源（一次性全部加载，适合数据量少的情况）。
@@ -27,77 +27,77 @@ public interface ResourceService {
      * @param type 资源类型
      * @return 所有资源数据
      */
-    List<Resource> loadFullResource(Integer type);
+    List<Resource> listAll(Integer type);
 
     /**
-     * 获得本资源（节点）下面的所有后代资源（节点）。
+     * 获得本资源下面的所有后代资源。
      *
-     * @param map {id:当前操作资源（节点）id,type:浆糊类型}
+     * @param map {id:当前操作资源id,type:浆糊类型}
      * @return 指定资源下的所有后代资源
      */
-    List<Resource> getResourceDescendant(Map map);
+    List<Resource> listDescendants(Map map);
 
     /**
-     * 获得本资源（节点）的孩子资源（节点）。
+     * 获得本资源的孩子资源。
      *
-     * @param map {id:当前操作资源（节点）id,type:浆糊类型}
+     * @param map {id:当前操作资源id,type:浆糊类型}
      * @return 指定资源下的所有资源
      */
-    List<Resource> getResourceChild(Map map);
+    List<Resource> listChildren(Map map);
 
     /**
-     * 获得本资源（节点）的父资源（节点）
+     * 获得本资源的父资源
      *
-     * @param id 当前操作资源（节点）id
+     * @param id 当前操作资源id
      * @return 本资源的父资源
      */
-    Resource getResourceParent(Long id);
+    Resource getParent(Long id);
 
     /**
-     * 获得本资源（节点）的祖先资源（节点）
+     * 获得本资源的祖先资源
      *
-     * @param id 当前操作资源（节点）id
+     * @param id 当前操作资源id
      * @return 本资源的祖先资源
      */
-    List<Resource> getResourceAncestry(Long id);
+    List<Resource> listAncestries(Long id);
 
     /**
-     * 获得本资源(节点)的所有兄弟资源（节点）
+     * 获得本资源(节点)的所有兄弟资源
      *
-     * @param id 当前操作资源（节点）id
+     * @param id 当前操作资源id
      * @return 本资源的兄弟节点
      */
-    List<Resource> getResourceSibling(Long id);
+    List<Resource> listSiblings(Long id);
 
     /**
-     * 添加孩子资源（节点）
+     * 添加孩子资源
      *
-     * @param resource 子资源（节点）的信息
+     * @param resource 子资源的信息
      */
     void addResource(Resource resource);
 
     /**
-     * 删除资源（节点）
+     * 删除资源
      *
      * @param id 要删除的资源ID
      */
-    void delResource(Long id);
+    void deleteResource(Long id);
 
     /**
-     * 平移某个资源（节点）
+     * 平移某个资源
      *
-     * @param sourceId 源（节点）ID
-     * @param targetId 目标（节点）ID
+     * @param sourceId 源ID
+     * @param targetId 目标ID
      */
     void moveResource(Long sourceId, Long targetId);
 
     /**
      * 查询一个资源。
      *
-     * @param id 当前操作资源（节点）id
+     * @param id 当前操作资源id
      * @return 一个资源
      */
-    Resource findResourceById(Long id);
+    Resource getResourceById(Long id);
 
     /**
      * 更新一个资源。
@@ -112,7 +112,7 @@ public interface ResourceService {
      * @param roleId 角色主键id
      * @return 所有资源数据
      */
-    List<Resource> selectResourceByRoleId(Long roleId);
+    List<Resource> listResourceByRoleId(Long roleId);
 
     /**
      * 根据用户id查询其拥有的资源。
@@ -120,7 +120,7 @@ public interface ResourceService {
      * @param userId 用户id
      * @return 用户菜单
      */
-    List<Resource> selectResourceByUserId(Long userId);
+    List<Resource> listResourceByUserId(Long userId);
 
     /**
      * 根据用户id或者名称查询用户的所有资源。
@@ -129,6 +129,6 @@ public interface ResourceService {
      * @param username 用户名称
      * @return 角色资源
      */
-    List<Resource> selectResourceByUserIdOrName(Long userId, String username);
+    List<Resource> listResourceByUserIdOrName(Long userId, String username);
 
 }

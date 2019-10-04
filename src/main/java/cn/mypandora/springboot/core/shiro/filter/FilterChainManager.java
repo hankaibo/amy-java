@@ -82,7 +82,7 @@ public class FilterChainManager {
         defaultAuth.forEach(auth -> filterChainDefinitionMap.put(auth, "auth"));
         // dynamic 动态url
         if (resourceService != null) {
-            List<RolePermRule> rolePermRules = this.resourceService.selectRolePermRules();
+            List<RolePermRule> rolePermRules = this.resourceService.listRolePermRules();
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {
                     StringBuilder chain = rule.toFilterChain();

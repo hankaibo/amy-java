@@ -2,6 +2,7 @@ package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
+import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,9 +35,9 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<RolePermRule> selectRolePermRules() {
+    public List<RolePermRule> listRolePermRules() {
         List<RolePermRule> rolePermRuleList = new ArrayList<>();
-        List<Resource> resourceList = resourceMapper.selectRolePermRules();
+        List<Resource> resourceList = resourceMapper.listRolePermRules();
         for (Resource resource : resourceList) {
             RolePermRule rolePermRule = new RolePermRule();
             rolePermRule.setUrl(resource.getUri());
@@ -47,47 +48,47 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> loadFullResource(Integer type) {
-        return resourceMapper.loadFullTree(type);
+    public List<Resource> listAll(Integer type) {
+        return resourceMapper.listAll(type);
     }
 
     @Override
-    public List<Resource> getResourceDescendant(Map map) {
-        return resourceMapper.getDescendant(map);
+    public List<Resource> listDescendants(Map map) {
+        return resourceMapper.listDescendants(map);
     }
 
     @Override
-    public List<Resource> getResourceChild(Map map) {
-        return resourceMapper.getChild(map);
+    public List<Resource> listChildren(Map map) {
+        return resourceMapper.listChildren(map);
     }
 
     @Override
-    public Resource getResourceParent(Long id) {
+    public Resource getParent(Long id) {
         return resourceMapper.getParent(id);
     }
 
     @Override
-    public List<Resource> getResourceAncestry(Long id) {
-        return resourceMapper.getAncestry(id);
+    public List<Resource> listAncestries(Long id) {
+        return resourceMapper.getAncestries(id);
     }
 
     @Override
-    public List<Resource> getResourceSibling(Long id) {
-        return resourceMapper.getSiblings(id);
+    public List<Resource> listSiblings(Long id) {
+        return resourceMapper.listSiblings(id);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addResource(Resource resource) {
-        resourceMapper.lftPlus2(resource.getParentId());
-        resourceMapper.rgtPlus2(resource.getParentId());
+        resourceMapper.lftAdd(resource.getParentId(), 2);
+        resourceMapper.rgtAdd(resource.getParentId(), 2);
         resourceMapper.insert(resource);
-        resourceMapper.parentRgtPlus2(resource.getParentId());
+        resourceMapper.parentRgtAdd(resource.getParentId(), 2);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delResource(Long id) {
+    public void deleteResource(Long id) {
         Resource resource = new Resource();
         resource.setId(id);
         // 先求出要删除的节点的所有信息，利用左值与右值计算出要删除的节点数量。
@@ -95,13 +96,13 @@ public class ResourceServiceImpl implements ResourceService {
         Resource info = resourceMapper.selectByPrimaryKey(resource);
         Integer deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此节点之后的相关节点左右值
-        resourceMapper.lftMinus(id, deleteAmount);
-        resourceMapper.rgtMinus(id, deleteAmount);
+        resourceMapper.lftAdd(id, -deleteAmount);
+        resourceMapper.rgtAdd(id, -deleteAmount);
         // 求出要删除的节点所有子孙节点
         Map<String, Number> map = new HashMap<>(2);
         map.put("id", id);
-        List<Resource> willDelResourceList = resourceMapper.getDescendant(map);
-        List<Long> idList = willDelResourceList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        List<Resource> willDelResourceList = resourceMapper.listDescendants(map);
+        List<Long> idList = willDelResourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         String ids = StringUtils.join(idList, ",");
         // 批量删除节点及子孙节点
@@ -142,7 +143,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Resource findResourceById(Long id) {
+    public Resource getResourceById(Long id) {
         Resource resource = new Resource();
         resource.setId(id);
         return resourceMapper.selectByPrimaryKey(resource);
@@ -164,24 +165,24 @@ public class ResourceServiceImpl implements ResourceService {
     private List<Long> getDescendantId(Long id) {
         Map<String, Number> params = new HashMap<>(1);
         params.put("id", id);
-        List<Resource> resourceList = resourceMapper.getDescendant(params);
-        List<Long> idList = resourceList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        List<Resource> resourceList = resourceMapper.listDescendants(params);
+        List<Long> idList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;
     }
 
     @Override
-    public List<Resource> selectResourceByRoleId(Long roleId) {
-        return resourceMapper.selectByRoleId(roleId);
+    public List<Resource> listResourceByRoleId(Long roleId) {
+        return resourceMapper.listByRoleId(roleId);
     }
 
     @Override
-    public List<Resource> selectResourceByUserId(Long userId) {
-        return resourceMapper.selectByUserId(userId);
+    public List<Resource> listResourceByUserId(Long userId) {
+        return resourceMapper.listByUserId(userId);
     }
 
     @Override
-    public List<Resource> selectResourceByUserIdOrName(Long userId, String username) {
-        return resourceMapper.selectByUserIdOrName(userId, username);
+    public List<Resource> listResourceByUserIdOrName(Long userId, String username) {
+        return resourceMapper.listByUserIdOrName(userId, username);
     }
 }

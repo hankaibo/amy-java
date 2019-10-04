@@ -80,7 +80,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         // 根据 username 获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
                         List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
                         String roles = String.join(",", roleList);
-                        List<String> resourceList = resourceService.selectResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
+                        List<String> resourceList = resourceService.listResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
                         String resources = String.join(",", resourceList);
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
