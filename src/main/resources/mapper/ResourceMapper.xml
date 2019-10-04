@@ -74,8 +74,8 @@
                     SELECT s.rgt
                     FROM sys_resource s
                     WHERE s.id=#{id})
-            ORDER BY t.lft ASC
         ]]>
+        ORDER BY t.lft ASC
     </select>
 
     <select id="listChildren" resultMap="ResourceMap" parameterType="map">
@@ -95,14 +95,12 @@
         <include refid="baseColumns">
             <property name="alias" value="t"/>
         </include>
-        <![CDATA[
-            FROM sys_resource t
-            WHERE t.id=(
-                    SELECT s.parent_id
-                    FROM sys_resource s
-                    WHERE s.id=#{id}
-                )
-        ]]>
+        FROM sys_resource t
+        WHERE t.id=(
+        SELECT s.parent_id
+        FROM sys_resource s
+        WHERE s.id=#{id}
+        )
     </select>
 
     <select id="listAncestries" resultMap="ResourceMap" parameterType="long">
@@ -110,9 +108,10 @@
         <include refid="baseColumns">
             <property name="alias" value="t"/>
         </include>
+        FROM sys_resource t
+        WHERE 1 = 1
         <![CDATA[
-            FROM sys_resource t
-            WHERE t.lft<(
+           AND t.lft<(
                     SELECT s.lft
                     FROM sys_resource s
                     WHERE s.id=#{id})
@@ -120,8 +119,8 @@
                     SELECT s.lft
                     FROM sys_resource s
                     WHERE s.id=#{id})
-            ORDER BY t.lft ASC
         ]]>
+        ORDER BY t.lft ASC
     </select>
 
     <select id="listSiblings" resultMap="ResourceMap" parameterType="long">
@@ -129,36 +128,33 @@
         <include refid="baseColumns">
             <property name="alias" value="t"/>
         </include>
-        <![CDATA[
         FROM sys_resource t
-        WHERE t.parent_id=(
-                SELECT parent_id
-                FROM sys_resource
-                WHERE id=#{id})
+        WHERE 1=1
+        AND t.parent_id=(
+        SELECT parent_id
+        FROM sys_resource
+        WHERE id=#{id})
         ORDER BY t.lft ASC
-        ]]>
     </select>
 
-    <update id="parentRgtAdd" parameterType="long">
-        <![CDATA[
+    <update id="parentRgtAdd">
         UPDATE sys_resource t
-        SET t.rgt=t.rgt + #{amount}
+        SET t.rgt=(t.rgt + #{amount})
         WHERE id = #{id, jdbcType=NUMERIC}
-        ]]>
     </update>
 
     <update id="lftAdd">
-        <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft + #{amount})
+        <![CDATA[
         WHERE t.lft > f.rgt
         ]]>
     </update>
 
     <update id="rgtAdd">
-        <![CDATA[
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.rgt= (t.rgt + #{amount})
+        <![CDATA[
         WHERE t.rgt > f.rgt
         ]]>
     </update>
@@ -175,10 +171,10 @@
 
     <select id="isFirstNode" resultType="boolean" parameterType="long">
         SELECT count(*)
-        <![CDATA[
         FROM sys_resource t
         WHERE t.id = #{id}
-          AND t.lft - 1 = (
+        <![CDATA[
+        AND t.lft - 1 = (
             SELECT p.lft
             FROM sys_resource p
             WHERE p.id = t.parent_id
@@ -188,10 +184,10 @@
 
     <select id="isLastNode" resultType="boolean" parameterType="long">
         SELECT count(*)
-        <![CDATA[
         FROM sys_resource t
         WHERE t.id = #{id}
-          AND t.rgt + 1 = (
+        <![CDATA[
+        AND t.rgt + 1 = (
             SELECT p.rgt
             FROM sys_resource p
             WHERE p.id = t.parent_id
