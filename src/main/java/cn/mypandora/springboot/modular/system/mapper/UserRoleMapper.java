@@ -40,7 +40,7 @@ public interface UserRoleMapper extends MyBaseMapper<UserRole> {
      *
      * @param userListId 用户Id
      */
-    void deleteBatchUserAllRole(@Param(value = "userListId") Long[] userListId);
+    void deleteBatchUserAllRole(@Param(value = "userListId") long[] userListId);
 
     /**
      * 删除角色所有用户。
@@ -54,6 +54,6 @@ public interface UserRoleMapper extends MyBaseMapper<UserRole> {
      *
      * @param roleListId 角色Id集合
      */
-    void deleteBatchRoleAllUser(@Param(value = "roleListId") Long[] roleListId);
+    void deleteBatchRoleAllUser(@Param(value = "roleListId") long[] roleListId);
 
 }

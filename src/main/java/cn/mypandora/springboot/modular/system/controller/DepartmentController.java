@@ -42,7 +42,7 @@ public class DepartmentController {
      *
      * @return 获取整个部门树
      */
-    @ApiOperation(value = "查询部门", notes = "获取整棵部门树。")
+    @ApiOperation(value = "部门列表", notes = "获取整棵部门树。")
     @GetMapping
     public List<TreeNode> listDepartment() {
         List<Department> departmentList = departmentService.listAll();
@@ -56,7 +56,7 @@ public class DepartmentController {
      * @param id 主键id
      * @return 某个部门的所有直接子部门
      */
-    @ApiOperation(value = "查询子部门", notes = "根据主键id查询其下的所有直接子部门。")
+    @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
     public List<TreeNode> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id) {
         List<Department> departmentList = departmentService.listChildren(id);
@@ -90,14 +90,15 @@ public class DepartmentController {
      *
      * @return 添加部门
      */
-    @ApiOperation(value = "新建部门", notes = "根据部门数据新建。")
+    @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
     @PostMapping
     public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是0，level是1。
-        if (department.getParentId() == null) {
+        // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是null，level是1。
+        if (department.getParentId() == null || department.getParentId() < 1) {
             department.setLft(1);
             department.setRgt(2);
             department.setLevel(1);
+            department.setParentId(null);
             departmentService.addDepartment(department);
         } else {
             Department info = departmentService.getDepartmentById(department.getParentId());
@@ -115,7 +116,7 @@ public class DepartmentController {
      * @param department 部门数据
      * @return 更新结果
      */
-    @ApiOperation(value = "更新部门", notes = "根据部门数据更新部门。")
+    @ApiOperation(value = "部门更新", notes = "根据部门数据更新部门。")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
         departmentService.updateDepartment(department);
@@ -128,7 +129,7 @@ public class DepartmentController {
      * @param id 部门主键id
      * @return 删除结果
      */
-    @ApiOperation(value = "删除部门", notes = "根据部门Id删除部门。")
+    @ApiOperation(value = "部门删除", notes = "根据部门Id删除一个部门。")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
         int count = departmentService.countUserById(id);
@@ -146,7 +147,7 @@ public class DepartmentController {
      * @param map 移动步数(1：上移，-1：下移）
      * @return ok
      */
-    @ApiOperation(value = "移动部门", notes = "将当前部门上移或下移。")
+    @ApiOperation(value = "部门移动", notes = "将当前部门上移或下移。")
     @PutMapping("/{id}/location")
     public ResponseEntity<Void> move(@PathVariable @ApiParam(value = "部门数据", required = true) Long id,
                                      @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {

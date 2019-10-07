@@ -2,6 +2,7 @@ package cn.mypandora.springboot.core.base;
 
 import tk.mybatis.mapper.common.BaseMapper;
 import tk.mybatis.mapper.common.ConditionMapper;
+import tk.mybatis.mapper.common.ExampleMapper;
 import tk.mybatis.mapper.common.IdsMapper;
 
 /**
@@ -14,5 +15,5 @@ import tk.mybatis.mapper.common.IdsMapper;
  * @see <a href="https://mapperhelper.github.io/all/">Mapper接口</a>
  * @see <a href="https://www.cnblogs.com/mingyue1818/p/3714162.html">多参数传递</a>
  */
-public interface MyBaseMapper<T> extends BaseMapper<T>, ConditionMapper<T>, IdsMapper<T> {
+public interface MyBaseMapper<T> extends BaseMapper<T>, ConditionMapper<T>, IdsMapper<T>, ExampleMapper<T> {
 }

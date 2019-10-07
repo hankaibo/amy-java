@@ -3,12 +3,13 @@
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper">
 
     <insert id="grantRoleResource">
-        INSERT INTO sys_role_resource( role_id, resource_id )
+        INSERT INTO sys_role_resource( role_id, resource_id, create_time )
         VALUES
         <foreach collection="resourceListId" item="resourceId" index="index" separator=",">
             (
             #{roleId},
-            #{resourceId}
+            #{resourceId},
+            now()
             )
         </foreach>
     </insert>

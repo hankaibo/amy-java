@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * RoleServiceImpl
@@ -78,7 +77,7 @@ public class RoleServiceImpl implements RoleService {
     public void deleteBatchRole(String ids) {
         roleMapper.deleteByIds(ids);
 
-        Long[] idList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()).toArray(new Long[]{});
+        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
         roleResourceMapper.deleteBatchRoleAllResource(idList);
         userRoleMapper.deleteBatchRoleAllUser(idList);
     }

@@ -6,7 +6,6 @@ import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
-import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -39,14 +38,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1")
 public class LoginController {
 
-    private UserService userService;
     private RoleService roleService;
     private ResourceService resourceService;
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    public LoginController(UserService userService, RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
-        this.userService = userService;
+    public LoginController(RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
         this.roleService = roleService;
         this.resourceService = resourceService;
         this.redisTemplate = redisTemplate;

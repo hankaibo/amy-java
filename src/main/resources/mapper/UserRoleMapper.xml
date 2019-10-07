@@ -3,12 +3,13 @@
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.UserRoleMapper">
 
     <insert id="grantUserRole">
-        INSERT INTO sys_user_role( user_id, role_id )
+        INSERT INTO sys_user_role( user_id, role_id, create_time )
         VALUES
         <foreach collection="roleListId" item="roleId" index="index" separator=",">
             (
             #{userId},
-            #{roleId}
+            #{roleId},
+            now()
             )
         </foreach>
     </insert>

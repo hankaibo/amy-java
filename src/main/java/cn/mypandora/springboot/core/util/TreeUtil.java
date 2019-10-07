@@ -54,8 +54,7 @@ public class TreeUtil {
         List<TreeNode> result = new ArrayList<>();
         List<TreeNode> treeNodeList = lr2Node(resourceList);
         for (TreeNode treeNode : treeNodeList) {
-            // 因为设置了数据库主键不能为空，所以这里用0代替null进行判断。
-            if (treeNode.getParentId() == 0) {
+            if (treeNode.getParentId() == null) {
                 result.add(findChildren(treeNode, treeNodeList));
             }
         }
@@ -105,7 +104,7 @@ public class TreeUtil {
         return treeNodeList;
     }
 
-    public static TreeNode findChildren(TreeNode treeNode, List<TreeNode> treeNodeList) {
+    private static TreeNode findChildren(TreeNode treeNode, List<TreeNode> treeNodeList) {
         for (TreeNode it : treeNodeList) {
             if (treeNode.getId().equals(it.getParentId())) {
                 if (treeNode.getChildren() == null) {

@@ -1,16 +1,12 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
-import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
 import cn.mypandora.springboot.core.util.RequestResponseUtil;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletRequest;
@@ -26,20 +22,13 @@ import java.util.Map;
 @Slf4j
 public class PasswordFilter extends AccessControlFilter {
 
-    private StringRedisTemplate redisTemplate;
-
-    @Autowired
-    public PasswordFilter(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
-
     /**
      * 表示是否允许访问；mappedValue就是[urls]配置中拦截器参数部分，如果允许访问返回true，否则false；
      *
-     * @param request
-     * @param response
-     * @param mappedValue
-     * @return
+     * @param request     HttpServletRequest
+     * @param response    HttpServletResponse
+     * @param mappedValue map
+     * @return boolean
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -52,10 +41,10 @@ public class PasswordFilter extends AccessControlFilter {
     /**
      * 表示当访问拒绝时是否已经处理了；如果返回true表示需要继续处理；如果返回false表示该拦截器实例已经处理了，将直接返回即可。
      *
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
+     * @param request  request
+     * @param response response
+     * @return boolean
+     * @throws Exception 认证失败异常
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
@@ -64,7 +53,7 @@ public class PasswordFilter extends AccessControlFilter {
             authenticationToken = createPasswordToken(request);
         } catch (Exception e) {
             // response 告知无效请求
-            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.BAD_REQUEST.value(),HttpStatus.BAD_REQUEST.getReasonPhrase())), response);
+            RequestResponseUtil.responseWrite(HttpStatus.BAD_REQUEST.value(), "参数错误", response);
             return false;
         }
 
@@ -76,12 +65,12 @@ public class PasswordFilter extends AccessControlFilter {
         } catch (AuthenticationException e) {
             log.warn(authenticationToken.getPrincipal() + "::" + e.getMessage());
             // 返回response告诉客户端认证失败
-            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(),HttpStatus.UNAUTHORIZED.getReasonPhrase())), response);
+            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), "用户名/密码错误", response);
             return false;
         } catch (Exception e) {
             log.error(authenticationToken.getPrincipal() + "::认证异常::" + e.getMessage(), e);
             // 返回response告诉客户端认证失败
-            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(),HttpStatus.UNAUTHORIZED.getReasonPhrase())), response);
+            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), "用户名/密码错误", response);
             return false;
         }
     }
