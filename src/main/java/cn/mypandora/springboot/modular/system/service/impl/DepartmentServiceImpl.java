@@ -81,7 +81,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 先求出要删除的节点的所有信息，利用左值与右值计算出要删除的节点数量。
         // 删除节点数=(节点右值-节点左值+1)/2
         Department info = departmentMapper.selectByPrimaryKey(department);
-        Integer deleteAmount = info.getRgt() - info.getLft() + 1;
+        int deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此节点之后的相关节点左右值
         departmentMapper.lftAdd(id, -deleteAmount);
         departmentMapper.rgtAdd(id, -deleteAmount);
@@ -115,11 +115,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         // 确定方向，目标大于源：下称；反之：上移。
         if (targetInfo.getRgt() > sourceInfo.getRgt()) {
-            targetAmount *= 1;
             sourceAmount *= -1;
         } else {
             targetAmount *= -1;
-            sourceAmount *= 1;
         }
         // 源节点及子孙节点左右值 targetAmount
         departmentMapper.selfAndDescendant(sourceIdList, targetAmount);

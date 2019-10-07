@@ -135,6 +135,13 @@ public class RequestResponseUtil {
         }
     }
 
+    /**
+     * 直接输出返回。
+     *
+     * @param code     状态码
+     * @param message  信息
+     * @param response response
+     */
     public static void responseWrite(int code, String message, ServletResponse response) {
         HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
         try {

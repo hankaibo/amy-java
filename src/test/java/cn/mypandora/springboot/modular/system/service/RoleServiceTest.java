@@ -23,7 +23,7 @@ public class RoleServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void testDeleteRole() {
-        roleService.deleteRole(23L);
+        roleService.deleteRole(47L);
     }
 
     public void testDeleteBatchRole() {

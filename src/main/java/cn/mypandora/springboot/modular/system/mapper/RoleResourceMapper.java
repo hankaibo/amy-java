@@ -41,7 +41,7 @@ public interface RoleResourceMapper extends MyBaseMapper<RoleResource> {
      * @param roleListId 角色Id
      * @see <a href="https://chenzhou123520.iteye.com/blog/1921284">mybatis foreach参数问题</a>
      */
-    void deleteBatchRoleAllResource(@Param(value = "roleListId") Long[] roleListId);
+    void deleteBatchRoleAllResource(@Param(value = "roleListId") long[] roleListId);
 
     /**
      * 删除资源所有的角色。
@@ -55,5 +55,5 @@ public interface RoleResourceMapper extends MyBaseMapper<RoleResource> {
      *
      * @param resourceListId 资源Id集合
      */
-    void deleteBatchResourceAllRole(@Param(value = "resourceListId") Long[] resourceListId);
+    void deleteBatchResourceAllRole(@Param(value = "resourceListId") long[] resourceListId);
 }

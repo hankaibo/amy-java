@@ -15,9 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * UserServiceImpl
@@ -91,7 +90,7 @@ public class UserServiceImpl implements UserService {
     public void deleteBatchUser(String ids) {
         userMapper.deleteByIds(ids);
 
-        Long[] idList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()).toArray(new Long[]{});
+        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
         userRoleMapper.deleteBatchUserAllRole(idList);
         departmentUserMapper.deleteBatchByUserIds(idList);
     }

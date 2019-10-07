@@ -29,7 +29,6 @@ public class Dictionary extends BaseEntity {
      * 父级id
      */
     @ApiModelProperty(value = "字典父级id")
-    @PositiveOrZero
     private Long parentId;
 
     /**

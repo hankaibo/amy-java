@@ -54,7 +54,7 @@ public class FilterChainManager {
     public Map<String, Filter> initFilters() {
         Map<String, Filter> filters = new LinkedHashMap<>();
         // 配置登录过滤器
-        PasswordFilter passwordFilter = new PasswordFilter(redisTemplate);
+        PasswordFilter passwordFilter = new PasswordFilter();
         filters.put("auth", passwordFilter);
 
         // 配置token过滤器

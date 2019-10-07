@@ -48,7 +48,7 @@ public class ResourceServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void delResource() {
-        resourceService.deleteResource(132L);
+        resourceService.deleteResource(47L);
     }
 
     @Test
@@ -73,5 +73,50 @@ public class ResourceServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void selectResourceByUserIdOrName() {
+    }
+
+    public void testListRolePermRules() {
+    }
+
+    public void testListAll() {
+    }
+
+    public void testListDescendants() {
+    }
+
+    public void testListChildren() {
+    }
+
+    public void testGetParent() {
+    }
+
+    public void testListAncestries() {
+    }
+
+    public void testListSiblings() {
+    }
+
+    public void testTestAddResource() {
+    }
+
+    public void testDeleteResource() {
+    }
+
+    public void testTestMoveResource() {
+    }
+
+    public void testGetResourceById() {
+    }
+
+    public void testTestUpdateResource() {
+    }
+
+    public void testListResourceByRoleId() {
+    }
+
+    public void testListResourceByUserId() {
+    }
+
+    public void testListResourceByUserIdOrName() {
     }
 }

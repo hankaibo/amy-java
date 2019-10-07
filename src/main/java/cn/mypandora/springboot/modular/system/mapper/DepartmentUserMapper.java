@@ -32,7 +32,7 @@ public interface DepartmentUserMapper extends MyBaseMapper<DepartmentUser> {
      *
      * @param userListId 用户Id集合
      */
-    void deleteBatchByUserIds(@Param(value = "userListId") Long[] userListId);
+    void deleteBatchByUserIds(@Param(value = "userListId") long[] userListId);
 
     /**
      * 查询某部门的用户总数。

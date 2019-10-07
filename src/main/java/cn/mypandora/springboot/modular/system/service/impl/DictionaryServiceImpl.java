@@ -7,8 +7,10 @@ import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,7 +32,15 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     public PageInfo<Dictionary> pageDictionary(int pageNum, int pageSize, Dictionary dictionary) {
         PageHelper.startPage(pageNum, pageSize);
-        List<Dictionary> dictionaryList = dictionaryMapper.select(dictionary);
+        // 使用通用 Mapper Example 用法，亦可用传统的 xml 配置文件。
+        Example example = new Example(Dictionary.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (dictionary.getParentId() == null) {
+            criteria.andIsNull("parentId");
+        } else {
+            criteria.andEqualTo("parentId", dictionary.getParentId());
+        }
+        List<Dictionary> dictionaryList = dictionaryMapper.selectByExample(example);
         return new PageInfo<>(dictionaryList);
     }
 
@@ -50,14 +60,13 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void deleteDictionary(Long id) {
-        Dictionary dictionary = new Dictionary();
-        dictionary.setId(id);
-        dictionaryMapper.delete(dictionary);
+        dictionaryMapper.deleteDictionaryById(id);
     }
 
     @Override
     public void deleteBatchDictionary(String ids) {
-        dictionaryMapper.deleteByIds(ids);
+        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
+        dictionaryMapper.deleteDictionaryByListId(idList);
     }
 
     @Override

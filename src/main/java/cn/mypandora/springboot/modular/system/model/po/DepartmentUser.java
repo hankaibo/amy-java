@@ -15,7 +15,7 @@ import javax.validation.constraints.PositiveOrZero;
  * @date 2019/9/25
  */
 @Data
-@Table(name="sys_department_user")
+@Table(name = "sys_department_user")
 @NameStyle(Style.camelhumpAndLowercase)
 public class DepartmentUser extends BaseEntity {
 

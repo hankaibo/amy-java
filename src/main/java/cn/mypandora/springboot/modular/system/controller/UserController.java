@@ -53,7 +53,7 @@ public class UserController {
      * @param request request
      * @return 用户信息，用户权限对应的菜单信息
      */
-    @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息返回。")
+    @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息。")
     @GetMapping("/info")
     public Map<String, Object> getUserAndMenu(HttpServletRequest request) {
         String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
@@ -76,7 +76,7 @@ public class UserController {
      * @param pageSize 每页条数
      * @return 分页数据
      */
-    @ApiOperation(value = "用户列表", notes = "查询用户列表")
+    @ApiOperation(value = "用户列表", notes = "分页查询用户列表。")
     @GetMapping
     public PageInfo<User> pageUser(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
                                    @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
@@ -133,7 +133,7 @@ public class UserController {
      *
      * @param user 用户数据
      */
-    @ApiOperation(value = "新建用户", notes = "根据用户数据新建用户。")
+    @ApiOperation(value = "用户新建", notes = "根据数据新建用户。")
     @PostMapping
     public void addUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         // 管理员新建用户时，如果密码为空，则统一使用默认密码。
@@ -149,7 +149,7 @@ public class UserController {
      *
      * @param id 用户主键id
      */
-    @ApiOperation(value = "删除用户", notes = "根据用户Id删除用户。")
+    @ApiOperation(value = "用户删除", notes = "根据用户Id删除用户。")
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         userService.deleteUser(id);
@@ -160,10 +160,10 @@ public class UserController {
      *
      * @param ids 用户id数组
      */
-    @ApiOperation(value = "删除用户(批量)", notes = "根据用户Id批量删除用户。")
+    @ApiOperation(value = "用户删除(批量)", notes = "根据用户Id批量删除用户。")
     @DeleteMapping
-    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
-        userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ","));
+    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, long[]> ids) {
+        userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ','));
     }
 
     /**
@@ -171,7 +171,7 @@ public class UserController {
      *
      * @param user 用户数据
      */
-    @ApiOperation(value = "更新用户", notes = "根据用户数据更新用户。")
+    @ApiOperation(value = "用户更新", notes = "根据用户数据更新用户。")
     @PutMapping("/{id}")
     public void updateUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         userService.updateUser(user);
@@ -183,10 +183,10 @@ public class UserController {
      * @param id     用户主键id
      * @param status 启用:1，禁用:0
      */
-    @ApiOperation(value = "启用|禁用用户", notes = "根据用户id启用或禁用用户。")
+    @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
     @PutMapping("/{id}/status")
     public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                              @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
+                           @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
         userService.enableUser(id, s);
     }
@@ -197,7 +197,7 @@ public class UserController {
      * @param id 角色主键id
      * @return 用户所包含的角色
      */
-    @ApiOperation(value = "查询用户的所有角色")
+    @ApiOperation(value = "查询用户的所有角色", notes = "根据用户id查询其包含的所有角色。")
     @GetMapping("/{id}/roles")
     public Map<String, List<Role>> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         List<Role> roleList = roleService.listRole();
@@ -215,7 +215,7 @@ public class UserController {
      * @param id     用户id
      * @param params 增加和删除的角色对象
      */
-    @ApiOperation(value = "赋予用户一些角色。")
+    @ApiOperation(value = "赋予用户一些角色。", notes = "根据用户id赋予其一些角色。")
     @PostMapping("/{id}/roles")
     public void grantUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
                               @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) Map<String, List<Long>> params) {

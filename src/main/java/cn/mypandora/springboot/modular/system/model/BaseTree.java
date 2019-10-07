@@ -7,7 +7,6 @@ import tk.mybatis.mapper.code.Style;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 /**
  * BaseTree

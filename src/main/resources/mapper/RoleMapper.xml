@@ -23,7 +23,9 @@
 
     <select id="selectByUserIdOrName" resultMap="RoleMap">
         SELECT
-        <include refid="baseColumns"><property name="alias" value="t"/></include>
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
         FROM sys_role t
         JOIN sys_user_role ur ON t.id = ur.role_id
         JOIN sys_user u ON ur.user_id = u.id

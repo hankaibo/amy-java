@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `sys_department` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='系统部门表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统部门表。';
 
 -- Data exporting was unselected.
 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `sys_department_user` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='系统部门用户表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统部门用户表。';
 
 -- Data exporting was unselected.
 
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `sys_dictionary` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统字典表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统字典表。';
 
 -- Data exporting was unselected.
 
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `sys_resource` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8 COMMENT='系统资源表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统资源表。';
 
 -- Data exporting was unselected.
 
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `sys_role` (
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COMMENT='系统角色表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统角色表。';
 
 -- Data exporting was unselected.
 
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `sys_role_resource` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1014 DEFAULT CHARSET=utf8 COMMENT='系统角色权限表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统角色权限表。';
 
 -- Data exporting was unselected.
 
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COMMENT='系统用户表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统用户表。';
 
 -- Data exporting was unselected.
 
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `sys_user_role` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='系统用户角色表。';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统用户角色表。';
 
 -- Data exporting was unselected.
 
