@@ -70,7 +70,7 @@ INSERT INTO `sys_resource` (`id`, `parent_id`, `name`, `lft`, `rgt`, `level`, `c
 	(29, 6, '角色删除（批量）', 48, 49, 4, 'system.role.batchDelete', 1, '/api/v1/roles', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(30, 6, '角色详情', 50, 51, 4, 'system.role.detail', 1, '/api/v1/roles/*', 2, 'GET', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(31, 6, '角色更新', 52, 53, 4, 'system.role.update', 1, '/api/v1/roles/*', 2, 'PUT', NULL, NULL, '2019-10-07 01:30:52', NULL),
-	(32, 6, '角色删除', 54, 55, 4, 'system.role.detele', 1, '/api/v1/roles/*', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', NULL),
+	(32, 6, '角色删除', 54, 55, 4, 'system.role.delete', 1, '/api/v1/roles/*', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(33, 6, '角色所有资源', 56, 57, 4, 'system.role.resources', 1, '/api/v1/roles/*/resources', 2, 'GET', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(34, 6, '赋予角色资源', 58, 59, 4, 'system.role.grant', 1, '/api/v1/roles/*/resources', 2, 'POST', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(35, 6, '角色状态', 60, 61, 4, 'system.role.status', 1, '/api/v1/roles/*/status', 2, 'PUT', NULL, NULL, '2019-10-07 01:30:52', NULL),
@@ -93,7 +93,7 @@ INSERT INTO `sys_resource` (`id`, `parent_id`, `name`, `lft`, `rgt`, `level`, `c
 	(52, 9, '字典删除（批量）', 100, 101, 4, 'system.dictionary.batchDelete', 1, '/api/v1/dictionaries', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(53, 9, '字典详情', 102, 103, 4, 'system.dictionary.detail', 1, '/api/v1/dictionaries/*', 2, 'GET', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(54, 9, '字典更新', 104, 105, 4, 'system.dictionary.update', 1, '/api/v1/dictionaries/*', 2, 'PUT', NULL, NULL, '2019-10-07 01:30:52', NULL),
-	(55, 9, '字典删除', 106, 107, 4, 'system.dictionary.detele', 1, '/api/v1/dictionaries/*', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', NULL),
+	(55, 9, '字典删除', 106, 107, 4, 'system.dictionary.delete', 1, '/api/v1/dictionaries/*', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', NULL),
 	(56, 9, '字典状态', 108, 109, 4, 'system.dictionary.status', 1, '/api/v1/dictionaries/*/status', 2, 'PUT', NULL, NULL, '2019-10-07 01:30:52', NULL);
 /*!40000 ALTER TABLE `sys_resource` ENABLE KEYS */;
 
