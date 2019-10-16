@@ -17,58 +17,28 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     /**
      * 获取整棵树（一次性全部加载，适合数据量少的情况）
      *
+     * @param status 状态，1启用；0禁用
      * @return 整棵树
      */
-    List<Department> listAll();
-
-    /**
-     * 获取某一层级节点。
-     *
-     * @param level 节点层级
-     * @return 指定层级的树
-     * TODO SQL未实现
-     */
-    List<Department> listByLevel(int level);
+    List<Department> listAll(Integer status);
 
     /**
      * 获得本节点下面的所有后代节点
      *
-     * @param id 当前操作节点id
+     * @param id     当前操作节点id
+     * @param status 状态，1启用；0禁用
      * @return 本节点下面的所有后代节点
      */
-    List<Department> listDescendants(Long id);
+    List<Department> listDescendants(@Param("id") Long id, @Param("status") Integer status);
 
     /**
      * 获得本节点的孩子节点
      *
-     * @param id 当前操作节点id
+     * @param id     当前操作节点id
+     * @param status 状态，1启用；0禁用
      * @return 本节点的孩子节点
      */
-    List<Department> listChildren(Long id);
-
-    /**
-     * 获得本节点的父节点
-     *
-     * @param id 当前操作节点id
-     * @return 本节点的父节点
-     */
-    Department getParent(Long id);
-
-    /**
-     * 获得本节点的祖先节点
-     *
-     * @param id 当前操作节点id
-     * @return 本节点的祖先节点
-     */
-    List<Department> listAncestries(Long id);
-
-    /**
-     * 获得本节点的所有兄弟节点
-     *
-     * @param id 当前操作节点id
-     * @return 本节点的所有兄弟节点
-     */
-    List<Department> listSiblings(Long id);
+    List<Department> listChildren(@Param("id") Long id, @Param("status") Integer status);
 
     /**
      * 父右节点加N
@@ -103,19 +73,11 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     void selfAndDescendant(@Param("idList") List<Long> idList, @Param("amount") Integer amount);
 
     /**
-     * 判断是否是第一个节点
+     * 启用禁用节点状态
      *
-     * @param id 节点id
-     * @return 是第一个节点，返回真；反之，则假。
+     * @param idList 节点id集合
+     * @param status 状态，1开启；0禁用
      */
-    boolean isFirstNode(Long id);
-
-    /**
-     * 判断是否是最后一个节点
-     *
-     * @param id 节点id
-     * @return 是最后一个节点，返回真；反之，则假。
-     */
-    boolean isLastNode(Long id);
+    void enableDescendants(@Param("idList") List<Long> idList, @Param("status") Integer status);
 
 }

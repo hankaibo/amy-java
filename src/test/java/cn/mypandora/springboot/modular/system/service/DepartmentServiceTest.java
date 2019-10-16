@@ -17,37 +17,13 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void testListAll() {
-        List<Department> departmentList = departmentService.listAll();
+        List<Department> departmentList = departmentService.listAll(null);
         assertEquals(departmentList.size(), 4);
     }
 
     @Test
-    public void testListDescendants() {
-        List<Department> departmentList = departmentService.listDescendants(2L);
-        assertEquals(departmentList.size(), 3);
-    }
-
-    @Test
     public void testListChildren() {
-        List<Department> departmentList = departmentService.listChildren(2L);
-        assertEquals(departmentList.size(), 2);
-    }
-
-    @Test
-    public void testGetParent() {
-        Department department = departmentService.getParent(2L);
-        assertNull(department);
-    }
-
-    @Test
-    public void testListAncestries() {
-        List<Department> departmentList = departmentService.listAncestries(54L);
-        assertEquals(departmentList.size(), 2L);
-    }
-
-    @Test
-    public void testListSiblings() {
-        List<Department> departmentList = departmentService.listSiblings(31L);
+        List<Department> departmentList = departmentService.listChildren(2L, null);
         assertEquals(departmentList.size(), 2);
     }
 
@@ -69,16 +45,16 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
     @Test
     public void testDeleteDepartment() {
         departmentService.deleteDepartment(56L);
-        int count = departmentService.listAll().size();
+        int count = departmentService.listAll(null).size();
         assertEquals(count, 0);
     }
 
     @Test
     public void testMoveDepartment() {
-        List<Department> departmentListBefore = departmentService.listAll();
+        List<Department> departmentListBefore = departmentService.listAll(null);
         System.out.println(departmentListBefore);
         departmentService.moveDepartment(31L, 53L);
-        List<Department> departmentListAfter = departmentService.listAll();
+        List<Department> departmentListAfter = departmentService.listAll(null);
         System.out.println(departmentListAfter);
 
     }
@@ -101,8 +77,18 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
     }
 
     @Test
+    public void testEnableDepartment() {
+    }
+
+    @Test
     public void testCountUserById() {
         int count = departmentService.countUserById(2L);
         assertEquals(count, 4);
     }
+
+    @Test
+    public void testIsExistParentId() {
+    }
+
+
 }

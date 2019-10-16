@@ -15,7 +15,6 @@ myspringboot
 ├── sql -- sql脚本目录 
 ├── src/main/java/cn.mypandora.springboot 
 |   ├── config -- 通用配置  
-|   |    ├── druid -- 连接池配置文件  
 |   |    ├── shiro -- 权限框架配置文件 
 |   |    └── swagger -- 接口文档配置文件   
 |   ├── core -- 通用核心代码  
@@ -47,7 +46,6 @@ myspringboot
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.0.1  
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
 [x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.12 
-[x] | Druid(druid-spring-boot-starter) | 1.1.16  
 [x] | Shiro | 1.4.0 
 [x] | jjwt | 0.10.7
 [x] | jBCrypt | 0.4.1
