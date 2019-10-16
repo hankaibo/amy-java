@@ -16,14 +16,15 @@ spring:
     active: @active.profile@
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
+    type: com.zaxxer.hikari.HikariDataSource
   jackson:
     default-property-inclusion: non_null
 ###############################################################################
 ## mybatis
 mybatis:
   type-aliases-package: cn.mypandora.springboot.modular.system.model.po
-  mapper-locations: classpath:mapper/**/*.xml
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/**/*.xml
 ###############################################################################
 ## mapper
 mapper:

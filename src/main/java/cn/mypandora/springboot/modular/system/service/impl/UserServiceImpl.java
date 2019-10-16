@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addUser(User user) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         user.setCreateTime(now);
         passwordHelper(user);
 
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUser(User user) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         user.setUpdateTime(now);
 
         userMapper.updateByPrimaryKeySelective(user);

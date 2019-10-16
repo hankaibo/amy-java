@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void addRole(Role role) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         role.setCreateTime(now);
         roleMapper.insert(role);
     }
@@ -84,7 +85,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void updateRole(Role role) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         role.setUpdateTime(now);
         roleMapper.updateByPrimaryKeySelective(role);
     }

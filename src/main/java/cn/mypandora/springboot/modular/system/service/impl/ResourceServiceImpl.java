@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +81,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addResource(Resource resource) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         resource.setCreateTime(now);
         resourceMapper.lftAdd(resource.getParentId(), 2);
         resourceMapper.rgtAdd(resource.getParentId(), 2);
@@ -151,7 +152,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public void updateResource(Resource resource) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         resource.setUpdateTime(now);
         resourceMapper.updateByPrimaryKeySelective(resource);
     }

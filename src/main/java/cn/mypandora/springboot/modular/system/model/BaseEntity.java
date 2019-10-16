@@ -10,7 +10,7 @@ import tk.mybatis.mapper.code.Style;
 import javax.persistence.Id;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * BaseEntity
@@ -37,12 +37,12 @@ public abstract class BaseEntity implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 }

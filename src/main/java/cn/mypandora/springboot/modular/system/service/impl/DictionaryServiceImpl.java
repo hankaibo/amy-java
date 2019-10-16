@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void addDictionary(Dictionary dictionary) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         dictionary.setCreateTime(now);
         dictionaryMapper.insert(dictionary);
     }
@@ -71,7 +72,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void updateDictionary(Dictionary dictionary) {
-        Date now = new Date(System.currentTimeMillis());
+        LocalDateTime now=LocalDateTime.now();
         dictionary.setUpdateTime(now);
         dictionaryMapper.updateByPrimaryKeySelective(dictionary);
     }

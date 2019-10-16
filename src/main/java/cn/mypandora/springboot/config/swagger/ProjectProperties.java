@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 /**
  * ProjectProperties
  * <p>
+ * 方法有三种，如下：
+ * 1. @ConfigurationProperties + @Component 注解到bean定义类上
+ * 2. @ConfigurationProperties + @Bean注解在配置类的bean定义方法上
+ * 3. @ConfigurationProperties注解到普通类然后通过@EnableConfigurationProperties定义为bean
+ *
+ * <p>
  * 读取配置文件(application*.xml)中的属性值。
  * 注：
  * 1. @Component 将该类作为Bean注入Ioc容器；
@@ -14,7 +20,8 @@ import org.springframework.stereotype.Component;
  *
  * @author hankaibo
  * @date 2019/6/17
- * @see <a href="../druid/DataSourceProperties.java" />
+ * @see <a href="https://blog.csdn.net/andy_zhang2007/article/details/78761651" />
+ * @see <a href="https://www.cnblogs.com/duanxz/p/7493276.html#4261534" />
  */
 @Data
 @Component
