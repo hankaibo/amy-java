@@ -24,7 +24,7 @@ import java.util.List;
  * @author hankaibo
  * @date 2019/6/14
  */
-@Service("UserService")
+@Service
 public class UserServiceImpl implements UserService {
 
     private UserMapper userMapper;
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addUser(User user) {
-        LocalDateTime now=LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         user.setCreateTime(now);
         passwordHelper(user);
 
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUser(User user) {
-        LocalDateTime now=LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         user.setUpdateTime(now);
 
         userMapper.updateByPrimaryKeySelective(user);
@@ -118,11 +118,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void grantUserRole(Long userId, long[] plusId, long[] minusId) {
         // 删除角色
-        if(minusId.length>0){
+        if (minusId.length > 0) {
             userRoleMapper.deleteUserSomeRole(userId, minusId);
         }
         // 添加新的角色
-        if(plusId.length>0){
+        if (plusId.length > 0) {
             userRoleMapper.grantUserRole(userId, plusId);
         }
     }

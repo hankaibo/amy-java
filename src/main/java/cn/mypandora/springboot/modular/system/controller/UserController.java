@@ -84,9 +84,8 @@ public class UserController {
                                    @RequestParam(value = "phone", required = false) @ApiParam(value = "电话") String phone,
                                    @RequestParam(value = "mobile", required = false) @ApiParam(value = "手机") String mobile,
                                    @RequestParam(value = "sex", required = false) @ApiParam(value = "性别") Byte sex,
-                                   @RequestParam(value = "status", required = false) @ApiParam(value = "性别") Integer status,
-                                   @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId
-    ) {
+                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+                                   @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId) {
         User user = new User();
         if (StringUtils.isNotBlank(username)) {
             user.setUsername(username);

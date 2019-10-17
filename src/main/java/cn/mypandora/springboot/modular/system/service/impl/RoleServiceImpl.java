@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.List;
  * @author hankaibo
  * @date 2019/1/12
  */
-@Service("RoleService")
+@Service
 public class RoleServiceImpl implements RoleService {
 
     private RoleMapper roleMapper;
@@ -58,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void addRole(Role role) {
-        LocalDateTime now=LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         role.setCreateTime(now);
         roleMapper.insert(role);
     }
@@ -85,7 +84,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void updateRole(Role role) {
-        LocalDateTime now=LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         role.setUpdateTime(now);
         roleMapper.updateByPrimaryKeySelective(role);
     }
@@ -95,6 +94,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = new Role();
         role.setId(id);
         role.setStatus(status);
+
         roleMapper.updateByPrimaryKeySelective(role);
     }
 
