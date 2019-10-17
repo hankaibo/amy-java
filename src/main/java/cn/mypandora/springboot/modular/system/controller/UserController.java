@@ -162,7 +162,7 @@ public class UserController {
      */
     @ApiOperation(value = "用户删除(批量)", notes = "根据用户Id批量删除用户。")
     @DeleteMapping
-    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, long[]> ids) {
+    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
         userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ','));
     }
 
@@ -184,7 +184,7 @@ public class UserController {
      * @param status 启用:1，禁用:0
      */
     @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}")
     public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
                            @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
@@ -222,9 +222,9 @@ public class UserController {
 
         List<Long> plusRole = params.get("plusRole");
         List<Long> minusRole = params.get("minusRole");
-        long[] a = plusRole.stream().distinct().mapToLong(it -> it).toArray();
-        long[] b = minusRole.stream().distinct().mapToLong(it -> it).toArray();
-        userService.grantUserRole(id, a, b);
+        long[] plusId = plusRole.stream().distinct().mapToLong(it -> it).toArray();
+        long[] minusId = minusRole.stream().distinct().mapToLong(it -> it).toArray();
+        userService.grantUserRole(id, plusId, minusId);
     }
 
 }
