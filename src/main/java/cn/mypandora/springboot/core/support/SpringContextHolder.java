@@ -15,11 +15,6 @@ import org.springframework.stereotype.Component;
 public class SpringContextHolder implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        set(applicationContext);
-    }
-
     private static void set(ApplicationContext applicationContext) {
         SpringContextHolder.applicationContext = applicationContext;
     }
@@ -29,6 +24,11 @@ public class SpringContextHolder implements ApplicationContextAware {
         return applicationContext;
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        set(applicationContext);
+    }
+
     public static <T> T getBean(String beanName) {
         assertApplicationContext();
         return (T) applicationContext.getBean(beanName);
@@ -36,7 +36,7 @@ public class SpringContextHolder implements ApplicationContextAware {
 
     public static <T> T getBean(Class<T> clazz) {
         assertApplicationContext();
-        return (T) applicationContext.getBean(clazz);
+        return applicationContext.getBean(clazz);
     }
 
     private static void assertApplicationContext() {

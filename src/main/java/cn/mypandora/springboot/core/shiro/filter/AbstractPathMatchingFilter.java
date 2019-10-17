@@ -31,13 +31,13 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
     @Override
     protected boolean pathsMatch(String path, ServletRequest request) {
         String requestURI = this.getPathWithinApplication(request);
-        requestURI=safeFormatUrl(requestURI);
+        requestURI = safeFormatUrl(requestURI);
         // path: url==method eg: http://api/menu==GET   需要解析出path中的url和httpMethod
         String[] strings = path.split("==");
-        String URL=strings[0];
-        String method=strings[1];
+        String URL = strings[0];
+        String method = strings[1];
 
-        URL=safeFormatUrl(URL);
+        URL = safeFormatUrl(URL);
         if (strings.length == 1) {
             // 分割出来只有URL
             return this.pathsMatch(URL, requestURI);

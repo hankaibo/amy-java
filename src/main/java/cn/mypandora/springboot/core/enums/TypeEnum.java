@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * TypeEnum
- * 
+ *
  * @author hankaibo
  * @date 2019/7/18
  */

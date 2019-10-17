@@ -53,8 +53,13 @@ public class RoleController {
     @ApiOperation(value = "角色列表", notes = "查询角色列表。")
     @GetMapping
     public PageInfo<Role> pageRole(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                   @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize) {
-        return roleService.pageRole(pageNum, pageSize, null);
+                                   @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
+                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
+        Role role = new Role();
+        if (status != null) {
+            role.setStatus(status);
+        }
+        return roleService.pageRole(pageNum, pageSize, role);
     }
 
     /**
@@ -70,6 +75,8 @@ public class RoleController {
         if (role == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
         }
+        role.setCreateTime(null);
+        role.setUpdateTime(null);
         return role;
     }
 
@@ -102,7 +109,7 @@ public class RoleController {
      */
     @ApiOperation(value = "角色删除(批量)", notes = "根据角色Id批量删除角色。")
     @DeleteMapping
-    public void deleteBatchRole(@RequestBody @ApiParam(value = "角色主键数组ids", required = true) Map<String, long[]> ids) {
+    public void deleteBatchRole(@RequestBody @ApiParam(value = "角色主键数组ids", required = true) Map<String, Long[]> ids) {
         roleService.deleteBatchRole(StringUtils.join(ids.get("ids"), ','));
     }
 
@@ -125,7 +132,7 @@ public class RoleController {
      * @param status 启用:1，禁用:0
      */
     @ApiOperation(value = "角色状态启用禁用", notes = "根据角色id启用或禁用其状态。")
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}")
     public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                            @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
         Integer s = status.get("status");
@@ -163,9 +170,9 @@ public class RoleController {
                                   @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> params) {
         List<Long> plusResource = params.get("plusResource");
         List<Long> minusResource = params.get("minusResource");
-        long[] a = plusResource.stream().distinct().mapToLong(it -> it).toArray();
-        long[] b = minusResource.stream().distinct().mapToLong(it -> it).toArray();
-        roleService.grantRoleResource(id, a, b);
+        long[] plusId = plusResource.stream().distinct().mapToLong(it -> it).toArray();
+        long[] minusId = minusResource.stream().distinct().mapToLong(it -> it).toArray();
+        roleService.grantRoleResource(id, plusId, minusId);
         filterChainManager.reloadFilterChain();
     }
 

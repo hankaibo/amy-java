@@ -3,7 +3,10 @@ package cn.mypandora.springboot.core.shiro.realm;
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import io.jsonwebtoken.MalformedJwtException;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -68,15 +71,15 @@ public class JwtRealm extends AuthorizingRealm {
         } catch (MalformedJwtException e) {
             //令牌格式错误
             throw new AuthenticationException("errJwt");
-        } catch(Exception e){
+        } catch (Exception e) {
             //令牌无效
             throw new AuthenticationException("errsJwt");
         }
-        if(null == payload){
+        if (null == payload) {
             //令牌无效
             throw new AuthenticationException("errJwt");
         }
-        return new SimpleAuthenticationInfo("jwt:"+payload,jwt,this.getName());
+        return new SimpleAuthenticationInfo("jwt:" + payload, jwt, this.getName());
     }
 
 }
