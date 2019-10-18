@@ -86,10 +86,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void enableUser(Long id, Integer status) {
+        LocalDateTime now = LocalDateTime.now();
         User user = new User();
         user.setId(id);
         user.setStatus(status);
-
+        user.setUpdateTime(now);
         userMapper.updateByPrimaryKeySelective(user);
     }
 

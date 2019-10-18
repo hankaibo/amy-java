@@ -45,13 +45,6 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public Dictionary getDictionary(Long id) {
-        Dictionary dictionary = new Dictionary();
-        dictionary.setId(id);
-        return dictionaryMapper.selectByPrimaryKey(dictionary);
-    }
-
-    @Override
     public void addDictionary(Dictionary dictionary) {
         LocalDateTime now = LocalDateTime.now();
         dictionary.setCreateTime(now);
@@ -59,14 +52,10 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void deleteDictionary(Long id) {
-        dictionaryMapper.deleteDictionaryById(id);
-    }
-
-    @Override
-    public void deleteBatchDictionary(String ids) {
-        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
-        dictionaryMapper.deleteDictionaryByListId(idList);
+    public Dictionary getDictionary(Long id) {
+        Dictionary dictionary = new Dictionary();
+        dictionary.setId(id);
+        return dictionaryMapper.selectByPrimaryKey(dictionary);
     }
 
     @Override
@@ -78,9 +67,22 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void enableDictionary(Long id, Integer status) {
+        LocalDateTime now = LocalDateTime.now();
         Dictionary dictionary = new Dictionary();
         dictionary.setId(id);
         dictionary.setStatus(status);
+        dictionary.setUpdateTime(now);
         dictionaryMapper.updateByPrimaryKeySelective(dictionary);
+    }
+
+    @Override
+    public void deleteDictionary(Long id) {
+        dictionaryMapper.deleteDictionaryById(id);
+    }
+
+    @Override
+    public void deleteBatchDictionary(String ids) {
+        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
+        dictionaryMapper.deleteDictionaryByListId(idList);
     }
 }

@@ -16,17 +16,17 @@ public interface RoleResourceMapper extends MyBaseMapper<RoleResource> {
      * 赋予角色资源。
      *
      * @param roleId         角色Id
-     * @param resourceListId 资源id集合
+     * @param resourceIdList 资源id集合
      */
-    void grantRoleResource(@Param(value = "roleId") Long roleId, @Param(value = "resourceListId") long[] resourceListId);
+    void grantRoleResource(@Param(value = "roleId") Long roleId, @Param(value = "resourceIdList") long[] resourceIdList);
 
     /**
      * 删除角色某些资源。
      *
      * @param roleId         角色Id
-     * @param resourceListId 资源id集合
+     * @param resourceIdList 资源id集合
      */
-    void deleteRoleSomeResource(@Param(value = "roleId") Long roleId, @Param(value = "resourceListId") long[] resourceListId);
+    void deleteRoleSomeResource(@Param(value = "roleId") Long roleId, @Param(value = "resourceIdList") long[] resourceIdList);
 
     /**
      * 删除角色所有资源。
@@ -36,12 +36,12 @@ public interface RoleResourceMapper extends MyBaseMapper<RoleResource> {
     void deleteRoleAllResource(Long roleId);
 
     /**
-     * 批量删除角色资源。
+     * 删除角色所有资源（批量）。
      *
-     * @param roleListId 角色Id
+     * @param roleIdList 角色Id集合
      * @see <a href="https://chenzhou123520.iteye.com/blog/1921284">mybatis foreach参数问题</a>
      */
-    void deleteBatchRoleAllResource(@Param(value = "roleListId") long[] roleListId);
+    void deleteBatchRoleAllResource(@Param(value = "roleIdList") long[] roleIdList);
 
     /**
      * 删除资源所有的角色。
@@ -51,9 +51,9 @@ public interface RoleResourceMapper extends MyBaseMapper<RoleResource> {
     void deleteResourceAllRole(Long resourceId);
 
     /**
-     * 批量删除资源角色。
+     * 删除资源所有角色（批量）。
      *
-     * @param resourceListId 资源Id集合
+     * @param resourceIdList 资源Id集合
      */
-    void deleteBatchResourceAllRole(@Param(value = "resourceListId") long[] resourceListId);
+    void deleteBatchResourceAllRole(@Param(value = "resourceIdList") long[] resourceIdList);
 }

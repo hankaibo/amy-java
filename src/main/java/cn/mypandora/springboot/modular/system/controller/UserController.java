@@ -62,7 +62,7 @@ public class UserController {
         User user = userService.getUserByIdOrName(null, jwtAccount.getAppId());
         user.setPassword(null);
         user.setSalt(null);
-        List<String> menuList = resourceService.listResourceByUserId(user.getId()).stream().map(Resource::getCode).collect(Collectors.toList());
+        List<String> menuList = resourceService.listResourceMenuByUserId(user.getId()).stream().map(Resource::getCode).distinct().collect(Collectors.toList());
         map.put("user", user);
         map.put("menuList", menuList);
         return map;

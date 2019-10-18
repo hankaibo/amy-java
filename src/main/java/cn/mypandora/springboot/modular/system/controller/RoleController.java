@@ -149,7 +149,7 @@ public class RoleController {
     @GetMapping("/{id}/resources")
     public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
         Map<String, Object> params = new HashMap<>(1);
-        params.put("type", 3);
+        params.put("status", 1);
         List<Resource> allResourceList = resourceService.listAll(params);
         List<Resource> roleResourceList = resourceService.listResourceByRoleId(id);
         List<TreeNode> treeNodeList = TreeUtil.lr2Tree(allResourceList);

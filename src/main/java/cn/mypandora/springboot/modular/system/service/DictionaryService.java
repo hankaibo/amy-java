@@ -21,13 +21,6 @@ public interface DictionaryService {
      */
     PageInfo<Dictionary> pageDictionary(int pageNum, int pageSize, Dictionary dictionary);
 
-    /**
-     * 根据主键查询字典详情。
-     *
-     * @param id 主键id
-     * @return 字典数据
-     */
-    Dictionary getDictionary(Long id);
 
     /**
      * 添加字典。
@@ -37,18 +30,12 @@ public interface DictionaryService {
     void addDictionary(Dictionary dictionary);
 
     /**
-     * 删除字典。
+     * 根据主键查询字典详情。
      *
-     * @param id 字典id
+     * @param id 主键id
+     * @return 字典数据
      */
-    void deleteDictionary(Long id);
-
-    /**
-     * 批量删除字典。
-     *
-     * @param ids '1,2,3,4'
-     */
-    void deleteBatchDictionary(String ids);
+    Dictionary getDictionary(Long id);
 
     /**
      * 更新字典。
@@ -64,4 +51,18 @@ public interface DictionaryService {
      * @param status 启用(1),禁用(0)
      */
     void enableDictionary(Long id, Integer status);
+
+    /**
+     * 删除字典。
+     *
+     * @param id 字典id
+     */
+    void deleteDictionary(Long id);
+
+    /**
+     * 批量删除字典。
+     *
+     * @param ids '1,2,3,4'
+     */
+    void deleteBatchDictionary(String ids);
 }

@@ -37,11 +37,12 @@ public class DepartmentController {
     /**
      * 获取整棵部门树。
      *
+     * @param status 状态(启用:1，禁用:0)
      * @return 部门树
      */
     @ApiOperation(value = "部门列表", notes = "获取整棵部门树。")
     @GetMapping
-    public List<TreeNode> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
+    public List<TreeNode> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
         List<Department> departmentList = departmentService.listAll(status);
         return TreeUtil.department2Tree(departmentList);
     }
@@ -49,13 +50,14 @@ public class DepartmentController {
     /**
      * 获取子部门。
      *
-     * @param id 主键id
+     * @param id     主键id
+     * @param status 状态(启用:1，禁用:0)
      * @return 某个部门的所有直接子部门
      */
     @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
     public List<TreeNode> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
+                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
         List<Department> departmentList = departmentService.listChildren(id, status);
         return TreeUtil.department2Node(departmentList);
     }
@@ -116,7 +118,8 @@ public class DepartmentController {
     /**
      * 启用禁用部门。
      *
-     * @param id 部门主键id
+     * @param id  部门主键id
+     * @param map 状态(启用:1，禁用:0)
      * @return 更新结果
      */
     @ApiOperation(value = "部门状态启用禁用", notes = "根据部门状态启用禁用部门。")

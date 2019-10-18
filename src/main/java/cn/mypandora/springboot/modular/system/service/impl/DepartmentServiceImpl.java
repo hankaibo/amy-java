@@ -36,14 +36,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> listAll(Integer status) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(1);
         map.put("status", status);
         return departmentMapper.listAll(map);
     }
 
     @Override
     public List<Department> listChildren(Long id, Integer status) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         map.put("id", id);
         map.put("status", status);
         return departmentMapper.listChildren(map);
@@ -66,7 +66,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         LocalDateTime now = LocalDateTime.now();
         department.setCreateTime(now);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         map.put("id", department.getParentId());
         map.put("amount", 2);
         departmentMapper.lftAdd(map);
@@ -92,7 +92,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void enableDepartment(Long id, Integer status) {
         List<Long> idList = listDescendantId(id);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         map.put("idList", idList);
         map.put("status", status);
         departmentMapper.enableDescendants(map);
@@ -108,7 +108,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department info = departmentMapper.selectByPrimaryKey(department);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此节点之后的相关节点左右值
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         map.put("id", id);
         map.put("amount", -deleteAmount);
         departmentMapper.lftAdd(map);
@@ -146,12 +146,12 @@ public class DepartmentServiceImpl implements DepartmentService {
             targetAmount *= -1;
         }
         // 源节点及子孙节点左右值 targetAmount
-        Map<String, Object> sourceMap = new HashMap<>();
+        Map<String, Object> sourceMap = new HashMap<>(2);
         sourceMap.put("idList", sourceIdList);
         sourceMap.put("amount", targetAmount);
         departmentMapper.selfAndDescendant(sourceMap);
         // 目标节点及子孙节点左右值 sourceAmount
-        Map<String, Object> targetMap = new HashMap<>();
+        Map<String, Object> targetMap = new HashMap<>(2);
         targetMap.put("idList", targetIdList);
         targetMap.put("amount", sourceAmount);
         departmentMapper.selfAndDescendant(targetMap);
@@ -184,7 +184,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @return 节点集合
      */
     private List<Long> listDescendantId(Long id) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(1);
         map.put("id", id);
         List<Department> departmentList = departmentMapper.listDescendants(map);
         List<Long> idList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());

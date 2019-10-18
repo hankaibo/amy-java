@@ -30,9 +30,9 @@ public interface DepartmentUserMapper extends MyBaseMapper<DepartmentUser> {
     /**
      * 根据用户id批量删除其所在的部门
      *
-     * @param userListId 用户Id集合
+     * @param userIdList 用户Id集合
      */
-    void deleteBatchByUserIds(@Param(value = "userListId") long[] userListId);
+    void deleteBatchByUserIds(@Param(value = "userIdList") long[] userIdList);
 
     /**
      * 查询某部门的用户总数。

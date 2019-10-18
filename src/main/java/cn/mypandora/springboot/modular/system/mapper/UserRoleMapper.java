@@ -16,17 +16,17 @@ public interface UserRoleMapper extends MyBaseMapper<UserRole> {
      * 赋予用户角色。
      *
      * @param userId     用户Id
-     * @param roleListId 角色id集合
+     * @param roleIdList 角色id集合
      */
-    void grantUserRole(@Param(value = "userId") Long userId, @Param(value = "roleListId") long[] roleListId);
+    void grantUserRole(@Param(value = "userId") Long userId, @Param(value = "roleIdList") long[] roleIdList);
 
     /**
      * 删除用户某些角色。
      *
      * @param userId     用户Id
-     * @param roleListId 角色id集合
+     * @param roleIdList 角色id集合
      */
-    void deleteUserSomeRole(@Param(value = "userId") Long userId, @Param(value = "roleListId") long[] roleListId);
+    void deleteUserSomeRole(@Param(value = "userId") Long userId, @Param(value = "roleIdList") long[] roleIdList);
 
     /**
      * 删除用户所有角色。
@@ -36,11 +36,11 @@ public interface UserRoleMapper extends MyBaseMapper<UserRole> {
     void deleteUserAllRole(Long userId);
 
     /**
-     * 批量删除用户角色。
+     * 删除用户所有角色（批量）。
      *
-     * @param userListId 用户Id
+     * @param userIdList 用户Id
      */
-    void deleteBatchUserAllRole(@Param(value = "userListId") long[] userListId);
+    void deleteBatchUserAllRole(@Param(value = "userIdList") long[] userIdList);
 
     /**
      * 删除角色所有用户。
@@ -50,10 +50,10 @@ public interface UserRoleMapper extends MyBaseMapper<UserRole> {
     void deleteRoleAllUser(Long roleId);
 
     /**
-     * 批量删除用户角色。
+     * 删除角色所有用户（批量）。
      *
-     * @param roleListId 角色Id集合
+     * @param roleIdList 角色Id集合
      */
-    void deleteBatchRoleAllUser(@Param(value = "roleListId") long[] roleListId);
+    void deleteBatchRoleAllUser(@Param(value = "roleIdList") long[] roleIdList);
 
 }
