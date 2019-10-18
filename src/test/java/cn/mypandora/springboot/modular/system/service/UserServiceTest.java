@@ -17,20 +17,10 @@ public class UserServiceTest extends SpringbootApplicationTest {
     public void testGetUserByIdOrName() {
     }
 
-    public void testGetUserById() {
-    }
-
     public void testAddUser() {
     }
 
-    public void testDeleteUser() {
-    }
-
-    @Test
-    public void testDeleteBatchUser() {
-        userService.deleteBatchUser("16,96,103,104");
-        long total = userService.pageUser(1, 100, null).getTotal();
-        Assert.assertEquals(total, 0);
+    public void testGetUserById() {
     }
 
     @Test
@@ -46,6 +36,16 @@ public class UserServiceTest extends SpringbootApplicationTest {
     }
 
     public void testEnableUser() {
+    }
+
+    public void testDeleteUser() {
+    }
+
+    @Test
+    public void testDeleteBatchUser() {
+        userService.deleteBatchUser("16,96,103,104");
+        long total = userService.pageUser(1, 100, null).getTotal();
+        Assert.assertEquals(total, 0);
     }
 
     public void testGrantUserRole() {

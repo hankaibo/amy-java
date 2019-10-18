@@ -49,6 +49,9 @@
         <if test="phone!=null">
             AND u.phone = #{phone}
         </if>
+        <if test="mobile!=null">
+            AND u.phone = #{phone}
+        </if>
         <if test="sex!=null">
             AND u.sex = #{sex}
         </if>
