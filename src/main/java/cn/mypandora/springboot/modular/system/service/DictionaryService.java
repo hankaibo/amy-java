@@ -21,7 +21,6 @@ public interface DictionaryService {
      */
     PageInfo<Dictionary> pageDictionary(int pageNum, int pageSize, Dictionary dictionary);
 
-
     /**
      * 添加字典。
      *
@@ -62,7 +61,7 @@ public interface DictionaryService {
     /**
      * 批量删除字典。
      *
-     * @param ids '1,2,3,4'
+     * @param ids [1,2]
      */
-    void deleteBatchDictionary(String ids);
+    void deleteBatchDictionary(long[] ids);
 }

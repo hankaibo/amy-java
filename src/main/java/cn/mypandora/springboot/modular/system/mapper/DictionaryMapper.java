@@ -2,6 +2,7 @@ package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * DictionaryMapper
@@ -23,5 +24,5 @@ public interface DictionaryMapper extends MyBaseMapper<Dictionary> {
      *
      * @param ids id数组
      */
-    void deleteDictionaryByListId(long[] ids);
+    void deleteDictionaryByListId(@Param("ids") long[] ids);
 }
