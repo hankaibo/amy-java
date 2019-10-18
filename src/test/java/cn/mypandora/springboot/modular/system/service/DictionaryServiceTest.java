@@ -2,7 +2,6 @@ package cn.mypandora.springboot.modular.system.service;
 
 import cn.mypandora.springboot.SpringbootApplicationTest;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,9 +13,6 @@ public class DictionaryServiceTest extends SpringbootApplicationTest {
     private DictionaryService dictionaryService;
 
     public void testPageDictionary() {
-    }
-
-    public void testGetDictionary() {
     }
 
     @Test
@@ -45,6 +41,15 @@ public class DictionaryServiceTest extends SpringbootApplicationTest {
         dictionaryService.addDictionary(dictionary3);
     }
 
+    public void testGetDictionary() {
+    }
+
+    public void testUpdateDictionary() {
+    }
+
+    public void testEnableDictionary() {
+    }
+
     @Test
     public void testDeleteDictionary() {
         dictionaryService.deleteDictionary(1L);
@@ -53,11 +58,5 @@ public class DictionaryServiceTest extends SpringbootApplicationTest {
     }
 
     public void testDeleteBatchDictionary() {
-    }
-
-    public void testUpdateDictionary() {
-    }
-
-    public void testEnableDictionary() {
     }
 }

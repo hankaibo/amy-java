@@ -4,7 +4,7 @@
 
     <update id="updateByUserId">
         UPDATE sys_department_user t
-        SET t.department_id = #{departmentId}
+        SET t.department_id = #{departmentId}, t.update_time=now()
         WHERE t.user_id = #{userId}
     </update>
 
@@ -18,7 +18,7 @@
         DELETE t
         FROM sys_department_user t
         WHERE t.user_id in
-        <foreach collection="userListId" item="userId" index="index" open="(" separator="," close=")">
+        <foreach collection="userIdList" item="userId" index="index" open="(" separator="," close=")">
             #{userId}
         </foreach>
     </delete>
@@ -31,15 +31,15 @@
         FROM sys_department t
         WHERE 1=1
         <![CDATA[
-            AND t.lft>=(
-                    SELECT s.lft
-                    FROM sys_department s
-                    WHERE s.id=#{id})
-            AND t.rgt<=(
-                    SELECT s.rgt
-                    FROM sys_department s
-                    WHERE s.id=#{id})
-        ]]>)
+                AND t.lft>=(
+                        SELECT s.lft
+                        FROM sys_department s
+                        WHERE s.id=#{id})
+                AND t.rgt<=(
+                        SELECT s.rgt
+                        FROM sys_department s
+                        WHERE s.id=#{id})
+            ]]>)
     </select>
 
 </mapper>

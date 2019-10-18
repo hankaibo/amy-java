@@ -42,15 +42,18 @@
         ${alias}.update_time
     </sql>
 
-    <select id="listAll" resultMap="ResourceMap" parameterType="int">
+    <select id="listAll" resultMap="ResourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
         </include>
         FROM sys_resource t
         WHERE 1=1
-        <if test="type != 3">
+        <if test="type != null">
             AND t.type=#{type}
+        </if>
+        <if test="status != null">
+            AND t.status=#{status}
         </if>
         ORDER BY t.lft ASC
     </select>
@@ -64,6 +67,9 @@
         WHERE 1=1
         <if test="type != null">
             AND t.type=#{type}
+        </if>
+        <if test="status!=null">
+            AND t.status=#{status}
         </if>
         <![CDATA[
             AND t.lft>(
@@ -87,81 +93,37 @@
         WHERE 1=1
         AND t.type=#{type}
         AND t.parent_id=#{id}
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
         ORDER BY t.lft ASC
     </select>
 
-    <select id="getParent" resultMap="ResourceMap" parameterType="long">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_resource t
-        WHERE t.id=(
-        SELECT s.parent_id
-        FROM sys_resource s
-        WHERE s.id=#{id}
-        )
-    </select>
-
-    <select id="listAncestries" resultMap="ResourceMap" parameterType="long">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_resource t
-        WHERE 1 = 1
-        <![CDATA[
-           AND t.lft<(
-                    SELECT s.lft
-                    FROM sys_resource s
-                    WHERE s.id=#{id})
-            AND t.rgt>(
-                    SELECT s.lft
-                    FROM sys_resource s
-                    WHERE s.id=#{id})
-        ]]>
-        ORDER BY t.lft ASC
-    </select>
-
-    <select id="listSiblings" resultMap="ResourceMap" parameterType="long">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_resource t
-        WHERE 1=1
-        AND t.parent_id=(
-        SELECT parent_id
-        FROM sys_resource
-        WHERE id=#{id})
-        ORDER BY t.lft ASC
-    </select>
-
-    <update id="parentRgtAdd">
+    <update id="parentRgtAdd" parameterType="map">
         UPDATE sys_resource t
-        SET t.rgt=(t.rgt + #{amount})
+        SET t.rgt=(t.rgt + #{amount}), t.update_time=now()
         WHERE id = #{id, jdbcType=NUMERIC}
     </update>
 
-    <update id="lftAdd">
+    <update id="lftAdd" parameterType="map">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.lft= (t.lft + #{amount})
+        SET t.lft= (t.lft + #{amount}), t.update_time=now()
         <![CDATA[
         WHERE t.lft > f.rgt
         ]]>
     </update>
 
-    <update id="rgtAdd">
+    <update id="rgtAdd" parameterType="map">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
-        SET t.rgt= (t.rgt + #{amount})
+        SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         <![CDATA[
         WHERE t.rgt > f.rgt
         ]]>
     </update>
 
-    <update id="selfAndDescendant">
+    <update id="selfAndDescendant" parameterType="map">
         UPDATE sys_resource t
-        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount})
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
         WHERE 1 = 1
         AND t.id in
         <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
@@ -169,31 +131,15 @@
         </foreach>
     </update>
 
-    <select id="isFirstNode" resultType="boolean" parameterType="long">
-        SELECT count(*)
-        FROM sys_resource t
-        WHERE t.id = #{id}
-        <![CDATA[
-        AND t.lft - 1 = (
-            SELECT p.lft
-            FROM sys_resource p
-            WHERE p.id = t.parent_id
-        )
-        ]]>
-    </select>
-
-    <select id="isLastNode" resultType="boolean" parameterType="long">
-        SELECT count(*)
-        FROM sys_resource t
-        WHERE t.id = #{id}
-        <![CDATA[
-        AND t.rgt + 1 = (
-            SELECT p.rgt
-            FROM sys_resource p
-            WHERE p.id = t.parent_id
-        )
-        ]]>
-    </select>
+    <update id="enableDescendants" parameterType="map">
+        UPDATE sys_resource t
+        SET t.status= #{status}, t.update_time=now()
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="listRolePermRules" resultMap="rolePermRule">
         SELECT CONCAT(t.uri, "==", UPPER(t.method)) AS url,
@@ -214,23 +160,28 @@
         </include>
         FROM sys_resource t
         INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
-        INNER JOIN sys_role role ON rr.role_id = role.id
         WHERE 1 = 1
-        AND role.id = #{id}
+        AND rr.role_id = #{id}
     </select>
 
-    <select id="listByUserId" resultMap="ResourceMap" parameterType="long">
+    <select id="listResourceMenuByUserId" resultMap="ResourceMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
-            <property name="alias" value="re"/>
+            <property name="alias" value="t"/>
         </include>
-        FROM sys_user u
-        JOIN sys_user_role ur ON u.id=ur.user_id
-        JOIN sys_role r ON ur.role_id=r.id
-        JOIN sys_role_resource rr ON r.id= rr.role_id
-        JOIN sys_resource re ON rr.resource_id=re.id
-        WHERE u.id=#{userId}
-        AND re.type=1
+        FROM sys_resource t
+        WHERE t.type=1
+        AND t.status=1
+        AND t.id IN (
+        SELECT rr.resource_id
+        FROM sys_role_resource rr
+        JOIN (
+        SELECT ur.role_id AS role_id
+        FROM sys_user_role ur
+        WHERE ur.user_id =#{userId}
+        ) temp
+        ON rr.role_id=temp.role_id
+        )
     </select>
 
     <select id="listByUserIdOrName" resultMap="ResourceMap">
@@ -239,13 +190,20 @@
             <property name="alias" value="t"/>
         </include>
         FROM sys_resource t
-        JOIN sys_role_resource rr ON t.id=rr.resource_id
-        JOIN sys_role r ON rr.role_id=r.id
-        JOIN sys_user_role ur ON r.id = ur.role_id
-        JOIN sys_user u ON ur.user_id = u.id
-        WHERE 1 = 1
-        AND u.username = #{username}
-        OR u.id = #{userId}
+        WHERE 1=1
+        AND t.id IN (
+        SELECT rr.resource_id
+        FROM sys_role_resource rr
+        JOIN (
+        SELECT ur.role_id AS role_id
+        FROM sys_user_role ur
+        WHERE ur.user_id =(
+        SELECT id AS userId
+        FROM sys_user u
+        WHERE u.username=#{username} OR u.id=#{userId}
+        )
+        ) temp ON rr.role_id=temp.role_id
+        )
     </select>
 
 </mapper>

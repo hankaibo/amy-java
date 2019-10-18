@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import io.swagger.annotations.Api;
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -49,18 +51,6 @@ public class DictionaryController {
     }
 
     /**
-     * 查询字典某项的详细数据。
-     *
-     * @param id 字典主键id
-     * @return 新建结果
-     */
-    @ApiOperation(value = "字典详情", notes = "根据字典id查询字典详情。")
-    @GetMapping("/{id}")
-    public Dictionary getDictionaryById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
-        return dictionaryService.getDictionary(id);
-    }
-
-    /**
      * 新建字典。
      *
      * @param dictionary 字典数据
@@ -74,6 +64,48 @@ public class DictionaryController {
             dictionaryService.addDictionary(dictionary);
         }
         dictionaryService.addDictionary(dictionary);
+    }
+
+
+    /**
+     * 查询字典某项的详细数据。
+     *
+     * @param id 字典主键id
+     * @return 新建结果
+     */
+    @ApiOperation(value = "字典详情", notes = "根据字典id查询字典详情。")
+    @GetMapping("/{id}")
+    public Dictionary getDictionaryById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
+        Dictionary dictionary = dictionaryService.getDictionary(id);
+        if (dictionary == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+        }
+        return dictionary;
+    }
+
+    /**
+     * 更新字典。
+     *
+     * @param dictionary 字典数据
+     */
+    @ApiOperation(value = "字典更新", notes = "根据字典数据更新一个字典。")
+    @PutMapping("/{id}")
+    public void updateDictionary(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
+        dictionaryService.updateDictionary(dictionary);
+    }
+
+    /**
+     * 启用|禁用字典。
+     *
+     * @param id  字典主键id
+     * @param map 状态(启用:1，禁用:0)
+     */
+    @ApiOperation(value = "字典状态启用禁用", notes = "根据字典id启用或禁用其状态。")
+    @PatchMapping("/{id}")
+    public void enableDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
+                                 @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
+        Integer status = map.get("status");
+        dictionaryService.enableDictionary(id, status);
     }
 
     /**
@@ -96,31 +128,6 @@ public class DictionaryController {
     @DeleteMapping
     public void deleteBatchDictionary(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, long[]> ids) {
         dictionaryService.deleteBatchDictionary(StringUtils.join(ids.get("ids"), ','));
-    }
-
-    /**
-     * 更新字典。
-     *
-     * @param dictionary 字典数据
-     */
-    @ApiOperation(value = "字典更新", notes = "根据字典数据更新一个字典。")
-    @PutMapping("/{id}")
-    public void updateDictionary(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
-        dictionaryService.updateDictionary(dictionary);
-    }
-
-    /**
-     * 启用|禁用字典。
-     *
-     * @param id     字典主键id
-     * @param status 启用:1，禁用:0
-     */
-    @ApiOperation(value = "字典状态启用禁用", notes = "根据字典id启用或禁用其状态。")
-    @PutMapping("/{id}/status")
-    public void enableDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
-                                 @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
-        Integer s = status.get("status");
-        dictionaryService.enableDictionary(id, s);
     }
 
 }

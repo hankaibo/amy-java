@@ -5,7 +5,7 @@
     <insert id="grantUserRole">
         INSERT INTO sys_user_role( user_id, role_id, create_time )
         VALUES
-        <foreach collection="roleListId" item="roleId" index="index" separator=",">
+        <foreach collection="roleIdList" item="roleId" index="index" separator=",">
             (
             #{userId},
             #{roleId},
@@ -19,7 +19,7 @@
         FROM sys_user_role t
         WHERE t.user_id = #{userId}
         AND t.role_id in
-        <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
+        <foreach collection="roleIdList" item="roleId" index="index" open="(" separator="," close=")">
             #{roleId}
         </foreach>
     </delete>
@@ -34,7 +34,7 @@
         DELETE t
         FROM sys_user_role t
         WHERE t.user_id in
-        <foreach collection="userListId" item="userId" index="index" open="(" separator="," close=")">
+        <foreach collection="userIdList" item="userId" index="index" open="(" separator="," close=")">
             #{userId}
         </foreach>
     </delete>
@@ -49,7 +49,7 @@
         DELETE t
         FROM sys_user_role t
         WHERE t.role_id in
-        <foreach collection="roleListId" item="roleId" index="index" open="(" separator="," close=")">
+        <foreach collection="roleIdList" item="roleId" index="index" open="(" separator="," close=")">
             #{roleId}
         </foreach>
     </delete>

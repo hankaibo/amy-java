@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.enums.TypeEnum;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
@@ -9,7 +8,6 @@ import cn.mypandora.springboot.modular.system.service.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +28,6 @@ import java.util.Map;
 @RequestMapping("/api/v1/resources")
 public class ResourceController {
 
-    private final String DOWN = "DOWN";
-
     private ResourceService resourceService;
 
     @Autowired
@@ -40,16 +36,50 @@ public class ResourceController {
     }
 
     /**
-     * 获取整个资源树。
+     * 获取整棵资源树。
      *
-     * @return 获取整个资源树
+     * @param type   资源类型(1菜单，2接口)
+     * @param status 状态，1开启；0禁用
+     * @return 资源树
      */
     @ApiOperation(value = "资源列表", notes = "获取整棵资源树。")
     @GetMapping
-    public List<TreeNode> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1资源，2接口)") Integer type) {
-        List<Resource> resourceList = resourceService.listAll(type);
-
+    public List<TreeNode> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
+                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("status", status);
+        List<Resource> resourceList = resourceService.listAll(map);
         return TreeUtil.lr2Tree(resourceList);
+    }
+
+    /**
+     * 查询子资源
+     *
+     * @param id     主键id
+     * @param type   资源类型(1菜单，2接口)
+     * @param status 状态(启用:1，禁用:0)
+     * @return 某个资源的所有直接子资源
+     */
+    @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
+    @GetMapping("/{id}/children")
+    public List<TreeNode> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                               @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
+                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
+        Map<String, Object> map = new HashMap<>(2);
+        map.put("type", type);
+        map.put("status", status);
+        List<Resource> resourceList = resourceService.listChildren(id, map);
+        return TreeUtil.lr2Node(resourceList);
+    }
+
+    /**
+     * 添加资源
+     */
+    @ApiOperation(value = "资源新建", notes = "根据数据新建。")
+    @PostMapping
+    public void addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+        resourceService.addResource(resource);
     }
 
     /**
@@ -68,6 +98,7 @@ public class ResourceController {
         resource.setRgt(null);
         resource.setLft(null);
         resource.setLevel(null);
+        resource.setCreateTime(null);
         resource.setUpdateTime(null);
         return resource;
     }
@@ -84,6 +115,21 @@ public class ResourceController {
     }
 
     /**
+     * 启用禁用资源。
+     *
+     * @param id  资源主键id
+     * @param map {type:资源类型(1菜单，2接口), status:状态(1开启；0禁用)}
+     * @return 更新结果
+     */
+    @ApiOperation(value = "资源状态启用禁用", notes = "根据状态启用禁用资源。")
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
+                                               @RequestBody @ApiParam(value = "资源状态", required = true) Map<String, Object> map) {
+        resourceService.enableResource(id, map);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * 删除资源。
      *
      * @param id 资源主键id
@@ -95,96 +141,21 @@ public class ResourceController {
     }
 
     /**
-     * 添加资源
-     */
-    @ApiOperation(value = "资源新建", notes = "根据数据新建。")
-    @PostMapping
-    public void addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
-        // 如果没有parentId为空，那么就创建为一个新树的根节点，parentId是空的，level是1。
-        if (resource.getParentId() == null || resource.getParentId() < 1) {
-            resource.setLft(1);
-            resource.setRgt(2);
-            resource.setLevel(1);
-            resource.setParentId(null);
-            resource.setType(TypeEnum.MENU.getValue());
-            resourceService.addResource(resource);
-        } else {
-            Resource info = resourceService.getResourceById(resource.getParentId());
-            resource.setLft(info.getRgt());
-            resource.setRgt(info.getRgt() + 1);
-            resource.setLevel(info.getLevel() + 1);
-            resourceService.addResource(resource);
-        }
-    }
-
-    /**
-     * 查询子资源
-     *
-     * @param id 主键id
-     * @return 某个资源的所有直接子资源
-     */
-    @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
-    @GetMapping("/{id}/children")
-    public List<TreeNode> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                               @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type) {
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("id", id);
-        map.put("type", type);
-        List<Resource> resourceList = resourceService.listChildren(map);
-
-        return TreeUtil.lr2Node(resourceList);
-    }
-
-    /**
      * 本功能只针对同层级节点的平移。
      *
-     * @param id  当前资源id
-     * @param map 移动步数(1：上移，-1：下移）
+     * @param sourceId 源id
+     * @param targetId 目标id
      * @return ok
      */
     @ApiOperation(value = "资源移动", notes = "将当前资源上移或下移。")
-    @PutMapping("/{id}/location")
-    public ResponseEntity<Void> moveUp(@PathVariable @ApiParam(value = "资源数据", required = true) Long id,
-                                       @RequestBody @ApiParam(value = "上移(1)或下移(-1)", required = true) Map<String, String> map) {
-        String direction = map.get("direction");
-        // 获得同层级节点
-        List<Resource> resourceList = resourceService.listSiblings(id);
-        // 目标节点id
-        Long targetId = getTargetId(resourceList, id, direction);
-        if (null == targetId) {
+    @PutMapping
+    public ResponseEntity<Void> move(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+                                     @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId) {
+        if (null == targetId || null == sourceId) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
-        resourceService.moveResource(id, targetId);
+        resourceService.moveResource(sourceId, targetId);
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * 获得目标节点的id。
-     *
-     * @param resourceList 当前资源所在的数组
-     * @param id           当前资源id
-     * @param direction    上移下移
-     * @return 当前资源的兄弟资源id
-     */
-    private Long getTargetId(List<Resource> resourceList, Long id, String direction) {
-        int len = resourceList.size();
-        if (len == 0 || len == 1) {
-            return null;
-        }
-        // 获得当前节点的索引
-        int index = 0;
-        for (int i = 0; i < resourceList.size(); i++) {
-            if (resourceList.get(i).getId().equals(id)) {
-                index = i;
-                break;
-            }
-        }
-        int targetIndex = StringUtils.equals(StringUtils.upperCase(direction), DOWN) ? index + 1 : index - 1;
-        // 顶节点上移，不操作；底节点下移，不操作
-        if (targetIndex < 0 || targetIndex >= len) {
-            return null;
-        }
-        return resourceList.get(targetIndex).getId();
     }
 
 }

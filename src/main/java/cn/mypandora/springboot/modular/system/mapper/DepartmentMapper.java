@@ -64,8 +64,8 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
 
     /**
      * 当前节点集合都加上n
-     * <p>
-     * map {idList:节点id集合, amount:节点及子孙都要加上的数值}
+     *
+     * @param map {idList:节点id集合, amount:节点及子孙都要加上的数值}
      */
     void selfAndDescendant(Map<String, Object> map);
 
