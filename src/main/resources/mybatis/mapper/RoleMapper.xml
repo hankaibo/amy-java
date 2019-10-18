@@ -30,8 +30,8 @@
         JOIN sys_user_role ur ON t.id = ur.role_id
         JOIN sys_user u ON ur.user_id = u.id
         WHERE 1 = 1
-        AND u.username = #{username}
-        OR u.id = #{userId}
+        AND t.status = 1
+        AND (u.username = #{username} OR u.id = #{userId})
     </select>
 
 </mapper>

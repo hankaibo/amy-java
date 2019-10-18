@@ -12,13 +12,19 @@ public class RoleServiceTest extends SpringbootApplicationTest {
     public void testPageRole() {
     }
 
-    public void testListRole() {
+    public void testListRoleByCondition() {
+    }
+
+    public void testAddRole() {
     }
 
     public void testGetRoleByIdOrName() {
     }
 
-    public void testAddRole() {
+    public void testUpdateRole() {
+    }
+
+    public void testEnableRole() {
     }
 
     @Test
@@ -29,15 +35,10 @@ public class RoleServiceTest extends SpringbootApplicationTest {
     public void testDeleteBatchRole() {
     }
 
-    public void testUpdateRole() {
-    }
-
-    public void testEnableRole() {
-    }
-
     public void testGrantRoleResource() {
     }
 
     public void testListRoleByUserIdOrName() {
     }
+
 }
