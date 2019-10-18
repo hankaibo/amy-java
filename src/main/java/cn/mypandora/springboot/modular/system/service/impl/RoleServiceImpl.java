@@ -10,10 +10,12 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Condition;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * RoleServiceImpl
@@ -43,8 +45,20 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> listRole() {
-        return roleMapper.selectAll();
+    public List<Role> listRoleByCondition(Map<String, Object> map) {
+        Condition condition = new Condition(Role.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        if (map.get("status") != null) {
+            criteria.andEqualTo("status", map.get("status"));
+        }
+        return roleMapper.selectByCondition(condition);
+    }
+
+    @Override
+    public void addRole(Role role) {
+        LocalDateTime now = LocalDateTime.now();
+        role.setCreateTime(now);
+        roleMapper.insert(role);
     }
 
     @Override
@@ -56,10 +70,20 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void addRole(Role role) {
+    public void updateRole(Role role) {
         LocalDateTime now = LocalDateTime.now();
-        role.setCreateTime(now);
-        roleMapper.insert(role);
+        role.setUpdateTime(now);
+        roleMapper.updateByPrimaryKeySelective(role);
+    }
+
+    @Override
+    public void enableRole(Long id, Integer status) {
+        LocalDateTime now = LocalDateTime.now();
+        Role role = new Role();
+        role.setId(id);
+        role.setStatus(status);
+        role.setUpdateTime(now);
+        roleMapper.updateByPrimaryKeySelective(role);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -82,21 +106,6 @@ public class RoleServiceImpl implements RoleService {
         userRoleMapper.deleteBatchRoleAllUser(idList);
     }
 
-    @Override
-    public void updateRole(Role role) {
-        LocalDateTime now = LocalDateTime.now();
-        role.setUpdateTime(now);
-        roleMapper.updateByPrimaryKeySelective(role);
-    }
-
-    @Override
-    public void enableRole(Long id, Integer status) {
-        Role role = new Role();
-        role.setId(id);
-        role.setStatus(status);
-
-        roleMapper.updateByPrimaryKeySelective(role);
-    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -115,4 +124,5 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> listRoleByUserIdOrName(Long userId, String username) {
         return roleMapper.selectByUserIdOrName(userId, username);
     }
+
 }

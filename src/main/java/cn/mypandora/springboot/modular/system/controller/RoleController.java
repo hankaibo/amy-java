@@ -48,6 +48,7 @@ public class RoleController {
      *
      * @param pageNum  页码
      * @param pageSize 每页条数
+     * @param status   状态，1开启；0禁用
      * @return 分页数据
      */
     @ApiOperation(value = "角色列表", notes = "查询角色列表。")
@@ -63,10 +64,21 @@ public class RoleController {
     }
 
     /**
+     * 新建角色。
+     *
+     * @param role 角色数据
+     */
+    @ApiOperation(value = "角色新建", notes = "根据数据新建一个角色。")
+    @PostMapping
+    public void addRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
+        roleService.addRole(role);
+    }
+
+    /**
      * 查询角色详细数据。
      *
      * @param id 角色主键id
-     * @return 数据
+     * @return 角色信息
      */
     @ApiOperation(value = "角色详情", notes = "根据角色id查询角色详情。")
     @GetMapping("/{id}")
@@ -81,14 +93,28 @@ public class RoleController {
     }
 
     /**
-     * 新建角色。
+     * 更新角色。
      *
      * @param role 角色数据
      */
-    @ApiOperation(value = "角色新建", notes = "根据数据新建一个角色。")
-    @PostMapping
-    public void addRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
-        roleService.addRole(role);
+    @ApiOperation(value = "角色更新", notes = "根据角色数据更新角色。")
+    @PutMapping("/{id}")
+    public void updateRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
+        roleService.updateRole(role);
+    }
+
+    /**
+     * 启用|禁用角色。
+     *
+     * @param id  角色主键id
+     * @param map 状态，1开启；0禁用
+     */
+    @ApiOperation(value = "角色状态启用禁用", notes = "根据角色id启用或禁用其状态。")
+    @PatchMapping("/{id}")
+    public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                           @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
+        Integer status = map.get("status");
+        roleService.enableRole(id, status);
     }
 
     /**
@@ -113,32 +139,6 @@ public class RoleController {
         roleService.deleteBatchRole(StringUtils.join(ids.get("ids"), ','));
     }
 
-
-    /**
-     * 更新角色。
-     *
-     * @param role 角色数据
-     */
-    @ApiOperation(value = "角色更新", notes = "根据角色数据更新角色。")
-    @PutMapping("/{id}")
-    public void updateRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
-        roleService.updateRole(role);
-    }
-
-    /**
-     * 启用|禁用角色。
-     *
-     * @param id     角色主键id
-     * @param status 启用:1，禁用:0
-     */
-    @ApiOperation(value = "角色状态启用禁用", notes = "根据角色id启用或禁用其状态。")
-    @PatchMapping("/{id}")
-    public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-                           @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
-        Integer s = status.get("status");
-        roleService.enableRole(id, s);
-    }
-
     /**
      * 查询该角色所包含的资源。
      *
@@ -148,7 +148,9 @@ public class RoleController {
     @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
     public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
-        List<Resource> allResourceList = resourceService.listAll(3);
+        Map<String, Object> params = new HashMap<>(1);
+        params.put("type", 3);
+        List<Resource> allResourceList = resourceService.listAll(params);
         List<Resource> roleResourceList = resourceService.listResourceByRoleId(id);
         List<TreeNode> treeNodeList = TreeUtil.lr2Tree(allResourceList);
 
@@ -161,15 +163,15 @@ public class RoleController {
     /**
      * 赋予某角色某资源。
      *
-     * @param id     角色id
-     * @param params 增加和删除的角色对象
+     * @param id  角色id
+     * @param map 增加和删除的角色对象
      */
     @ApiOperation(value = "赋予角色一些资源。", notes = "根据角色id赋予其一些资源。")
     @PostMapping("/{id}/resources")
     public void grantRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-                                  @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> params) {
-        List<Long> plusResource = params.get("plusResource");
-        List<Long> minusResource = params.get("minusResource");
+                                  @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> map) {
+        List<Long> plusResource = map.get("plusResource");
+        List<Long> minusResource = map.get("minusResource");
         long[] plusId = plusResource.stream().distinct().mapToLong(it -> it).toArray();
         long[] minusId = minusResource.stream().distinct().mapToLong(it -> it).toArray();
         roleService.grantRoleResource(id, plusId, minusId);

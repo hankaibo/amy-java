@@ -4,6 +4,7 @@ import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * RoleService
@@ -24,20 +25,12 @@ public interface RoleService {
     PageInfo<Role> pageRole(int pageNum, int pageSize, Role role);
 
     /**
-     * 查询所有的角色。
+     * 根据条件查询角色。
      *
-     * @return 所有角色
+     * @param params 角色条件
+     * @return 角色列表
      */
-    List<Role> listRole();
-
-    /**
-     * 根据角色Id或者名称查询角色。
-     *
-     * @param id   角色id
-     * @param name 角色名称
-     * @return 角色信息
-     */
-    Role getRoleByIdOrName(Long id, String name);
+    List<Role> listRoleByCondition(Map<String, Object> params);
 
     /**
      * 新增角色。
@@ -47,18 +40,13 @@ public interface RoleService {
     void addRole(Role role);
 
     /**
-     * 删除角色。
+     * 根据角色Id或者名称查询角色。
      *
-     * @param id 角色id
+     * @param id   角色id
+     * @param name 角色名称
+     * @return 角色信息
      */
-    void deleteRole(Long id);
-
-    /**
-     * 批量删除角色。
-     *
-     * @param ids '1,2,3,4'
-     */
-    void deleteBatchRole(String ids);
+    Role getRoleByIdOrName(Long id, String name);
 
     /**
      * 更新角色。
@@ -76,6 +64,20 @@ public interface RoleService {
     void enableRole(Long id, Integer status);
 
     /**
+     * 删除角色。
+     *
+     * @param id 角色id
+     */
+    void deleteRole(Long id);
+
+    /**
+     * 批量删除角色。
+     *
+     * @param ids '1,2,3,4'
+     */
+    void deleteBatchRole(String ids);
+
+    /**
      * 赋予角色某资源。
      *
      * @param roleId  角色Id
@@ -86,6 +88,7 @@ public interface RoleService {
 
     /**
      * 根据用户id或者名称查询用户的所有角色。
+     * 默认只查询可用状态的角色。
      *
      * @param userId   用户id
      * @param username 用户名称
