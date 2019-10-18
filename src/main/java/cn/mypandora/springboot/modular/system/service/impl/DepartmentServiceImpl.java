@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,12 +36,17 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> listAll(Integer status) {
-        return departmentMapper.listAll(status);
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", status);
+        return departmentMapper.listAll(map);
     }
 
     @Override
     public List<Department> listChildren(Long id, Integer status) {
-        return departmentMapper.listChildren(id, status);
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("status", status);
+        return departmentMapper.listChildren(map);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -59,10 +66,36 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         LocalDateTime now = LocalDateTime.now();
         department.setCreateTime(now);
-        departmentMapper.lftAdd(department.getParentId(), 2);
-        departmentMapper.rgtAdd(department.getParentId(), 2);
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", department.getParentId());
+        map.put("amount", 2);
+        departmentMapper.lftAdd(map);
+        departmentMapper.rgtAdd(map);
         departmentMapper.insert(department);
-        departmentMapper.parentRgtAdd(department.getParentId(), 2);
+        departmentMapper.parentRgtAdd(map);
+    }
+
+    @Override
+    public Department getDepartmentById(Long id) {
+        Department department = new Department();
+        department.setId(id);
+        return departmentMapper.selectByPrimaryKey(department);
+    }
+
+    @Override
+    public void updateDepartment(Department department) {
+        LocalDateTime now = LocalDateTime.now();
+        department.setUpdateTime(now);
+        departmentMapper.updateByPrimaryKeySelective(department);
+    }
+
+    @Override
+    public void enableDepartment(Long id, Integer status) {
+        List<Long> idList = listDescendantId(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("idList", idList);
+        map.put("status", status);
+        departmentMapper.enableDescendants(map);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -75,8 +108,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department info = departmentMapper.selectByPrimaryKey(department);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此节点之后的相关节点左右值
-        departmentMapper.lftAdd(id, -deleteAmount);
-        departmentMapper.rgtAdd(id, -deleteAmount);
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("amount", -deleteAmount);
+        departmentMapper.lftAdd(map);
+        departmentMapper.rgtAdd(map);
         // 求出要删除的节点所有子孙节点
         List<Long> idList = listDescendantId(id);
         String ids = StringUtils.join(idList, ',');
@@ -110,29 +146,15 @@ public class DepartmentServiceImpl implements DepartmentService {
             targetAmount *= -1;
         }
         // 源节点及子孙节点左右值 targetAmount
-        departmentMapper.selfAndDescendant(sourceIdList, targetAmount);
+        Map<String, Object> sourceMap = new HashMap<>();
+        sourceMap.put("idList", sourceIdList);
+        sourceMap.put("amount", targetAmount);
+        departmentMapper.selfAndDescendant(sourceMap);
         // 目标节点及子孙节点左右值 sourceAmount
-        departmentMapper.selfAndDescendant(targetIdList, sourceAmount);
-    }
-
-    @Override
-    public Department getDepartmentById(Long id) {
-        Department department = new Department();
-        department.setId(id);
-        return departmentMapper.selectByPrimaryKey(department);
-    }
-
-    @Override
-    public void updateDepartment(Department department) {
-        LocalDateTime now = LocalDateTime.now();
-        department.setUpdateTime(now);
-        departmentMapper.updateByPrimaryKeySelective(department);
-    }
-
-    @Override
-    public void enableDepartment(Long id, Integer status) {
-        List<Long> idList = listDescendantId(id);
-        departmentMapper.enableDescendants(idList, status);
+        Map<String, Object> targetMap = new HashMap<>();
+        targetMap.put("idList", targetIdList);
+        targetMap.put("amount", sourceAmount);
+        departmentMapper.selfAndDescendant(targetMap);
     }
 
     @Override
@@ -143,17 +165,16 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public boolean isExistParentId(Long parentId) {
         // 默认情况下，数据结构为单树(只有一条数据的parentId可为空)，数据库表初始化后有一条数据。
-        // 为了避免没有初始化数据表就操作造成问题（比如多条数据的parentId为空），处理下特殊情况。
+        // 为了避免没有初始化数据表就操作造成问题（比如多条数据的parentId为空），用代码避免这种情况。
         // 如果parentId不为空，并存在于数据库表中，为真；
         // 如果parentId为空，并且数据库也为空，为真；
         // 其它为假。
         if (parentId != null) {
             Department department = getDepartmentById(parentId);
             return department != null;
-        } else {
-            int count = listAll(null).size();
-            return count == 0;
         }
+        int count = listAll(null).size();
+        return count == 0;
     }
 
     /**
@@ -163,7 +184,9 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @return 节点集合
      */
     private List<Long> listDescendantId(Long id) {
-        List<Department> departmentList = departmentMapper.listDescendants(id, null);
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        List<Department> departmentList = departmentMapper.listDescendants(map);
         List<Long> idList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;

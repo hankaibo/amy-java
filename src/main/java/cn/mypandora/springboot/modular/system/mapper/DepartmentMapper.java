@@ -2,82 +2,78 @@ package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
 import cn.mypandora.springboot.modular.system.model.po.Department;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DepartmentMapper
+ * 为了方便后期扩展，将参数封装成 Map 类型了。
+ * 如果业务稳定，可自行将其转换为单参数、多参数等简单参数形式。
  *
  * @author hankaibo
  * @date 2019/9/25
+ * @see <a href="https://mybatis.org/mybatis-3/zh/sqlmap-xml.html#Parameters">参数</a>
  */
 public interface DepartmentMapper extends MyBaseMapper<Department> {
 
     /**
      * 获取整棵树（一次性全部加载，适合数据量少的情况）
      *
-     * @param status 状态，1启用；0禁用
+     * @param map {status:状态(1开启；0禁用)}
      * @return 整棵树
      */
-    List<Department> listAll(Integer status);
+    List<Department> listAll(Map<String, Object> map);
 
     /**
      * 获得本节点下面的所有后代节点
      *
-     * @param id     当前操作节点id
-     * @param status 状态，1启用；0禁用
+     * @param map {id:当前操作节点id, status:状态(1开启；0禁用)}
      * @return 本节点下面的所有后代节点
      */
-    List<Department> listDescendants(@Param("id") Long id, @Param("status") Integer status);
+    List<Department> listDescendants(Map<String, Object> map);
 
     /**
      * 获得本节点的孩子节点
      *
-     * @param id     当前操作节点id
-     * @param status 状态，1启用；0禁用
+     * @param map {id:当前操作节点id, status:状态(1开启；0禁用)}
      * @return 本节点的孩子节点
      */
-    List<Department> listChildren(@Param("id") Long id, @Param("status") Integer status);
+    List<Department> listChildren(Map<String, Object> map);
 
     /**
      * 父右节点加N
      *
-     * @param id     节点id
-     * @param amount 大于id左值的节点，操作的数（正数相当于加，负数相当于减）
+     * @param map {id:节点id, amount:大于id左值的节点，加上的数值(正数相当于加，负数相当于减)}
      */
-    void parentRgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
+    void parentRgtAdd(Map<String, Object> map);
 
     /**
      * 左节点加N
      *
-     * @param id     节点id
-     * @param amount 大于id左值的节点，操作的数（正数相当于加，负数相当于减）
+     * @param map {id:节点id, amount:大于id左值的节点，加上的数值(正数相当于加，负数相当于减)}
      */
-    void lftAdd(@Param("id") Long id, @Param("amount") Integer amount);
+    void lftAdd(Map<String, Object> map);
 
     /**
      * 右节点加N
      *
-     * @param id     节点id
-     * @param amount 大于id右值的节点，操作的数（正数相当于加，负数相当于减）
+     * @param map {id:节点id, amount:大于id右值的节点，加上的数值(正数相当于加，负数相当于减)}
      */
-    void rgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
+    void rgtAdd(Map<String, Object> map);
 
     /**
      * 当前节点集合都加上n
-     *
-     * @param idList 节点id集合
-     * @param amount 节点及子孙都加上 amount
+     * <p>
+     * map {idList:节点id集合, amount:节点及子孙都要加上的数值}
      */
-    void selfAndDescendant(@Param("idList") List<Long> idList, @Param("amount") Integer amount);
+    void selfAndDescendant(Map<String, Object> map);
 
     /**
      * 启用禁用节点状态
      *
-     * @param idList 节点id集合
-     * @param status 状态，1开启；0禁用
+     * @param map {idList:节点id集合, status:状态(1开启；0禁用)}
      */
-    void enableDescendants(@Param("idList") List<Long> idList, @Param("status") Integer status);
+    void enableDescendants(Map<String, Object> map);
 
 }

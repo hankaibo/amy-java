@@ -37,7 +37,7 @@ public class DepartmentController {
     /**
      * 获取整棵部门树。
      *
-     * @return 获取整个部门树
+     * @return 部门树
      */
     @ApiOperation(value = "部门列表", notes = "获取整棵部门树。")
     @GetMapping
@@ -47,7 +47,7 @@ public class DepartmentController {
     }
 
     /**
-     * 查询子部门。
+     * 获取子部门。
      *
      * @param id 主键id
      * @return 某个部门的所有直接子部门
@@ -61,10 +61,26 @@ public class DepartmentController {
     }
 
     /**
+     * 添加部门。
+     *
+     * @return 添加结果成功或失败
+     */
+    @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
+    @PostMapping
+    public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
+        boolean existParentId = departmentService.isExistParentId(department.getParentId());
+        if (!existParentId) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+        }
+        departmentService.addDepartment(department);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * 查询部门。
      *
      * @param id 部门主键id
-     * @return 数据
+     * @return 部门
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
@@ -79,22 +95,6 @@ public class DepartmentController {
         department.setCreateTime(null);
         department.setUpdateTime(null);
         return department;
-    }
-
-    /**
-     * 添加部门
-     *
-     * @return 添加部门
-     */
-    @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
-    @PostMapping
-    public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        boolean existParentId = departmentService.isExistParentId(department.getParentId());
-        if (!existParentId) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
-        }
-        departmentService.addDepartment(department);
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -122,13 +122,13 @@ public class DepartmentController {
     @ApiOperation(value = "部门状态启用禁用", notes = "根据部门状态启用禁用部门。")
     @PatchMapping("/{id}")
     public ResponseEntity<Void> enableDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
-                                                 @RequestBody @ApiParam(value = "部门数据", required = true) Map<String, Integer> status) {
+                                                 @RequestBody @ApiParam(value = "部门状态", required = true) Map<String, Integer> map) {
         int count = departmentService.countUserById(id);
         if (count > 0) {
             throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以禁用。");
         }
-        Integer s = status.get("status");
-        departmentService.enableDepartment(id, s);
+        int status = map.get("status");
+        departmentService.enableDepartment(id, status);
         return ResponseEntity.ok().build();
     }
 

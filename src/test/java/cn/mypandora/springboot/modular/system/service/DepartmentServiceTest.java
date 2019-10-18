@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DepartmentServiceTest extends SpringbootApplicationTest {
 
@@ -23,11 +23,11 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void testListChildren() {
-        List<Department> departmentList = departmentService.listChildren(2L, null);
+        List<Department> departmentList = departmentService.listChildren(1L, null);
         assertEquals(departmentList.size(), 2);
     }
 
-    //    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Test
     public void testAddDepartment() {
         Department department = new Department();
@@ -37,9 +37,32 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
         department.setRgt(2);
         department.setLevel(1);
         department.setName("XX公司");
-        departmentService.addDepartment(department);
-        Department info = departmentService.getDepartmentById(department.getId());
-        assertEquals(department.getName(), info.getName());
+        boolean existParentId = departmentService.isExistParentId(1L);
+        if (!existParentId) {
+            departmentService.addDepartment(department);
+            Department info = departmentService.getDepartmentById(department.getId());
+            assertEquals(department.getName(), info.getName());
+        }
+    }
+
+    @Test
+    public void testGetDepartmentById() {
+        Department department = departmentService.getDepartmentById(1L);
+        assertEquals(department.getName(), "testAdd");
+    }
+
+    @Test
+    public void testUpdateDepartment() {
+        Department department = new Department();
+        department.setName("testUpdate");
+        department.setId(54L);
+        departmentService.updateDepartment(department);
+        Department info = departmentService.getDepartmentById(54L);
+        assertEquals(info.getName(), "testUpdate");
+    }
+
+    @Test
+    public void testEnableDepartment() {
     }
 
     @Test
@@ -56,28 +79,6 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
         departmentService.moveDepartment(31L, 53L);
         List<Department> departmentListAfter = departmentService.listAll(null);
         System.out.println(departmentListAfter);
-
-    }
-
-    @Test
-    public void testGetDepartmentById() {
-        Department department = departmentService.getDepartmentById(56L);
-        assertEquals(department.getName(), "testAdd");
-    }
-
-    @Test
-    public void testUpdateDepartment() {
-        Department department = new Department();
-        department.setName("testUpdate");
-        department.setId(54L);
-        departmentService.updateDepartment(department);
-        Department info = departmentService.getDepartmentById(54L);
-        assertEquals(info.getName(), "testUpdate");
-
-    }
-
-    @Test
-    public void testEnableDepartment() {
     }
 
     @Test
@@ -89,6 +90,5 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
     @Test
     public void testIsExistParentId() {
     }
-
 
 }

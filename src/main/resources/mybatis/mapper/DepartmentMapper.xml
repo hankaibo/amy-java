@@ -27,7 +27,7 @@
         ${alias}.update_time
     </sql>
 
-    <select id="listAll" resultMap="DepartmentMap" parameterType="int">
+    <select id="listAll" resultMap="DepartmentMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -40,7 +40,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listDescendants" resultMap="DepartmentMap">
+    <select id="listDescendants" resultMap="DepartmentMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -63,7 +63,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listChildren" resultMap="DepartmentMap">
+    <select id="listChildren" resultMap="DepartmentMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -77,50 +77,13 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listAncestries" resultMap="DepartmentMap" parameterType="long">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_department t
-        <![CDATA[
-            WHERE t.lft<(
-                    SELECT s.lft
-                    FROM sys_department s
-                    WHERE s.id=#{id})
-            AND t.rgt>(
-                    SELECT s.lft
-                    FROM sys_department s
-                    WHERE s.id=#{id})
-        ]]>
-        ORDER BY t.lft ASC
-    </select>
-
-    <select id="listSiblings" resultMap="DepartmentMap">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_department t
-        <![CDATA[
-        WHERE t.parent_id=(
-                SELECT parent_id
-                FROM sys_department
-                WHERE id=#{id})
-        ]]>
-        <if test="status!=null">
-            AND t.status=#{status}
-        </if>
-        ORDER BY t.lft ASC
-    </select>
-
-    <update id="parentRgtAdd">
+    <update id="parentRgtAdd" parameterType="map">
         UPDATE sys_department t
         SET t.rgt = (t.rgt + #{amount}), t.update_time=now()
         WHERE id = #{id, jdbcType=NUMERIC}
     </update>
 
-    <update id="lftAdd">
+    <update id="lftAdd" parameterType="map">
         UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         <![CDATA[
@@ -128,7 +91,7 @@
         ]]>
     </update>
 
-    <update id="rgtAdd">
+    <update id="rgtAdd" parameterType="map">
         UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         <![CDATA[
@@ -136,7 +99,7 @@
         ]]>
     </update>
 
-    <update id="selfAndDescendant">
+    <update id="selfAndDescendant" parameterType="map">
         UPDATE sys_department t
         SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
         WHERE 1 = 1
@@ -146,7 +109,7 @@
         </foreach>
     </update>
 
-    <update id="enableDescendants">
+    <update id="enableDescendants" parameterType="map">
         UPDATE sys_department t
         SET t.status= #{status}, t.update_time=now()
         WHERE 1 = 1
