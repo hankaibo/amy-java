@@ -31,14 +31,6 @@ public interface UserService {
     User getUserByIdOrName(Long id, String username);
 
     /**
-     * 根据用户Id查询用户。
-     *
-     * @param id 用户Id
-     * @return 用户信息
-     */
-    User getUserById(Long id);
-
-    /**
      * 添加用户。
      *
      * @param user 用户
@@ -46,18 +38,12 @@ public interface UserService {
     void addUser(User user);
 
     /**
-     * 删除用户。
+     * 根据用户Id查询用户。
      *
-     * @param id 用户id
+     * @param id 用户Id
+     * @return 用户信息
      */
-    void deleteUser(Long id);
-
-    /**
-     * 批量删除用户。
-     *
-     * @param ids '1,2,3,4'
-     */
-    void deleteBatchUser(String ids);
+    User getUserById(Long id);
 
     /**
      * 更新用户。
@@ -73,6 +59,20 @@ public interface UserService {
      * @param status 启用(1),禁用(0)
      */
     void enableUser(Long id, Integer status);
+
+    /**
+     * 删除用户。
+     *
+     * @param id 用户id
+     */
+    void deleteUser(Long id);
+
+    /**
+     * 批量删除用户。
+     *
+     * @param ids '1,2,3,4'
+     */
+    void deleteBatchUser(String ids);
 
     /**
      * 赋予用户某角色。

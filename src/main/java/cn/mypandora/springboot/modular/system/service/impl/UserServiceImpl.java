@@ -53,11 +53,6 @@ public class UserServiceImpl implements UserService {
         return this.userMapper.selectOne(user);
     }
 
-    @Override
-    public User getUserById(Long id) {
-        return this.userMapper.getUser(id);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addUser(User user) {
@@ -72,6 +67,30 @@ public class UserServiceImpl implements UserService {
         departmentUser.setUserId(user.getId());
         departmentUser.setCreateTime(now);
         departmentUserMapper.insert(departmentUser);
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return this.userMapper.getUser(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateUser(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        user.setUpdateTime(now);
+
+        userMapper.updateByPrimaryKeySelective(user);
+        departmentUserMapper.updateByUserId(user.getId(), user.getDepartmentId());
+    }
+
+    @Override
+    public void enableUser(Long id, Integer status) {
+        User user = new User();
+        user.setId(id);
+        user.setStatus(status);
+
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -93,25 +112,6 @@ public class UserServiceImpl implements UserService {
         long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
         userRoleMapper.deleteBatchUserAllRole(idList);
         departmentUserMapper.deleteBatchByUserIds(idList);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void updateUser(User user) {
-        LocalDateTime now = LocalDateTime.now();
-        user.setUpdateTime(now);
-
-        userMapper.updateByPrimaryKeySelective(user);
-        departmentUserMapper.updateByUserId(user.getId(), user.getDepartmentId());
-    }
-
-    @Override
-    public void enableUser(Long id, Integer status) {
-        User user = new User();
-        user.setId(id);
-        user.setStatus(status);
-
-        userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Transactional(rollbackFor = Exception.class)

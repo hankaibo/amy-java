@@ -65,15 +65,20 @@ public class UserController {
         List<String> menuList = resourceService.listResourceByUserId(user.getId()).stream().map(Resource::getCode).collect(Collectors.toList());
         map.put("user", user);
         map.put("menuList", menuList);
-
         return map;
     }
 
     /**
      * 分页查询用户数据。
      *
-     * @param pageNum  页码
-     * @param pageSize 每页条数
+     * @param pageNum      页码
+     * @param pageSize     每页条数
+     * @param username     用户名称
+     * @param phone        电话
+     * @param mobile       手机
+     * @param sex          性别
+     * @param status       状态
+     * @param departmentId 部门id
      * @return 分页数据
      */
     @ApiOperation(value = "用户列表", notes = "分页查询用户列表。")
@@ -108,24 +113,6 @@ public class UserController {
         return userService.pageUser(pageNum, pageSize, user);
     }
 
-    /**
-     * 查询用户详细数据。
-     *
-     * @param id 用户主键id
-     * @return 数据
-     */
-    @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        User user = userService.getUserById(id);
-        if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-        }
-        user.setLastLoginTime(null);
-        user.setCreateTime(null);
-        user.setUpdateTime(null);
-        return user;
-    }
 
     /**
      * 新建用户。
@@ -141,6 +128,51 @@ public class UserController {
             user.setPassword(defaultPassword);
         }
         userService.addUser(user);
+    }
+
+
+    /**
+     * 查询用户详细数据。
+     *
+     * @param id 用户主键id
+     * @return 用户信息
+     */
+    @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
+        User user = userService.getUserById(id);
+        if (user == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+        }
+        user.setLastLoginTime(null);
+        user.setCreateTime(null);
+        user.setUpdateTime(null);
+        return user;
+    }
+
+    /**
+     * 更新用户。
+     *
+     * @param user 用户数据
+     */
+    @ApiOperation(value = "用户更新", notes = "根据用户数据更新用户。")
+    @PutMapping("/{id}")
+    public void updateUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+        userService.updateUser(user);
+    }
+
+    /**
+     * 启用|禁用用户。
+     *
+     * @param id  用户主键id
+     * @param map 状态(启用:1，禁用:0)
+     */
+    @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
+    @PatchMapping("/{id}")
+    public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                           @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
+        Integer status = map.get("status");
+        userService.enableUser(id, status);
     }
 
     /**
@@ -166,40 +198,19 @@ public class UserController {
     }
 
     /**
-     * 更新用户。
-     *
-     * @param user 用户数据
-     */
-    @ApiOperation(value = "用户更新", notes = "根据用户数据更新用户。")
-    @PutMapping("/{id}")
-    public void updateUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
-        userService.updateUser(user);
-    }
-
-    /**
-     * 启用|禁用用户。
-     *
-     * @param id     用户主键id
-     * @param status 启用:1，禁用:0
-     */
-    @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
-    @PatchMapping("/{id}")
-    public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                           @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> status) {
-        Integer s = status.get("status");
-        userService.enableUser(id, s);
-    }
-
-    /**
      * 查询该用户所包含的角色。
      *
-     * @param id 角色主键id
+     * @param id     角色主键id
+     * @param status 状态(启用:1，禁用:0)
      * @return 用户所包含的角色
      */
     @ApiOperation(value = "查询用户的所有角色", notes = "根据用户id查询其包含的所有角色。")
     @GetMapping("/{id}/roles")
-    public Map<String, List<Role>> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        List<Role> roleList = roleService.listRole();
+    public Map<String, List<Role>> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                                                @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
+        Map<String, Object> params = new HashMap<>(1);
+        params.put("status", status);
+        List<Role> roleList = roleService.listRoleByCondition(params);
         List<Role> roleSelectedList = roleService.listRoleByUserIdOrName(id, null);
 
         Map<String, List<Role>> map = new HashMap<>(2);
@@ -211,16 +222,16 @@ public class UserController {
     /**
      * 赋予某用户某角色。
      *
-     * @param id     用户id
-     * @param params 增加和删除的角色对象
+     * @param id  用户id
+     * @param map 增加和删除的角色对象
      */
     @ApiOperation(value = "赋予用户一些角色。", notes = "根据用户id赋予其一些角色。")
     @PostMapping("/{id}/roles")
     public void grantUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                              @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) Map<String, List<Long>> params) {
+                              @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) Map<String, List<Long>> map) {
 
-        List<Long> plusRole = params.get("plusRole");
-        List<Long> minusRole = params.get("minusRole");
+        List<Long> plusRole = map.get("plusRole");
+        List<Long> minusRole = map.get("minusRole");
         long[] plusId = plusRole.stream().distinct().mapToLong(it -> it).toArray();
         long[] minusId = minusRole.stream().distinct().mapToLong(it -> it).toArray();
         userService.grantUserRole(id, plusId, minusId);
