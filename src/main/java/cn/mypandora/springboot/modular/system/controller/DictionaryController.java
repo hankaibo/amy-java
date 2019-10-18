@@ -7,7 +7,6 @@ import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -61,7 +60,6 @@ public class DictionaryController {
         // 如果没有parentId为空，那么就创建为一个根节点，parentId是null。
         if (dictionary.getParentId() == null || dictionary.getParentId() < 1) {
             dictionary.setParentId(null);
-            dictionaryService.addDictionary(dictionary);
         }
         dictionaryService.addDictionary(dictionary);
     }
@@ -122,12 +120,12 @@ public class DictionaryController {
     /**
      * 批量删除字典。
      *
-     * @param ids 字典id数组
+     * @param map 字典id数组
      */
     @ApiOperation(value = "字典删除(批量)", notes = "根据字典Id批量删除字典。")
     @DeleteMapping
-    public void deleteBatchDictionary(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, long[]> ids) {
-        dictionaryService.deleteBatchDictionary(StringUtils.join(ids.get("ids"), ','));
+    public void deleteBatchDictionary(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, long[]> map) {
+        dictionaryService.deleteBatchDictionary(map.get("ids"));
     }
 
 }

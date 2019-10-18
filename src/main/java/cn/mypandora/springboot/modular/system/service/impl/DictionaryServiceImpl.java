@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,6 +38,9 @@ public class DictionaryServiceImpl implements DictionaryService {
             criteria.andIsNull("parentId");
         } else {
             criteria.andEqualTo("parentId", dictionary.getParentId());
+        }
+        if (dictionary.getStatus() != null) {
+            criteria.andEqualTo("status", dictionary.getStatus());
         }
         List<Dictionary> dictionaryList = dictionaryMapper.selectByExample(example);
         return new PageInfo<>(dictionaryList);
@@ -81,8 +83,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void deleteBatchDictionary(String ids) {
-        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
-        dictionaryMapper.deleteDictionaryByListId(idList);
+    public void deleteBatchDictionary(long[] ids) {
+        dictionaryMapper.deleteDictionaryByListId(ids);
     }
 }
