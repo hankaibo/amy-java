@@ -37,21 +37,6 @@ public interface DepartmentService {
     void addDepartment(Department department);
 
     /**
-     * 删除部门。
-     *
-     * @param id 部门id
-     */
-    void deleteDepartment(Long id);
-
-    /**
-     * 平移部门。
-     *
-     * @param sourceId 源id
-     * @param targetId 目标id
-     */
-    void moveDepartment(Long sourceId, Long targetId);
-
-    /**
      * 查询一个部门。
      *
      * @param id 当前操作部门id
@@ -73,6 +58,21 @@ public interface DepartmentService {
      * @param status 启用(1),禁用(0)
      */
     void enableDepartment(Long id, Integer status);
+
+    /**
+     * 删除部门。
+     *
+     * @param id 部门id
+     */
+    void deleteDepartment(Long id);
+
+    /**
+     * 平移部门。
+     *
+     * @param sourceId 源id
+     * @param targetId 目标id
+     */
+    void moveDepartment(Long sourceId, Long targetId);
 
     /**
      * 根据部门Id查询用户数量（包含子孙部门的用户数量）。
