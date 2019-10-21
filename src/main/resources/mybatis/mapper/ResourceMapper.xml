@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.ResourceMapper">
-    <resultMap id="ResourceMap" type="Resource">
+    <resultMap id="resourceMap" type="resource">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -19,7 +19,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="rolePermRule" type="Resource">
+    <resultMap id="rolePermRule" type="resource">
         <result column="url" jdbcType="VARCHAR" property="uri"/>
         <result column="needRoles" jdbcType="VARCHAR" property="needRoles"/>
     </resultMap>
@@ -42,7 +42,7 @@
         ${alias}.update_time
     </sql>
 
-    <select id="listAll" resultMap="ResourceMap" parameterType="map">
+    <select id="listAll" resultMap="resourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -58,7 +58,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listDescendants" resultMap="ResourceMap" parameterType="map">
+    <select id="listDescendants" resultMap="resourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -84,7 +84,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listChildren" resultMap="ResourceMap" parameterType="map">
+    <select id="listChildren" resultMap="resourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -153,7 +153,7 @@
         ORDER BY url DESC
     </select>
 
-    <select id="listByRoleId" resultMap="ResourceMap" parameterType="long">
+    <select id="listByRoleId" resultMap="resourceMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -164,7 +164,7 @@
         AND rr.role_id = #{id}
     </select>
 
-    <select id="listResourceMenuByUserId" resultMap="ResourceMap" parameterType="long">
+    <select id="listResourceMenuByUserId" resultMap="resourceMap" parameterType="long">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -184,7 +184,7 @@
         )
     </select>
 
-    <select id="listByUserIdOrName" resultMap="ResourceMap">
+    <select id="listByUserIdOrName" resultMap="resourceMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>

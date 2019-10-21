@@ -36,7 +36,7 @@ public interface ResourceService {
      * @param map {type: 资源类型, status: 资源状态}
      * @return 指定资源下的所有资源
      */
-    List<Resource> listChildren(Long id, Map map);
+    List<Resource> listChildren(Long id, Map<String,Object> map);
 
     /**
      * 添加孩子资源
