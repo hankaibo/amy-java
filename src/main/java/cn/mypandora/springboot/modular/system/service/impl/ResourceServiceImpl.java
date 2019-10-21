@@ -57,7 +57,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> listChildren(Long id, Map map) {
+    public List<Resource> listChildren(Long id, Map<String,Object> map) {
         map.put("id", id);
         return resourceMapper.listChildren(map);
     }

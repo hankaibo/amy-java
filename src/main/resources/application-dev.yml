@@ -8,23 +8,25 @@ spring:
     username: ENC(IdxJT9iGJA3XYxo2iRZ4IQ==)
     password: ENC(MU8IYLJXxxv8ieJJWC8z/DTcsj0rQXvuIZqEeCm92DJRAcxbLnwTHA==)
     hikari:
-      connection-timeout: 30000
-      minimum-idle: 5
-      maximum-pool-size: 15
       auto-commit: true
-      idle-timeout: 600000
-      pool-name: DatebookHikariCP
-      max-lifetime: 28740000
-      connection-test-query: SELECT 1
+      connection-timeout: 30000
+      idle-timeout: 60000
+      max-lifetime: 600000
+      maximum-pool-size: 10
+      pool-name: MyHikariCP
   # redis
   redis:
     database: 0
     host: 58.87.121.239
     port: ENC(nraPi+7zb3yNOcyCHNUoSA==)
     password: ENC(vvYw/azP/VIWPNd0Pr8vGzFmpjDORgZk/eSDTuDGni5NVv2UrZI52g==)
-    timeout: 3000
-  cache:
-    type: redis
+    lettuce:
+      pool:
+        min-idle: 5
+        max-idle: 5
+        max-active: 8
+        max-wait: 1ms
+      shutdown-timeout: 100ms
   # servlet
   servlet:
     multipart:

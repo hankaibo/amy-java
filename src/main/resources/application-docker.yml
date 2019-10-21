@@ -25,9 +25,6 @@ spring:
     password: ENC(vvYw/azP/VIWPNd0Pr8vGzFmpjDORgZk/eSDTuDGni5NVv2UrZI52g==)
     timeout: 3000
 
-  cache:
-    type: redis
-
   servlet:
     multipart:
       max-file-size: 10KB
