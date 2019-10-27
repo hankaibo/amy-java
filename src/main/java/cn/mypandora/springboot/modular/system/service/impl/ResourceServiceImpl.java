@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.core.enums.TypeEnum;
+import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
@@ -71,7 +71,7 @@ public class ResourceServiceImpl implements ResourceService {
             resource.setRgt(2);
             resource.setLevel(1);
             resource.setParentId(null);
-            resource.setType(TypeEnum.MENU.getValue());
+            resource.setType(ResourceTypeEnum.MENU.getValue());
         } else {
             Resource info = getResourceById(resource.getParentId());
             resource.setLft(info.getRgt());
