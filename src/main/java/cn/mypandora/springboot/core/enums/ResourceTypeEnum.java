@@ -3,24 +3,26 @@ package cn.mypandora.springboot.core.enums;
 import lombok.Getter;
 
 /**
- * TypeEnum
+ * ResourceTypeEnum
  *
  * @author hankaibo
  * @date 2019/7/18
  */
 @Getter
-public enum TypeEnum {
+public enum ResourceTypeEnum {
 
     /**
-     * 1代表菜单
-     * 2代表api
+     * 资源类型
+     * 1, 菜单
+     * 2, 接口
      */
     MENU(1),
     API(2);
 
     private int value;
 
-    TypeEnum(int value) {
+    ResourceTypeEnum(int value) {
         this.value = value;
     }
+
 }
