@@ -46,7 +46,7 @@ public class ResourceController {
     @GetMapping
     public List<TreeNode> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
                                        @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
         List<Resource> resourceList = resourceService.listAll(map);

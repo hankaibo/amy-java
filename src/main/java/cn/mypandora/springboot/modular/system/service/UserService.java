@@ -61,6 +61,14 @@ public interface UserService {
     void enableUser(Long id, Integer status);
 
     /**
+     * 重置用户密码。
+     *
+     * @param id       用户id
+     * @param password 新密码
+     */
+    void resetPassword(Long id, String password);
+
+    /**
      * 删除用户。
      *
      * @param id 用户id

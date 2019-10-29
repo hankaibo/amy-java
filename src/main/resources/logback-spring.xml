@@ -31,7 +31,7 @@
     <!-- 测试环境 -->
     <springProfile name="dev">
         <logger name="cn.mypandora.springboot.modular.system.mapper" level="DEBUG" additivity="false">
-            <appender-ref ref="console"/>
+            <appender-ref ref="file"/>
         </logger>
         <root level="DEBUG">
             <appender-ref ref="console"/>

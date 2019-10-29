@@ -48,8 +48,9 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> listRoleByCondition(Map<String, Object> map) {
         Condition condition = new Condition(Role.class);
         Condition.Criteria criteria = condition.createCriteria();
-        if (map.get("status") != null) {
-            criteria.andEqualTo("status", map.get("status"));
+        final String status = "status";
+        if (map.get(status) != null) {
+            criteria.andEqualTo(status, map.get(status));
         }
         return roleMapper.selectByCondition(condition);
     }

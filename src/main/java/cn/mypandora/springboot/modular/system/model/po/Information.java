@@ -6,6 +6,7 @@ import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
+import javax.persistence.Column;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -44,12 +45,13 @@ public class Information extends BaseEntity {
     /**
      * 是否已读
      */
+    @Column(name = "is_read")
     private Integer read;
 
     /**
      * 信息时间
      */
-    private LocalDateTime datetime;
+    private LocalDateTime publishTime;
 
     /**
      * 信息状态，不同与其它实体的开启禁用。

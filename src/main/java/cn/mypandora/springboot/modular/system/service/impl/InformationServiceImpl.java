@@ -1,0 +1,77 @@
+package cn.mypandora.springboot.modular.system.service.impl;
+
+import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.modular.system.mapper.InformationMapper;
+import cn.mypandora.springboot.modular.system.model.po.Information;
+import cn.mypandora.springboot.modular.system.service.InformationService;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Condition;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * InformationServiceImpl
+ *
+ * @author hankaibo
+ * @date 2019/10/29
+ */
+@Service
+public class InformationServiceImpl implements InformationService {
+
+    private InformationMapper informationMapper;
+
+    @Autowired
+    public InformationServiceImpl(InformationMapper informationMapper) {
+        this.informationMapper = informationMapper;
+    }
+
+    @Override
+    public PageInfo<Information> pageInformation(int pageNum, int pageSize, Information information) {
+        PageHelper.startPage(pageNum, pageSize);
+        Condition condition = new Condition(Information.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        final String type = "type";
+        if (information.getType() != null) {
+            criteria.andEqualTo(type, information.getType());
+        }
+        List<Information> informationList = informationMapper.selectByCondition(condition);
+        return new PageInfo<>(informationList);
+    }
+
+    @Override
+    public void addInformation(Information information) {
+        LocalDateTime now = LocalDateTime.now();
+        information.setCreateTime(now);
+
+        informationMapper.insert(information);
+    }
+
+    @Override
+    public Information getInformationById(Long id) {
+        Information information = new Information();
+        information.setId(id);
+        return informationMapper.selectOne(information);
+    }
+
+    @Override
+    public void updateInformation(Information information) {
+        LocalDateTime now = LocalDateTime.now();
+        information.setUpdateTime(now);
+        informationMapper.updateByPrimaryKeySelective(information);
+    }
+
+    @Override
+    public void deleteInformation(Long id) {
+        Information information = new Information();
+        information.setId(id);
+        informationMapper.delete(information);
+    }
+
+    @Override
+    public void deleteBatchInformation(String ids) {
+        informationMapper.deleteByIds(ids);
+    }
+}
