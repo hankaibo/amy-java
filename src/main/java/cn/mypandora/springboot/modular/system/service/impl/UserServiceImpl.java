@@ -94,6 +94,17 @@ public class UserServiceImpl implements UserService {
         userMapper.updateByPrimaryKeySelective(user);
     }
 
+    @Override
+    public void resetPassword(Long id, String password) {
+        LocalDateTime now = LocalDateTime.now();
+        User user = new User();
+        user.setId(id);
+        user.setPassword(password);
+        user.setUpdateTime(now);
+        passwordHelper(user);
+        userMapper.updateByPrimaryKeySelective(user);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteUser(Long id) {
