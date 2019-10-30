@@ -39,13 +39,13 @@ public class ResourceController {
      * 获取整棵资源树。
      *
      * @param type   资源类型(1菜单，2接口)
-     * @param status 状态，1开启；0禁用
+     * @param status 状态(1:启用，0:禁用)
      * @return 资源树
      */
     @ApiOperation(value = "资源列表", notes = "获取整棵资源树。")
     @GetMapping
     public List<TreeNode> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
-                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
+                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
@@ -65,7 +65,7 @@ public class ResourceController {
     @GetMapping("/{id}/children")
     public List<TreeNode> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
-                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
+                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
@@ -118,7 +118,7 @@ public class ResourceController {
      * 启用禁用资源。
      *
      * @param id  资源主键id
-     * @param map {type:资源类型(1菜单，2接口), status:状态(1开启；0禁用)}
+     * @param map {type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用)}
      * @return 更新结果
      */
     @ApiOperation(value = "资源状态启用禁用", notes = "根据状态启用禁用资源。")

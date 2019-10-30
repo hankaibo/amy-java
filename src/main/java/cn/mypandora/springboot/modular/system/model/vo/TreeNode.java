@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
  * @date 2019/7/17
  * @see <a href="https://ant.design/components/tree-cn/#components-tree-demo-directory">tree</a>
  */
+@ApiModel(value = "基于antd组件Tree的数据结构。")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -64,7 +66,7 @@ public class TreeNode {
     /**
      * 禁掉 checkbox
      */
-    @ApiModelProperty(value = " 是否禁用该节点checkbox")
+    @ApiModelProperty(value = "是否禁用该节点checkbox")
     private Boolean disableCheckbox;
 
     /**

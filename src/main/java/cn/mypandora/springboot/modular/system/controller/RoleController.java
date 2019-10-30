@@ -48,7 +48,7 @@ public class RoleController {
      *
      * @param pageNum  页码
      * @param pageSize 每页条数
-     * @param status   状态，1开启；0禁用
+     * @param status   状态(1:启用，0:禁用)
      * @return 分页数据
      */
     @ApiOperation(value = "角色列表", notes = "查询角色列表。")
@@ -107,7 +107,7 @@ public class RoleController {
      * 启用|禁用角色。
      *
      * @param id  角色主键id
-     * @param map 状态，1开启；0禁用
+     * @param map 状态(1:启用，0:禁用)
      */
     @ApiOperation(value = "角色状态启用禁用", notes = "根据角色id启用或禁用其状态。")
     @PatchMapping("/{id}")

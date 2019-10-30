@@ -106,6 +106,45 @@ public class InformationController {
     }
 
     /**
+     * 启用|禁用信息。
+     *
+     * @param id  信息主键id
+     * @param map 状态(启用:1，禁用:0)
+     */
+    @ApiOperation(value = "信息状态启用禁用", notes = "根据信息id启用或禁用其状态。")
+    @PatchMapping("/{id}/status")
+    @ResponseBody
+    public void enableInformation(@PathVariable("id") @ApiParam(value = "信息主键id", required = true) Long id,
+                                  @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
+        Integer status = map.get("status");
+        informationService.enableInformation(id, status);
+    }
+
+    /**
+     * 发布信息。
+     *
+     * @param id 信息主键id
+     */
+    @ApiOperation(value = "信息发布", notes = "根据信息Id发布信息。")
+    @PatchMapping("/{id}/publication")
+    @ResponseBody
+    public void publishInformation(@PathVariable("id") @ApiParam(value = "信息主键id", required = true) Long id) {
+        informationService.publishInformation(id);
+    }
+
+    /**
+     * 批量发布信息。
+     *
+     * @param ids 信息id数组
+     */
+    @ApiOperation(value = "信息发布(批量)", notes = "根据信息Id批量发布信息。")
+    @PutMapping
+    @ResponseBody
+    public void publishBatchInformation(@RequestBody @ApiParam(value = "信息主键数组ids", required = true) Map<String, Long[]> ids) {
+        informationService.publishBatchInformation(StringUtils.join(ids.get("ids"), ','));
+    }
+
+    /**
      * 删除信息。
      *
      * @param id 信息主键id

@@ -19,7 +19,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     /**
      * 获取整棵树（一次性全部加载，适合数据量少的情况）
      *
-     * @param map {type:资源类型(1菜单，2接口), status:状态(1开启；0禁用)}
+     * @param map {type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用)}
      * @return 整棵树
      */
     List<Resource> listAll(Map<String, Object> map);
@@ -27,7 +27,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     /**
      * 获得本节点下面的所有后代节点
      *
-     * @param map {id: 前操作节点id, type:资源类型(1菜单，2接口), status:状态(1开启；0禁用)}
+     * @param map {id: 前操作节点id, type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用)}
      * @return 本节点下面的所有后代节点
      */
     List<Resource> listDescendants(Map<String, Object> map);
@@ -35,7 +35,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     /**
      * 获得本节点的孩子节点
      *
-     * @param map {id: 前操作节点id, type:资源类型(1菜单，2接口), status:状态(1开启；0禁用)}
+     * @param map {id: 前操作节点id, type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用)}
      * @return 本节点的孩子节点
      */
     List<Resource> listChildren(Map<String, Object> map);
@@ -71,7 +71,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
     /**
      * 启用禁用节点状态
      *
-     * @param map {idList:节点id集合, status:状态(1开启；0禁用)}
+     * @param map {idList:节点id集合, status:状态(1:启用，0:禁用)}
      */
     void enableDescendants(Map<String, Object> map);
 

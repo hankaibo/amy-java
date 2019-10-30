@@ -15,8 +15,8 @@ public interface DepartmentService {
     /**
      * 获取所有部门（一次性全部加载，适合数据量少的情况）。
      *
-     * @param status 状态，1开启；0禁用
-     * @return 所有部门数据
+     * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
+     * @return 整棵部门树
      */
     List<Department> listAll(Integer status);
 
@@ -24,7 +24,7 @@ public interface DepartmentService {
      * 获得本部门的直接子部门。
      *
      * @param id     当前操作部门id
-     * @param status 状态，1开启；0禁用
+     * @param status 状态(1:启用，0:禁用)
      * @return 指定部门下的所有部门
      */
     List<Department> listChildren(Long id, Integer status);

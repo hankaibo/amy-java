@@ -52,13 +52,13 @@
         </if>
         <![CDATA[
             AND t.lft>(
-                    SELECT s.lft
-                    FROM sys_department s
-                    WHERE s.id=#{id})
+                SELECT s.lft
+                FROM sys_department s
+                WHERE s.id=#{id})
             AND t.rgt<(
-                    SELECT s.rgt
-                    FROM sys_department s
-                    WHERE s.id=#{id})
+                SELECT s.rgt
+                FROM sys_department s
+                WHERE s.id=#{id})
         ]]>
         ORDER BY t.lft ASC
     </select>
@@ -80,22 +80,22 @@
     <update id="parentRgtAdd" parameterType="map">
         UPDATE sys_department t
         SET t.rgt = (t.rgt + #{amount}), t.update_time=now()
-        WHERE id = #{id, jdbcType=NUMERIC}
+        WHERE id = #{id}
     </update>
 
     <update id="lftAdd" parameterType="map">
-        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
+        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         <![CDATA[
-        WHERE t.lft > f.rgt
+            WHERE t.lft > f.rgt
         ]]>
     </update>
 
     <update id="rgtAdd" parameterType="map">
-        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id, jdbcType=NUMERIC}) f
+        UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id}) f
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         <![CDATA[
-        WHERE t.rgt > f.rgt
+            WHERE t.rgt > f.rgt
         ]]>
     </update>
 
