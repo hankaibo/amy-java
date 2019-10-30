@@ -24,7 +24,7 @@ public interface ResourceService {
     /**
      * 获取所有资源（一次性全部加载，适合数据量少的情况）。
      *
-     * @param map {type:资源类型(1菜单，2接口), status:状态(1开启；0禁用)}
+     * @param map {type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用)}
      * @return 所有资源数据
      */
     List<Resource> listAll(Map<String, Object> map);

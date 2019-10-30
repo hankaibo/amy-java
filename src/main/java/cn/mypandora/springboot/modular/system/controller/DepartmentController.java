@@ -40,9 +40,9 @@ public class DepartmentController {
      * @param status 状态(启用:1，禁用:0)
      * @return 部门树
      */
-    @ApiOperation(value = "部门列表", notes = "获取整棵部门树。")
+    @ApiOperation(value = "部门树", notes = "获取整棵部门树。")
     @GetMapping
-    public List<TreeNode> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
+    public List<TreeNode> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         List<Department> departmentList = departmentService.listAll(status);
         return TreeUtil.department2Tree(departmentList);
     }
@@ -51,13 +51,13 @@ public class DepartmentController {
      * 获取子部门。
      *
      * @param id     主键id
-     * @param status 状态(启用:1，禁用:0)
-     * @return 某个部门的所有直接子部门
+     * @param status 状态(1:启用，0:禁用)
+     * @return 某个部门的直接子部门
      */
     @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
     public List<TreeNode> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1开启；0禁用)") Integer status) {
+                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         List<Department> departmentList = departmentService.listChildren(id, status);
         return TreeUtil.department2Node(departmentList);
     }
@@ -65,7 +65,7 @@ public class DepartmentController {
     /**
      * 添加部门。
      *
-     * @return 添加结果成功或失败
+     * @return 空或异常
      */
     @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
     @PostMapping
@@ -82,7 +82,7 @@ public class DepartmentController {
      * 查询部门。
      *
      * @param id 部门主键id
-     * @return 部门
+     * @return 部门对象或空
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
@@ -103,7 +103,7 @@ public class DepartmentController {
      * 更新部门。
      *
      * @param department 部门数据
-     * @return 更新结果
+     * @return 空或异常
      */
     @ApiOperation(value = "部门更新", notes = "根据部门数据更新部门。")
     @PutMapping("/{id}")
@@ -120,10 +120,10 @@ public class DepartmentController {
      *
      * @param id  部门主键id
      * @param map 状态(启用:1，禁用:0)
-     * @return 更新结果
+     * @return 空或异常
      */
-    @ApiOperation(value = "部门状态启用禁用", notes = "根据部门状态启用禁用部门。")
-    @PatchMapping("/{id}")
+    @ApiOperation(value = "部门启用禁用", notes = "根据部门状态启用禁用部门。")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<Void> enableDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
                                                  @RequestBody @ApiParam(value = "部门状态", required = true) Map<String, Integer> map) {
         int count = departmentService.countUserById(id);
@@ -139,7 +139,7 @@ public class DepartmentController {
      * 删除部门。
      *
      * @param id 部门主键id
-     * @return 删除结果
+     * @return 空或异常
      */
     @ApiOperation(value = "部门删除", notes = "根据部门Id删除一个部门。")
     @DeleteMapping("/{id}")
@@ -157,7 +157,7 @@ public class DepartmentController {
      *
      * @param sourceId 源id
      * @param targetId 目标id
-     * @return ok
+     * @return 空或异常
      */
     @ApiOperation(value = "部门移动", notes = "将当前部门上移或下移。")
     @PutMapping
