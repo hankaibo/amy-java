@@ -44,6 +44,28 @@ public interface InformationService {
     void updateInformation(Information information);
 
     /**
+     * 启用禁用信息。 1:开启; 0:禁用
+     *
+     * @param id     信息id
+     * @param status 启用(1),禁用(0)
+     */
+    void enableInformation(Long id, Integer status);
+
+    /**
+     * 发布信息。
+     *
+     * @param id 信息id
+     */
+    void publishInformation(Long id);
+
+    /**
+     * 批量发布信息。
+     *
+     * @param ids '1,2,3,4'
+     */
+    void publishBatchInformation(String ids);
+
+    /**
      * 删除信息。
      *
      * @param id 信息id

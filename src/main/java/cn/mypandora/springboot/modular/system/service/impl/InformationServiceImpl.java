@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * InformationServiceImpl
@@ -61,6 +63,30 @@ public class InformationServiceImpl implements InformationService {
         LocalDateTime now = LocalDateTime.now();
         information.setUpdateTime(now);
         informationMapper.updateByPrimaryKeySelective(information);
+    }
+
+    @Override
+    public void enableInformation(Long id, Integer status) {
+        LocalDateTime now = LocalDateTime.now();
+        Information information = new Information();
+        information.setId(id);
+        information.setStatus(status);
+        information.setUpdateTime(now);
+        informationMapper.updateByPrimaryKeySelective(information);
+    }
+
+    @Override
+    public void publishInformation(Long id) {
+        Information information = new Information();
+        information.setId(id);
+        information.setPublish(1);
+        informationMapper.updateByPrimaryKeySelective(information);
+    }
+
+    @Override
+    public void publishBatchInformation(String ids) {
+        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
+        informationMapper.updateBatchPublish(idList);
     }
 
     @Override

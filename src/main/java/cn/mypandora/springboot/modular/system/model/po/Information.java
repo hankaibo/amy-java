@@ -33,14 +33,25 @@ public class Information extends BaseEntity {
     private String title;
 
     /**
-     * 信息描述
+     * 信息内容
      */
-    private String description;
+    private String content;
 
     /**
      * 信息类型
      */
     private Integer type;
+
+    /**
+     * 信息状态
+     */
+    private Integer status;
+
+    /**
+     * 是否发布
+     */
+    @Column(name = "is_publish")
+    private Integer publish;
 
     /**
      * 是否已读
@@ -49,16 +60,8 @@ public class Information extends BaseEntity {
     private Integer read;
 
     /**
-     * 信息时间
+     * 发布时间
      */
     private LocalDateTime publishTime;
 
-    /**
-     * 信息状态，不同与其它实体的开启禁用。
-     * 1, 未开始
-     * 2, 进行中
-     * 3, 马上到期
-     * 4, 已耗时
-     */
-    private Integer status;
 }
