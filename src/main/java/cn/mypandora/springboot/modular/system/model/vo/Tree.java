@@ -9,120 +9,93 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * TreeNode
+ * Tree
  *
  * @author hankaibo
- * @date 2019/7/17
- * @see <a href="https://ant.design/components/tree-cn/#components-tree-demo-directory">tree</a>
+ * @date 2019/10/31
  */
-@ApiModel(value = "基于antd组件Tree的数据结构。")
+@ApiModel(value = "ant design tree 组件")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class TreeNode {
+public class Tree {
 
     /**
-     * 节点id
+     * 主键id
      */
-    @ApiModelProperty(value = "主键id")
+    @ApiModelProperty(value = "主键id", example = "1")
     private Long id;
 
     /**
      * 冗余字段，适配ant design tree组件。
      */
-    @ApiModelProperty(value = "key")
+    @ApiModelProperty(value = "key", example = "1-1")
     private String key;
 
     /**
      * tree-select 默认根据此属性值进行筛选（其值在整个树范围内唯一）
      */
-    @ApiModelProperty(value = "value")
+    @ApiModelProperty(value = "value", example = "1")
     private String value;
 
     /**
      * 标题
      */
-    @ApiModelProperty(value = "标题")
+    @ApiModelProperty(value = "标题", example = "---")
     private String title;
 
     /**
      * 设置为叶子节点(设置了loadData时有效)
      */
-    @ApiModelProperty(value = "是否为叶子节点")
+    @ApiModelProperty(value = "设置为叶子节点(设置了loadData时有效)", example = "false")
     private Boolean isLeaf;
 
     /**
      * 设置节点是否可被选中
      */
-    @ApiModelProperty(value = "节点可选中")
+    @ApiModelProperty(value = "设置节点是否可被选中", example = "true")
     private Boolean selectable;
 
     /**
      * 当树为 checkable 时，设置独立节点是否展示 Checkbox
      */
-    @ApiModelProperty(value = "字典父级id")
+    @ApiModelProperty(value = "当树为 checkable 时，设置独立节点是否展示 Checkbox", example = "-")
     private Boolean checkable;
 
     /**
      * 禁掉 checkbox
      */
-    @ApiModelProperty(value = "是否禁用该节点checkbox")
+    @ApiModelProperty(value = "禁掉 checkbox", example = "false")
     private Boolean disableCheckbox;
 
     /**
      * 禁掉响应
      */
-    @ApiModelProperty(value = "禁止响应")
-    private Boolean disable;
+    @ApiModelProperty(value = "禁掉响应", example = "false")
+    private Boolean disabled;
 
     /**
      * 自定义图标。
      * 需要前台根据icon名称构造。
      */
-    @ApiModelProperty(value = "自定义图标")
+    @ApiModelProperty(value = "自定义图标", example = "-")
     private String icon;
 
     /**
-     * 父节点id
+     * 父主键id
      */
-    @ApiModelProperty(value = "字典父级id")
+    @ApiModelProperty(value = "主键父级id", example = "1")
     private Long parentId;
-
-    /**
-     * 子节点
-     */
-    @ApiModelProperty(value = "子节点数组")
-    private List<TreeNode> children;
 
     /**
      * 状态
      * 冗余字段，列表显示
      */
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态(列表显示)", example = "1")
     private Integer status;
 
     /**
-     * URI
-     */
-    @ApiModelProperty(value = "url")
-    private String uri;
-
-    /**
-     * 编码（标识符）
-     */
-    @ApiModelProperty(value = "code")
-    private String code;
-
-    /**
-     * 方法
-     */
-    @ApiModelProperty(value = "方法")
-    private String method;
-
-    /**
      * 描述
+     * 冗余字段，列表显示
      */
-    @ApiModelProperty(value = "描述")
+    @ApiModelProperty(value = "描述(列表显示)", example = "description")
     private String description;
-
 }

@@ -2,7 +2,7 @@ package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.modular.system.mapper.DepartmentMapper;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
-import cn.mypandora.springboot.modular.system.model.BaseEntity;
+import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
-import cn.mypandora.springboot.modular.system.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -3,7 +3,7 @@ package cn.mypandora.springboot.modular.system.controller;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
-import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
+import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,13 +44,13 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源列表", notes = "获取整棵资源树。")
     @GetMapping
-    public List<TreeNode> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
-                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+    public List<ResourceTree> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
+                                           @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
         List<Resource> resourceList = resourceService.listAll(map);
-        return TreeUtil.lr2Tree(resourceList);
+        return TreeUtil.resource2Tree(resourceList);
     }
 
     /**
@@ -63,14 +63,14 @@ public class ResourceController {
      */
     @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
-    public List<TreeNode> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                               @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
-                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+    public List<ResourceTree> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                                   @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
+                                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
         List<Resource> resourceList = resourceService.listChildren(id, map);
-        return TreeUtil.lr2Node(resourceList);
+        return TreeUtil.resource2Tree(resourceList);
     }
 
     /**

@@ -6,7 +6,7 @@ import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
-import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
+import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
@@ -152,10 +152,10 @@ public class RoleController {
         params.put("status", 1);
         List<Resource> allResourceList = resourceService.listAll(params);
         List<Resource> roleResourceList = resourceService.listResourceByRoleId(id);
-        List<TreeNode> treeNodeList = TreeUtil.lr2Tree(allResourceList);
+        List<ResourceTree> resourceTreeList = TreeUtil.resource2Tree(allResourceList);
 
         Map<String, List> map = new HashMap<>(2);
-        map.put("resTree", treeNodeList);
+        map.put("resTree", resourceTreeList);
         map.put("resSelected", roleResourceList);
         return map;
     }

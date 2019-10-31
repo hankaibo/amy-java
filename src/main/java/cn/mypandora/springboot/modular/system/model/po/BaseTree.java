@@ -1,5 +1,6 @@
-package cn.mypandora.springboot.modular.system.model;
+package cn.mypandora.springboot.modular.system.model.po;
 
+import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
