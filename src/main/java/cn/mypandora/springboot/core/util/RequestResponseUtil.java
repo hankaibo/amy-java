@@ -147,7 +147,7 @@ public class RequestResponseUtil {
         try {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=utf-8");
-            httpServletResponse.sendError(code);
+            httpServletResponse.setStatus(code);
             PrintWriter printWriter = httpServletResponse.getWriter();
             printWriter.write(message);
         } catch (IOException e) {

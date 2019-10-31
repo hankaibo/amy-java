@@ -4,7 +4,7 @@ import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
-import cn.mypandora.springboot.modular.system.model.BaseEntity;
+import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import org.apache.commons.lang3.StringUtils;

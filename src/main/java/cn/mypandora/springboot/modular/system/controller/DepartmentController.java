@@ -3,7 +3,7 @@ package cn.mypandora.springboot.modular.system.controller;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Department;
-import cn.mypandora.springboot.modular.system.model.vo.TreeNode;
+import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +42,7 @@ public class DepartmentController {
      */
     @ApiOperation(value = "部门树", notes = "获取整棵部门树。")
     @GetMapping
-    public List<TreeNode> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+    public List<DepartmentTree> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         List<Department> departmentList = departmentService.listAll(status);
         return TreeUtil.department2Tree(departmentList);
     }
@@ -56,10 +56,10 @@ public class DepartmentController {
      */
     @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
-    public List<TreeNode> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+    public List<DepartmentTree> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                                  @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         List<Department> departmentList = departmentService.listChildren(id, status);
-        return TreeUtil.department2Node(departmentList);
+        return TreeUtil.department2Tree(departmentList);
     }
 
     /**

@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
-import cn.mypandora.springboot.core.base.ResultGenerator;
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.util.IpUtil;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
@@ -8,7 +7,6 @@ import cn.mypandora.springboot.core.util.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -86,7 +84,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         long refreshPeriodTime = 36000L;
                         String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, resources);
                         redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
-                        RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.success(HttpStatus.OK.getReasonPhrase())), servletResponse);
+                        RequestResponseUtil.responseWrite(HttpStatus.OK.value(),HttpStatus.OK.getReasonPhrase(), servletResponse);
                         return false;
                     } else {
                         // jwt时间失效过期,jwt refresh time失效 返回jwt过期客户端重新登录
@@ -120,7 +118,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
         if (subject != null && subject.isAuthenticated()) {
             //  已经认证但未授权的情况
             // 告知客户端JWT没有权限访问此资源
-            RequestResponseUtil.responseWrite(JSON.toJSONString(ResultGenerator.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())), servletResponse);
+            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
         }
         // 过滤链终止
         return false;
