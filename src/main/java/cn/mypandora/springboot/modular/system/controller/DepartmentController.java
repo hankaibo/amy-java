@@ -40,7 +40,7 @@ public class DepartmentController {
      * @param status 状态(启用:1，禁用:0)
      * @return 部门树
      */
-    @ApiOperation(value = "部门树", notes = "获取整棵部门树。")
+    @ApiOperation(value = "部门树", notes = "根据状态获取整棵部门树。")
     @GetMapping
     public List<DepartmentTree> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         List<Department> departmentList = departmentService.listAll(status);
