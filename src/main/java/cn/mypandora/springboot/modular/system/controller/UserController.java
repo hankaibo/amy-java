@@ -15,7 +15,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -169,7 +168,7 @@ public class UserController {
      * @param map 状态(启用:1，禁用:0)
      */
     @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/status")
     public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
                            @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
         Integer status = map.get("status");
@@ -190,27 +189,27 @@ public class UserController {
         userService.resetPassword(id, password);
     }
 
-    /**
-     * 修改密码。
-     *
-     * @param id  用户主键id
-     * @param map {oldPassword: 旧密码, newPassword: 新密码}
-     */
-    @ApiOperation(value = "修改密码")
-    @PutMapping("/{id}/password")
-    public void updatePassword(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                               @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
-        String oldPassword = map.get("oldPassword");
-        User user = userService.getUserById(id);
-        if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-        }
-        if (!user.getPassword().equals(BCrypt.hashpw(oldPassword, user.getSalt()))) {
-            throw new CustomException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase());
-        }
-        String newPassword = map.get("newPassword");
-        userService.resetPassword(id, newPassword);
-    }
+//    /**
+//     * 修改密码。
+//     *
+//     * @param id  用户主键id
+//     * @param map {oldPassword: 旧密码, newPassword: 新密码}
+//     */
+//    @ApiOperation(value = "修改密码")
+//    @PutMapping("/{id}/password")
+//    public void updatePassword(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+//                               @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
+//        String oldPassword = map.get("oldPassword");
+//        User user = userService.getUserById(id);
+//        if (user == null) {
+//            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+//        }
+//        if (!user.getPassword().equals(BCrypt.hashpw(oldPassword, user.getSalt()))) {
+//            throw new CustomException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase());
+//        }
+//        String newPassword = map.get("newPassword");
+//        userService.resetPassword(id, newPassword);
+//    }
 
     /**
      * 删除用户。
@@ -230,8 +229,8 @@ public class UserController {
      */
     @ApiOperation(value = "用户删除(批量)", notes = "根据用户Id批量删除用户。")
     @DeleteMapping
-    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Map<String, Long[]> ids) {
-        userService.deleteBatchUser(StringUtils.join(ids.get("ids"), ','));
+    public void deleteBatchUser(@RequestBody @ApiParam(value = "用户主键数组ids", required = true) Long[] ids) {
+        userService.deleteBatchUser(ids);
     }
 
     /**

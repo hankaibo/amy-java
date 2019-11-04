@@ -118,12 +118,10 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBatchUser(String ids) {
-        userMapper.deleteByIds(ids);
-
-        long[] idList = Arrays.stream(ids.split(",")).mapToLong(Long::valueOf).toArray();
-        userRoleMapper.deleteBatchUserAllRole(idList);
-        departmentUserMapper.deleteBatchByUserIds(idList);
+    public void deleteBatchUser(Long[] ids) {
+        userMapper.deleteByIds(StringUtils.join(ids, ','));
+        userRoleMapper.deleteBatchUserAllRole(ids);
+        departmentUserMapper.deleteBatchByUserIds(ids);
     }
 
     @Transactional(rollbackFor = Exception.class)

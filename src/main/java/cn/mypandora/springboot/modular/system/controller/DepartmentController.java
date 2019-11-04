@@ -57,7 +57,7 @@ public class DepartmentController {
     @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
     public List<Department> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                                  @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+                                              @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         return departmentService.listChildren(id, status);
     }
 

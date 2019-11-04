@@ -43,9 +43,6 @@ public class UserServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void testDeleteBatchUser() {
-        userService.deleteBatchUser("16,96,103,104");
-        long total = userService.pageUser(1, 100, null).getTotal();
-        Assert.assertEquals(total, 0);
     }
 
     public void testGrantUserRole() {
