@@ -78,9 +78,9 @@ public interface UserService {
     /**
      * 批量删除用户。
      *
-     * @param ids '1,2,3,4'
+     * @param ids [1,2,3,4]
      */
-    void deleteBatchUser(String ids);
+    void deleteBatchUser(Long[] ids);
 
     /**
      * 赋予用户某角色。
