@@ -56,10 +56,9 @@ public class DepartmentController {
      */
     @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
-    public List<DepartmentTree> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+    public List<Department> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        List<Department> departmentList = departmentService.listChildren(id, status);
-        return TreeUtil.department2Tree(departmentList);
+        return departmentService.listChildren(id, status);
     }
 
     /**
@@ -110,6 +109,9 @@ public class DepartmentController {
     public ResponseEntity<Void> updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
         if (department.getId() == null || department.getId() < 0 || !departmentService.isExistParentId(department.getParentId())) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+        }
+        if (!departmentService.isCanUpdateParent(department)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子部门作为自己的父级。");
         }
         departmentService.updateDepartment(department);
         return ResponseEntity.ok().build();

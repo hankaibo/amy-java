@@ -177,6 +177,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         return count == 0;
     }
 
+    @Override
+    public boolean isCanUpdateParent(Department department) {
+        Department childDepartment = getDepartmentById(department.getId());
+        Department parentDepartment = getDepartmentById(department.getParentId());
+        return parentDepartment.getLft() < childDepartment.getLft() || parentDepartment.getRgt() > childDepartment.getRgt();
+    }
+
     /**
      * 获取此节点及其子孙节点的id
      *
