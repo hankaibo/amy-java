@@ -90,4 +90,12 @@ public interface DepartmentService {
      */
     boolean isExistParentId(Long parentId);
 
+    /**
+     * 判断是否可以更换父级部门。
+     *
+     * @param department 新部门
+     * @return true:可以；false：不可以
+     */
+    boolean isCanUpdateParent(Department department);
+
 }
