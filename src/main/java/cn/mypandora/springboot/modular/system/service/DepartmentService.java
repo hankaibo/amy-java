@@ -18,7 +18,7 @@ public interface DepartmentService {
      * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
      * @return 整棵部门树
      */
-    List<Department> listAll(Integer status);
+    List<Department> listAllDepartment(Integer status);
 
     /**
      * 获得本部门的直接子部门。
@@ -27,7 +27,7 @@ public interface DepartmentService {
      * @param status 状态(1:启用，0:禁用)
      * @return 指定部门下的所有部门
      */
-    List<Department> listChildren(Long id, Integer status);
+    List<Department> listChildrenDepartment(Long id, Integer status);
 
     /**
      * 添加部门。

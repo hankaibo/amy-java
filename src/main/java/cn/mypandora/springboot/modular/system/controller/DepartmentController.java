@@ -44,7 +44,7 @@ public class DepartmentController {
     @ApiOperation(value = "部门树", notes = "根据状态获取整棵部门树。")
     @GetMapping
     public List<DepartmentTree> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        List<Department> departmentList = departmentService.listAll(status);
+        List<Department> departmentList = departmentService.listAllDepartment(status);
         return TreeUtil.department2Tree(departmentList);
     }
 
@@ -59,7 +59,7 @@ public class DepartmentController {
     @GetMapping("/{id}/children")
     public List<Department> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        return departmentService.listChildren(id, status);
+        return departmentService.listChildrenDepartment(id, status);
     }
 
     /**
@@ -90,7 +90,7 @@ public class DepartmentController {
     public Department getDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
         Department department = departmentService.getDepartmentById(id);
         if (department == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "没有找到部门。");
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "部门不存在。");
         }
         department.setRgt(null);
         department.setLft(null);
