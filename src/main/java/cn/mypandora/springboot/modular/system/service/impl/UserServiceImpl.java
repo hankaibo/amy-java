@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -62,11 +61,13 @@ public class UserServiceImpl implements UserService {
 
         userMapper.insert(user);
 
-        DepartmentUser departmentUser = new DepartmentUser();
-        departmentUser.setDepartmentId(user.getDepartmentId());
-        departmentUser.setUserId(user.getId());
-        departmentUser.setCreateTime(now);
-        departmentUserMapper.insert(departmentUser);
+        if (null != user.getDepartmentId()) {
+            DepartmentUser departmentUser = new DepartmentUser();
+            departmentUser.setDepartmentId(user.getDepartmentId());
+            departmentUser.setUserId(user.getId());
+            departmentUser.setCreateTime(now);
+            departmentUserMapper.insert(departmentUser);
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 
 import java.util.List;
@@ -15,14 +14,20 @@ import java.util.Map;
 public interface RoleService {
 
     /**
-     * 根据分页参数查询角色。
+     * 获取所有角色（一次性全部加载，适合数据量少的情况）。
      *
-     * @param pageNum  当前页码
-     * @param pageSize 当前页数
+     * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
+     * @return 整棵角色树
+     */
+    List<Role> listAllRole(Integer status);
+
+    /**
+     * 获得本角色的直接子角色。
+     *
      * @param role     角色条件
      * @return 角色列表
      */
-    PageInfo<Role> pageRole(int pageNum, int pageSize, Role role);
+    List<Role> listChildrenRole(Role role);
 
     /**
      * 根据条件查询角色。
@@ -69,13 +74,6 @@ public interface RoleService {
      * @param id 角色id
      */
     void deleteRole(Long id);
-
-    /**
-     * 批量删除角色。
-     *
-     * @param ids '1,2,3,4'
-     */
-    void deleteBatchRole(String ids);
 
     /**
      * 赋予角色某资源。

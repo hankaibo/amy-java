@@ -2,8 +2,10 @@ package cn.mypandora.springboot.core.util;
 
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
+import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +91,49 @@ public class TreeUtil {
         }
         // 2.
         DepartmentTree node;
+        Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
+        int i;
+        for (i = 0; i < fragmentTree.size(); i += 1) {
+            map.put(fragmentTree.get(i).getId(), i);
+            fragmentTree.get(i).setChildren(new ArrayList<>());
+        }
+        for (i = 0; i < fragmentTree.size(); i += 1) {
+            node = fragmentTree.get(i);
+            if (node.getParentId() != null) {
+                // if you have dangling branches check that map[node.parentId] exists
+                fragmentTree.get(map.get(node.getParentId())).getChildren().add(node);
+            } else {
+                roots.add(node);
+            }
+        }
+        return roots;
+    }
+
+    /**
+     * 将角色数据转换为树。
+     *
+     * @param roleList 角色列表
+     * @return 角色树
+     */
+    public static List<RoleTree> role2Tree(List<Role> roleList) {
+        List<RoleTree> roots = new ArrayList<>();
+        // 1.
+        List<RoleTree> fragmentTree = new ArrayList<>();
+        for (Role role : roleList) {
+            RoleTree roleTree = new RoleTree();
+            roleTree.setId(role.getId());
+            roleTree.setKey(role.getId().toString());
+            roleTree.setValue(role.getId().toString());
+            roleTree.setTitle(role.getName());
+            roleTree.setParentId(role.getParentId());
+            // 列表字段
+            roleTree.setCode(role.getCode());
+            roleTree.setStatus(role.getStatus());
+            roleTree.setDescription(role.getDescription());
+            fragmentTree.add(roleTree);
+        }
+        // 2.
+        RoleTree node;
         Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
         int i;
         for (i = 0; i < fragmentTree.size(); i += 1) {

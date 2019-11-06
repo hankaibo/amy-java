@@ -3,8 +3,12 @@
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.RoleMapper">
     <resultMap id="roleMap" type="role">
         <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="lft" jdbcType="INTEGER" property="lft"/>
+        <result column="rgt" jdbcType="INTEGER" property="rgt"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
@@ -13,13 +17,109 @@
 
     <sql id="baseColumns">
         ${alias}.id,
+        ${alias}.parent_id,
         ${alias}.name,
         ${alias}.code,
+        ${alias}.lft,
+        ${alias}.rgt,
+        ${alias}.level,
         ${alias}.status,
         ${alias}.description,
         ${alias}.create_time,
         ${alias}.update_time
     </sql>
+
+    <select id="listAll" resultMap="roleMap" parameterType="map">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_role t
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="listDescendants" resultMap="roleMap" parameterType="map">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_role t
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft>(
+                SELECT s.lft
+                FROM sys_role s
+                WHERE s.id=#{id})
+            AND t.rgt<(
+                SELECT s.rgt
+                FROM sys_role s
+                WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="listChildren" resultMap="roleMap" parameterType="map">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_role t
+        WHERE 1=1
+        AND t.parent_id=#{id}
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        ORDER BY t.lft ASC
+    </select>
+
+    <update id="parentRgtAdd" parameterType="map">
+        UPDATE sys_role t
+        SET t.rgt = (t.rgt + #{amount}), t.update_time=now()
+        WHERE id = #{id}
+    </update>
+
+    <update id="lftAdd" parameterType="map">
+        UPDATE sys_role t,(SELECT * FROM sys_role WHERE id = #{id}) f
+        SET t.lft= (t.lft + #{amount}), t.update_time=now()
+        <![CDATA[
+            WHERE t.lft > f.rgt
+        ]]>
+    </update>
+
+    <update id="rgtAdd" parameterType="map">
+        UPDATE sys_role t,(SELECT * FROM sys_role WHERE id = #{id}) f
+        SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
+        <![CDATA[
+            WHERE t.rgt > f.rgt
+        ]]>
+    </update>
+
+    <update id="selfAndDescendant" parameterType="map">
+        UPDATE sys_role t
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="enableDescendants" parameterType="map">
+        UPDATE sys_role t
+        SET t.status= #{status}, t.update_time=now()
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="selectByUserIdOrName" resultMap="roleMap">
         SELECT

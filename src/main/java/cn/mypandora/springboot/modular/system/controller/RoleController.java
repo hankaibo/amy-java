@@ -1,18 +1,17 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
+import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -44,23 +43,35 @@ public class RoleController {
     }
 
     /**
-     * 分页查询角色数据。
+     * 获取整棵角色树。
      *
-     * @param pageNum  页码
-     * @param pageSize 每页条数
-     * @param status   状态(1:启用，0:禁用)
-     * @return 分页数据
+     * @param status 状态(启用:1，禁用:0)
+     * @return 角色树
      */
-    @ApiOperation(value = "角色列表", notes = "查询角色列表。")
+    @ApiOperation(value = "角色树", notes = "根据状态获取整棵角色树。")
     @GetMapping
-    public PageInfo<Role> pageRole(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                   @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
-                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
+    public List<RoleTree> listRole(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+        List<Role> roleList = roleService.listAllRole(status);
+        return TreeUtil.role2Tree(roleList);
+    }
+
+    /**
+     * 获取子角色。
+     *
+     * @param id     主键id
+     * @param status 状态(1:启用，0:禁用)
+     * @return 某个角色的分页子数据
+     */
+    @ApiOperation(value = "子角色列表", notes = "查询子角色列表。")
+    @GetMapping("/{id}/children")
+    public List<Role> listSubRole(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                  @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
         Role role = new Role();
+        role.setId(id);
         if (status != null) {
             role.setStatus(status);
         }
-        return roleService.pageRole(pageNum, pageSize, role);
+        return roleService.listChildrenRole(role);
     }
 
     /**
@@ -85,7 +96,7 @@ public class RoleController {
     public Role getRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
         Role role = roleService.getRoleByIdOrName(id, null);
         if (role == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "角色不存在。");
         }
         role.setCreateTime(null);
         role.setUpdateTime(null);
@@ -104,16 +115,16 @@ public class RoleController {
     }
 
     /**
-     * 启用|禁用角色。
+     * 启用禁用角色。
      *
      * @param id  角色主键id
      * @param map 状态(1:启用，0:禁用)
      */
     @ApiOperation(value = "角色状态启用禁用", notes = "根据角色id启用或禁用其状态。")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/status")
     public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                            @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
-        Integer status = map.get("status");
+        int status = map.get("status");
         roleService.enableRole(id, status);
     }
 
@@ -129,17 +140,6 @@ public class RoleController {
     }
 
     /**
-     * 批量删除角色。
-     *
-     * @param ids 角色id数组
-     */
-    @ApiOperation(value = "角色删除(批量)", notes = "根据角色Id批量删除角色。")
-    @DeleteMapping
-    public void deleteBatchRole(@RequestBody @ApiParam(value = "角色主键数组ids", required = true) Map<String, Long[]> ids) {
-        roleService.deleteBatchRole(StringUtils.join(ids.get("ids"), ','));
-    }
-
-    /**
      * 查询该角色所包含的资源。
      *
      * @param id 角色主键id
@@ -147,9 +147,10 @@ public class RoleController {
      */
     @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
-    public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
+    public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                                              @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
         Map<String, Object> params = new HashMap<>(1);
-        params.put("status", 1);
+        params.put("status", status);
         List<Resource> allResourceList = resourceService.listAll(params);
         List<Resource> roleResourceList = resourceService.listResourceByRoleId(id);
         List<ResourceTree> resourceTreeList = TreeUtil.resource2Tree(allResourceList);
