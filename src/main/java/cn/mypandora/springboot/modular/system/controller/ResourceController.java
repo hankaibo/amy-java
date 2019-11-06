@@ -63,14 +63,13 @@ public class ResourceController {
      */
     @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
-    public List<ResourceTree> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+    public List<Resource> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                    @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
                                                    @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
-        List<Resource> resourceList = resourceService.listChildren(id, map);
-        return TreeUtil.resource2Tree(resourceList);
+        return resourceService.listChildren(id, map);
     }
 
     /**
