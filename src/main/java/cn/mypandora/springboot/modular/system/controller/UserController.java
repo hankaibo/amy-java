@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -142,7 +143,7 @@ public class UserController {
     public User getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         User user = userService.getUserById(id);
         if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
         }
         user.setLastLoginTime(null);
         user.setCreateTime(null);
@@ -189,27 +190,27 @@ public class UserController {
         userService.resetPassword(id, password);
     }
 
-//    /**
-//     * 修改密码。
-//     *
-//     * @param id  用户主键id
-//     * @param map {oldPassword: 旧密码, newPassword: 新密码}
-//     */
-//    @ApiOperation(value = "修改密码")
-//    @PutMapping("/{id}/password")
-//    public void updatePassword(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-//                               @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
-//        String oldPassword = map.get("oldPassword");
-//        User user = userService.getUserById(id);
-//        if (user == null) {
-//            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-//        }
-//        if (!user.getPassword().equals(BCrypt.hashpw(oldPassword, user.getSalt()))) {
-//            throw new CustomException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase());
-//        }
-//        String newPassword = map.get("newPassword");
-//        userService.resetPassword(id, newPassword);
-//    }
+    /**
+     * 修改密码。
+     *
+     * @param id  用户主键id
+     * @param map {oldPassword: 旧密码, newPassword: 新密码}
+     */
+    @ApiOperation(value = "修改密码")
+    @PatchMapping("/{id}/pwd")
+    public void updatePassword(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                               @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
+        String oldPassword = map.get("oldPassword");
+        User user = userService.getUserById(id);
+        if (user == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
+        }
+        if (!user.getPassword().equals(BCrypt.hashpw(oldPassword, user.getSalt()))) {
+            throw new CustomException(HttpStatus.CONFLICT.value(), "密码错误。");
+        }
+        String newPassword = map.get("newPassword");
+        userService.resetPassword(id, newPassword);
+    }
 
     /**
      * 删除用户。

@@ -28,4 +28,5 @@ public interface UserMapper extends MyBaseMapper<User> {
      * @return 带部门的用户信息
      */
     User getUser(Long id);
+
 }
