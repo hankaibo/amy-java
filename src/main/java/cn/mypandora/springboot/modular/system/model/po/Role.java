@@ -18,16 +18,9 @@ import javax.validation.constraints.PositiveOrZero;
 @Data
 @Table(name = "sys_role")
 @NameStyle(Style.camelhumpAndLowercase)
-public class Role extends BaseEntity {
+public class Role extends BaseTree {
 
     private static final long serialVersionUID = 6446663192497654471L;
-
-    /**
-     * 角色名
-     */
-    @ApiModelProperty(value = "角色名称")
-    @NotBlank
-    private String name;
 
     /**
      * 角色编码
