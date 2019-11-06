@@ -83,18 +83,18 @@ public interface DepartmentService {
     int countUserById(Long id);
 
     /**
-     * 判断父id是否存在。
+     * 判断父级部门是否存在。
      *
-     * @param parentId 父主键id
-     * @return true，存在；false，不存在
+     * @param department 部门
+     * @return true:存在；false:不存在
      */
-    boolean isExistParentId(Long parentId);
+    boolean existParent(Department department);
 
     /**
      * 判断是否可以更换父级部门。
      *
-     * @param department 新部门
-     * @return true:可以；false：不可以
+     * @param department 部门
+     * @return true:可以；false:不可以
      */
     boolean isCanUpdateParent(Department department);
 
