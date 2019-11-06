@@ -36,6 +36,7 @@ public class DepartmentController {
 
     /**
      * 获取整棵部门树。
+     * 虽然返回一个List列表，但里面只有一棵数，为了首次打开列表时作为table的数据源就不改为Object了。
      *
      * @param status 状态(启用:1，禁用:0)
      * @return 部门树
@@ -69,9 +70,10 @@ public class DepartmentController {
     @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
     @PostMapping
     public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        boolean existParentId = departmentService.isExistParentId(department.getParentId());
-        if (!existParentId) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+        // 添加部门时，必须指定一个存在的父部门。
+        boolean existParent = departmentService.existParent(department);
+        if (!existParent) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门不存在。");
         }
         departmentService.addDepartment(department);
         return ResponseEntity.ok().build();
@@ -85,10 +87,10 @@ public class DepartmentController {
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
-    public Department listDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+    public Department getDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
         Department department = departmentService.getDepartmentById(id);
         if (department == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "没有找到部门。");
         }
         department.setRgt(null);
         department.setLft(null);
@@ -107,9 +109,11 @@ public class DepartmentController {
     @ApiOperation(value = "部门更新", notes = "根据部门数据更新部门。")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        if (department.getId() == null || department.getId() < 0 || !departmentService.isExistParentId(department.getParentId())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+        // 修改部门时，必须保证父部门存在。
+        if (!departmentService.existParent(department)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门不存在。");
         }
+        // 修改部门时，不可以指定自己的下级为父部门。
         if (!departmentService.isCanUpdateParent(department)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子部门作为自己的父级。");
         }
@@ -163,8 +167,8 @@ public class DepartmentController {
      */
     @ApiOperation(value = "部门移动", notes = "将当前部门上移或下移。")
     @PutMapping
-    public ResponseEntity<Void> move(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
-                                     @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId) {
+    public ResponseEntity<Void> moveDepartment(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+                                               @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId) {
         if (null == targetId || null == sourceId) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }

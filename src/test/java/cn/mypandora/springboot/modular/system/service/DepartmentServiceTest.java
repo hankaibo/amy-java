@@ -37,7 +37,7 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
         department.setRgt(2);
         department.setLevel(1);
         department.setName("XX公司");
-        boolean existParentId = departmentService.isExistParentId(1L);
+        boolean existParentId = departmentService.existParent(department);
         if (!existParentId) {
             departmentService.addDepartment(department);
             Department info = departmentService.getDepartmentById(department.getId());

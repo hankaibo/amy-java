@@ -30,7 +30,7 @@ mybatis:
 mapper:
   mappers:
     - cn.mypandora.springboot.core.base.MyBaseMapper
-  not-empty: true
+  not-empty: false
   identity: Mysql
 ###############################################################################
 ## pagehelper

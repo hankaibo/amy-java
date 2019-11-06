@@ -33,4 +33,5 @@ public class Department extends BaseTree {
      */
     @ApiModelProperty(value = "描述")
     private String description;
+
 }

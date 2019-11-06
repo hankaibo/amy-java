@@ -162,23 +162,38 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentUserMapper.countUserByDepartmentId(id);
     }
 
+    /**
+     * 默认情况下，数据结构为单树(只有一条数据的parentId可为空)，数据库表初始化后有一条数据。
+     * 为了避免没有初始化数据表就操作造成问题（比如多条数据的parentId为空），用代码避免这种情况。
+     *
+     * @param department 部门
+     * @return 是否存在父部门，true表示存在，可以添加或者修改部门；反之，则false
+     */
     @Override
-    public boolean isExistParentId(Long parentId) {
-        // 默认情况下，数据结构为单树(只有一条数据的parentId可为空)，数据库表初始化后有一条数据。
-        // 为了避免没有初始化数据表就操作造成问题（比如多条数据的parentId为空），用代码避免这种情况。
+    public boolean existParent(Department department) {
         // 如果parentId不为空，并存在于数据库表中，为真；
-        // 如果parentId为空，并且数据库也为空，为真；
-        // 其它为假。
-        if (parentId != null) {
-            Department department = getDepartmentById(parentId);
-            return department != null;
+        if (department.getParentId() != null) {
+            Department departmentParent = getDepartmentById(department.getParentId());
+            return departmentParent != null;
+        } else {
+            // 否则parentId为空，必须保证是根部门修改或者首次创建（即数据库为空，添加部门时），为真。
+            Department departmentRoot = getDepartmentById(department.getId());
+            if (departmentRoot.getLevel() == 1) {
+                return true;
+            }
+            int count = listAll(null).size();
+            return count == 0;
         }
-        int count = listAll(null).size();
-        return count == 0;
     }
 
     @Override
     public boolean isCanUpdateParent(Department department) {
+        // 如果是根部门，parentId 为空，返回真。
+        Department departmentRoot = getDepartmentById(department.getId());
+        if (departmentRoot.getLevel() == 1) {
+            return true;
+        }
+        // 如果不是根部门，进行父部门判断。
         Department childDepartment = getDepartmentById(department.getId());
         Department parentDepartment = getDepartmentById(department.getParentId());
         return parentDepartment.getLft() < childDepartment.getLft() || parentDepartment.getRgt() > childDepartment.getRgt();
@@ -198,4 +213,5 @@ public class DepartmentServiceImpl implements DepartmentService {
         idList.add(id);
         return idList;
     }
+
 }

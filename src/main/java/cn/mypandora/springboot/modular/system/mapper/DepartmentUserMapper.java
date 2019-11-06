@@ -41,4 +41,5 @@ public interface DepartmentUserMapper extends MyBaseMapper<DepartmentUser> {
      * @return 用户数量
      */
     int countUserByDepartmentId(Long departmentId);
+
 }
