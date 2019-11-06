@@ -35,14 +35,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> listAll(Integer status) {
+    public List<Department> listAllDepartment(Integer status) {
         Map<String, Integer> map = new HashMap<>(1);
         map.put("status", status);
         return departmentMapper.listAll(map);
     }
 
     @Override
-    public List<Department> listChildren(Long id, Integer status) {
+    public List<Department> listChildrenDepartment(Long id, Integer status) {
         Map<String, Number> map = new HashMap<>(2);
         map.put("id", id);
         map.put("status", status);
@@ -181,7 +181,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             if (departmentRoot.getLevel() == 1) {
                 return true;
             }
-            int count = listAll(null).size();
+            int count = listAllDepartment(null).size();
             return count == 0;
         }
     }
