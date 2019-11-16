@@ -1,21 +1,25 @@
 package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
+import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * ResourceController
@@ -29,10 +33,12 @@ import java.util.Map;
 public class ResourceController {
 
     private ResourceService resourceService;
+    private RoleService roleService;
 
     @Autowired
-    public ResourceController(ResourceService resourceService) {
+    public ResourceController(ResourceService resourceService, RoleService roleService) {
         this.resourceService = resourceService;
+        this.roleService = roleService;
     }
 
     /**
@@ -44,13 +50,37 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源列表", notes = "获取整棵资源树。")
     @GetMapping
-    public List<ResourceTree> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
+    public List<ResourceTree> listResource(@RequestHeader(value = "Authorization") String authorization,
+                                           @RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("type", type);
-        map.put("status", status);
-        List<Resource> resourceList = resourceService.listAll(map);
-        return TreeUtil.resource2Tree(resourceList);
+        // 获取当前登录者的所有角色
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        String[] roles = StringUtils.split(jwtAccount.getRoles(), ",");
+        // 获取所有后代角色
+        Set<Role> roleSet = new HashSet<>();
+        for (String name : roles) {
+            roleSet.addAll(roleService.listDescendantRole(name));
+        }
+        // 获取角色的资源
+        Set<Resource> resourceSet = new HashSet<>();
+        for (Role role : roleSet) {
+            resourceSet.addAll(resourceService.listResourceByRoleId(role.getId()));
+        }
+        List<Resource> allResourceList = resourceSet.stream().filter(item -> {
+            if (null != type) {
+                return item.getType().equals(type);
+            }
+            if (null != status) {
+                return item.getStatus().equals(status);
+            }
+            return true;
+        }).collect(Collectors.toList());
+//        Map<String, Object> map = new HashMap<>(2);
+//        map.put("type", type);
+//        map.put("status", status);
+//        List<Resource> resourceList = resourceService.listAll(map);
+        return TreeUtil.resource2Tree(allResourceList);
     }
 
     /**
@@ -64,8 +94,8 @@ public class ResourceController {
     @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
     public List<Resource> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                                   @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
-                                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+                                               @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
+                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
         Map<String, Object> map = new HashMap<>(2);
         map.put("type", type);
         map.put("status", status);
