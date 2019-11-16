@@ -2,9 +2,11 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
@@ -12,13 +14,12 @@ import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * RoleController
@@ -50,9 +51,18 @@ public class RoleController {
      */
     @ApiOperation(value = "角色树", notes = "根据状态获取整棵角色树。")
     @GetMapping
-    public List<RoleTree> listRole(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        List<Role> roleList = roleService.listAllRole(status);
-        return TreeUtil.role2Tree(roleList);
+    public List<RoleTree> listRole(@RequestHeader(value = "Authorization") String authorization,
+                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+        // 获取当前登录者的所有角色
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        String[] roles = StringUtils.split(jwtAccount.getRoles(), ",");
+        // 获取所有后代角色
+        Set<Role> roleSet = new HashSet<>();
+        for (String name : roles) {
+            roleSet.addAll(roleService.listDescendantRole(name));
+        }
+        return TreeUtil.role2Tree(new ArrayList<>(roleSet));
     }
 
     /**
@@ -147,11 +157,26 @@ public class RoleController {
      */
     @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
-    public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+    public Map<String, List> listRoleResource(@RequestHeader(value = "Authorization") String authorization,
+                                              @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
         Map<String, Object> params = new HashMap<>(1);
         params.put("status", status);
-        List<Resource> allResourceList = resourceService.listAll(params);
+        // 获取当前登录者的所有角色
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        String[] roles = StringUtils.split(jwtAccount.getRoles(), ",");
+        // 获取所有后代角色
+        Set<Role> roleSet = new HashSet<>();
+        for (String name : roles) {
+            roleSet.addAll(roleService.listDescendantRole(name));
+        }
+        // 获取角色的资源
+        Set<Resource> resourceSet=new HashSet<>();
+        for(Role role: roleSet){
+            resourceSet.addAll(resourceService.listResourceByRoleId(role.getId()));
+        }
+        List<Resource> allResourceList = new ArrayList<>(resourceSet);
         List<Resource> roleResourceList = resourceService.listResourceByRoleId(id);
         List<ResourceTree> resourceTreeList = TreeUtil.resource2Tree(allResourceList);
 

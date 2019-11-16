@@ -22,9 +22,17 @@ public interface RoleService {
     List<Role> listAllRole(Integer status);
 
     /**
+     * 获得本角色的后代角色。
+     *
+     * @param name 角色名称
+     * @return 角色列表
+     */
+    List<Role> listDescendantRole(String name);
+
+    /**
      * 获得本角色的直接子角色。
      *
-     * @param role     角色条件
+     * @param role 角色条件
      * @return 角色列表
      */
     List<Role> listChildrenRole(Role role);

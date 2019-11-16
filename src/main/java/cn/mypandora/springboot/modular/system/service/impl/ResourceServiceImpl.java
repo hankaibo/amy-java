@@ -3,9 +3,11 @@ package cn.mypandora.springboot.modular.system.service.impl;
 import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
+import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +33,13 @@ public class ResourceServiceImpl implements ResourceService {
 
     private ResourceMapper resourceMapper;
     private RoleResourceMapper roleResourceMapper;
+    private RoleMapper roleMapper;
 
     @Autowired
-    public ResourceServiceImpl(ResourceMapper resourceMapper, RoleResourceMapper roleResourceMapper) {
+    public ResourceServiceImpl(ResourceMapper resourceMapper, RoleResourceMapper roleResourceMapper, RoleMapper roleMapper) {
         this.resourceMapper = resourceMapper;
         this.roleResourceMapper = roleResourceMapper;
+        this.roleMapper = roleMapper;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> listChildren(Long id, Map<String,Object> map) {
+    public List<Resource> listChildren(Long id, Map<String, Object> map) {
         map.put("id", id);
         return resourceMapper.listChildren(map);
     }
@@ -87,6 +91,10 @@ public class ResourceServiceImpl implements ResourceService {
         resourceMapper.rgtAdd(map);
         resourceMapper.insert(resource);
         resourceMapper.parentRgtAdd(map);
+        // 所有资源默认添加到根角色
+        Role role = getRootRole();
+        long[] plusId = {resource.getId()};
+        roleResourceMapper.grantRoleResource(role.getId(), plusId);
     }
 
     @Override
@@ -199,5 +207,19 @@ public class ResourceServiceImpl implements ResourceService {
         List<Long> idList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;
+    }
+
+    /**
+     * 得到根角色
+     * <p>
+     * 根角色特征：层级level为1，父级parentId为空。
+     *
+     * @return 根角色
+     */
+    private Role getRootRole() {
+        Role role = new Role();
+        role.setLevel(1);
+        role.setParentId(null);
+        return roleMapper.selectOne(role);
     }
 }

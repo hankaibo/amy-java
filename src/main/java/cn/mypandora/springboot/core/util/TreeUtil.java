@@ -142,7 +142,7 @@ public class TreeUtil {
         }
         for (i = 0; i < fragmentTree.size(); i += 1) {
             node = fragmentTree.get(i);
-            if (node.getParentId() != null) {
+            if (node.getParentId() != null && map.get(node.getParentId()) != null) {
                 // if you have dangling branches check that map[node.parentId] exists
                 fragmentTree.get(map.get(node.getParentId())).getChildren().add(node);
             } else {

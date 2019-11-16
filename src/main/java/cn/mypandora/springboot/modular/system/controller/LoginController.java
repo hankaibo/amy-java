@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,11 +83,17 @@ public class LoginController {
         return token;
     }
 
+    /**
+     * 用户退出，清空token.
+     *
+     * @param Authorization token
+     * @return 成功或异常
+     */
     @ApiOperation(value = "用户登出", notes = "带token。")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization") String Authorization) {
         SecurityUtils.getSubject().logout();
-        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
+        String jwt = JsonWebTokenUtil.unBearer(Authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         String username = jwtAccount.getAppId();
         if (StringUtils.isEmpty(username)) {

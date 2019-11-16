@@ -3,7 +3,6 @@ package cn.mypandora.springboot.modular.system.controller;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
-import cn.mypandora.springboot.core.util.RequestResponseUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,13 +49,13 @@ public class UserController {
     /**
      * 根据token获取用户信息。
      *
-     * @param request request
+     * @param Authorization token
      * @return 用户信息，用户权限对应的菜单信息
      */
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息。")
     @GetMapping("/info")
-    public Map<String, Object> getUserAndMenu(HttpServletRequest request) {
-        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
+    public Map<String, Object> getUserAndMenu(@RequestHeader(value = "Authorization") String Authorization) {
+        String jwt = JsonWebTokenUtil.unBearer(Authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserByIdOrName(null, jwtAccount.getAppId());

@@ -46,6 +46,18 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public List<Role> listDescendantRole(String name) {
+        Role role = new Role();
+        role.setCode(name);
+        Role info = roleMapper.selectOne(role);
+        Map<String, Number> map = new HashMap<>(1);
+        map.put("id", info.getId());
+        List<Role> result = roleMapper.listDescendants(map);
+        result.add(info);
+        return result;
+    }
+
+    @Override
     public List<Role> listChildrenRole(Role role) {
         Map<String, Number> map = new HashMap<>(2);
         map.put("id", role.getId());
