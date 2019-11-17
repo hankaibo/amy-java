@@ -45,6 +45,10 @@ public class UserServiceTest extends SpringbootApplicationTest {
     public void testDeleteBatchUser() {
     }
 
+    @Test
     public void testGrantUserRole() {
+        long[] add = {6};
+        long[] minus = {};
+        userService.grantUserRole(1L, add, minus);
     }
 }

@@ -1,10 +1,13 @@
 package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
+import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
+import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,23 +31,29 @@ import java.util.Map;
 public class DepartmentController {
 
     private DepartmentService departmentService;
+    private UserService userService;
 
     @Autowired
-    public DepartmentController(DepartmentService departmentService) {
+    public DepartmentController(DepartmentService departmentService, UserService userService) {
         this.departmentService = departmentService;
+        this.userService = userService;
     }
 
     /**
      * 获取整棵部门树。
-     * 虽然返回一个List列表，但里面只有一棵数，为了首次打开列表时作为table的数据源就不改为Object了。
      *
-     * @param status 状态(启用:1，禁用:0)
+     * @param authorization token
+     * @param status        状态(启用:1，禁用:0)
      * @return 部门树
      */
     @ApiOperation(value = "部门树", notes = "根据状态获取整棵部门树。")
     @GetMapping
-    public List<DepartmentTree> listDepartment(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        List<Department> departmentList = departmentService.listAllDepartment(status);
+    public List<DepartmentTree> listDepartment(@RequestHeader(value = "Authorization") String authorization,
+                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        Long userId = userService.getUserByIdOrName(null, jwtAccount.getAppId()).getId();
+        List<Department> departmentList = departmentService.listUserDepartment(userId, status);
         return TreeUtil.department2Tree(departmentList);
     }
 

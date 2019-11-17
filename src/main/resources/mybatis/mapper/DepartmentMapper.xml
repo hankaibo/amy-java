@@ -40,6 +40,43 @@
         ORDER BY t.lft ASC
     </select>
 
+    <select id="listByUserId" resultMap="departmentMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_department t
+        WHERE t.id IN (
+            SELECT du.department_id
+            FROM sys_department_user du
+            WHERE du.user_id=#{userId}
+        )
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="listAncestries" resultMap="departmentMap" parameterType="map">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_department t
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft<(
+                    SELECT s.lft
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+            AND t.rgt>(
+                    SELECT s.lft
+                    FROM sys_department s
+                    WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft ASC
+    </select>
+
     <select id="listDescendants" resultMap="departmentMap" parameterType="map">
         SELECT
         <include refid="baseColumns">

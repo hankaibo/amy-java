@@ -17,7 +17,7 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
 
     @Test
     public void testListAll() {
-        List<Department> departmentList = departmentService.listAllDepartment(null);
+        List<Department> departmentList = departmentService.listUserDepartment(null, null);
         assertEquals(departmentList.size(), 4);
     }
 
@@ -68,16 +68,16 @@ public class DepartmentServiceTest extends SpringbootApplicationTest {
     @Test
     public void testDeleteDepartment() {
         departmentService.deleteDepartment(56L);
-        int count = departmentService.listAllDepartment(null).size();
+        int count = departmentService.listUserDepartment(null, null).size();
         assertEquals(count, 0);
     }
 
     @Test
     public void testMoveDepartment() {
-        List<Department> departmentListBefore = departmentService.listAllDepartment(null);
+        List<Department> departmentListBefore = departmentService.listUserDepartment(1L, null);
         System.out.println(departmentListBefore);
         departmentService.moveDepartment(31L, 53L);
-        List<Department> departmentListAfter = departmentService.listAllDepartment(null);
+        List<Department> departmentListAfter = departmentService.listUserDepartment(1L, null);
         System.out.println(departmentListAfter);
     }
 

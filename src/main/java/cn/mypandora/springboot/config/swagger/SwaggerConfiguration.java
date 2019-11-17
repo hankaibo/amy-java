@@ -65,7 +65,7 @@ public class SwaggerConfiguration {
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("系统API接口文档")
+                .groupName("system API")
                 //这里采用包含注解的方式来确定要显示的接口
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))

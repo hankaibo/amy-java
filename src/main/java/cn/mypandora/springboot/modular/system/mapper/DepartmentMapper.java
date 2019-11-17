@@ -18,12 +18,28 @@ import java.util.Map;
 public interface DepartmentMapper extends MyBaseMapper<Department> {
 
     /**
+     * 根据用户id查询其所有部门。
+     *
+     * @param userId 用户id
+     * @return 用户所在部门
+     */
+    List<Department> listByUserId(Long userId);
+
+    /**
      * 获取整棵树（一次性全部加载，适合数据量少的情况）
      *
      * @param map {status:状态(1:启用，0:禁用)}
      * @return 整棵树
      */
     List<Department> listAll(Map<String, Integer> map);
+
+    /**
+     * 获得本节点下面的所有后代节点
+     *
+     * @param map {id:当前操作节点id, status:状态(1:启用，0:禁用)}
+     * @return 本节点的所有祖先节点
+     */
+    List<Department> listAncestries(Map<String, Number> map);
 
     /**
      * 获得本节点下面的所有后代节点

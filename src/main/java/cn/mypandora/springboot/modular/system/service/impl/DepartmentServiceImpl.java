@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,10 +33,27 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> listAllDepartment(Integer status) {
-        Map<String, Integer> map = new HashMap<>(1);
-        map.put("status", status);
-        return departmentMapper.listAll(map);
+    public List<Department> listUserDepartment(Long userId, Integer status) {
+        // 获取用户的所有部门并过滤掉子孙部门，以减少后面重复部门的获取。
+        List<Department> departmentList = listTopDepartment(departmentMapper.listByUserId(userId));
+        Set<Department> departmentSet = new HashSet<>(departmentList);
+        // 获取用户的所有祖先部门
+        for (Department department : departmentList) {
+            Map<String, Number> map = new HashMap<>(2);
+            map.put("id", department.getId());
+            map.put("status", status);
+            List<Department> departmentAncestryList = departmentMapper.listAncestries(map);
+            departmentSet.addAll(departmentAncestryList);
+        }
+        // 获取用户的所有后代部门
+        for (Department department : departmentList) {
+            Map<String, Number> map = new HashMap<>(2);
+            map.put("id", department.getId());
+            map.put("status", status);
+            List<Department> departmentDescendantList = departmentMapper.listDescendants(map);
+            departmentSet.addAll(departmentDescendantList);
+        }
+        return new ArrayList<>(departmentSet);
     }
 
     @Override
@@ -181,7 +196,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             if (departmentRoot.getLevel() == 1) {
                 return true;
             }
-            int count = listAllDepartment(null).size();
+            int count = departmentMapper.selectAll().size();
             return count == 0;
         }
     }
@@ -212,6 +227,29 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<Long> idList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;
+    }
+
+    /**
+     * 获取顶级部门
+     *
+     * @param departmentList 部门列表
+     * @return
+     */
+    private List<Department> listTopDepartment(List<Department> departmentList) {
+        List<Department> result = new ArrayList<>();
+        if (departmentList.size() == 1) {
+            return departmentList;
+        }
+        for (Department department : departmentList) {
+            if (departmentList
+                    .stream()
+                    .filter(item -> item.getLevel() < department.getLevel())
+                    .noneMatch(item -> item.getLft() < department.getLft() && item.getRgt() > department.getRgt())) {
+                result.add(department);
+
+            }
+        }
+        return result;
     }
 
 }

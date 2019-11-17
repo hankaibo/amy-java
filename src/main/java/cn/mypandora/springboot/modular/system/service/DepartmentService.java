@@ -13,12 +13,13 @@ import java.util.List;
 public interface DepartmentService {
 
     /**
-     * 获取所有部门（一次性全部加载，适合数据量少的情况）。
+     * 获取指定用户的部门树（一次性全部加载，适合数据量少的情况）。
      *
+     * @param userId 用户id
      * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
      * @return 整棵部门树
      */
-    List<Department> listAllDepartment(Integer status);
+    List<Department> listUserDepartment(Long userId, Integer status);
 
     /**
      * 获得本部门的直接子部门。
