@@ -40,67 +40,67 @@ public class DepartmentController {
     }
 
     /**
-     * 获取整棵部门树。
+     * 获取部门树。
      *
      * @param authorization token
      * @param status        状态(启用:1，禁用:0)
      * @return 部门树
      */
-    @ApiOperation(value = "部门树", notes = "根据状态获取整棵部门树。")
+    @ApiOperation(value = "部门树", notes = "根据状态获取部门树。")
     @GetMapping
-    public List<DepartmentTree> listDepartment(@RequestHeader(value = "Authorization") String authorization,
-                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        String jwt = JsonWebTokenUtil.unBearer(authorization);
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        Long userId = userService.getUserByIdOrName(null, jwtAccount.getAppId()).getId();
-        List<Department> departmentList = departmentService.listUserDepartment(userId, status);
+    public List<DepartmentTree> listDepartmentTree(@RequestHeader(value = "Authorization") String authorization,
+                                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+        Long userId = getUserIdFromToken(authorization);
+        List<Department> departmentList = departmentService.listDepartment(status, userId);
         return TreeUtil.department2Tree(departmentList);
     }
 
     /**
      * 获取子部门。
      *
-     * @param id     主键id
-     * @param status 状态(1:启用，0:禁用)
+     * @param authorization token
+     * @param id            主键id
+     * @param status        状态(1:启用，0:禁用)
      * @return 某个部门的直接子部门
      */
     @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
-    public List<Department> listSubDepartment(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                              @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        return departmentService.listChildrenDepartment(id, status);
+    public List<Department> listDepartmentChildren(@RequestHeader(value = "Authorization") String authorization,
+                                                   @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                                   @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
+        Long userId = getUserIdFromToken(authorization);
+        return departmentService.listDepartmentChildren(id, status, userId);
     }
 
     /**
      * 添加部门。
      *
+     * @param authorization token
+     * @param department    部门数据
      * @return 空或异常
      */
     @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
     @PostMapping
-    public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        // 添加部门时，必须指定一个存在的父部门。
-        boolean existParent = departmentService.existParent(department);
-        if (!existParent) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门不存在。");
-        }
-        departmentService.addDepartment(department);
+    public ResponseEntity<Void> addDepartment(@RequestHeader(value = "Authorization") String authorization,
+                                              @RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
+        Long userId = getUserIdFromToken(authorization);
+        departmentService.addDepartment(department, userId);
         return ResponseEntity.ok().build();
     }
 
     /**
      * 查询部门。
      *
-     * @param id 部门主键id
+     * @param authorization token
+     * @param id            部门主键id
      * @return 部门对象或空
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
-    public Department getDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
-        Department department = departmentService.getDepartmentById(id);
-        if (department == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "部门不存在。");
-        }
+    public Department getDepartmentById(@RequestHeader(value = "Authorization") String authorization,
+                                        @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+        Long userId = getUserIdFromToken(authorization);
+        Department department = departmentService.getDepartmentById(id, userId);
         department.setRgt(null);
         department.setLft(null);
         department.setLevel(null);
@@ -112,77 +112,93 @@ public class DepartmentController {
     /**
      * 更新部门。
      *
-     * @param department 部门数据
+     * @param authorization token
+     * @param department    部门数据
      * @return 空或异常
      */
     @ApiOperation(value = "部门更新", notes = "根据部门数据更新部门。")
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
-        // 修改部门时，必须保证父部门存在。
-        if (!departmentService.existParent(department)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门不存在。");
-        }
-        // 修改部门时，不可以指定自己的下级为父部门。
-        if (!departmentService.isCanUpdateParent(department)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子部门作为自己的父级。");
-        }
-        departmentService.updateDepartment(department);
+    public ResponseEntity<Void> updateDepartment(@RequestHeader(value = "Authorization") String authorization,
+                                                 @RequestBody @ApiParam(value = "部门数据", required = true) Department department) {
+        Long userId = getUserIdFromToken(authorization);
+        departmentService.updateDepartment(department, userId);
         return ResponseEntity.ok().build();
     }
 
     /**
      * 启用禁用部门。
      *
-     * @param id  部门主键id
-     * @param map 状态(启用:1，禁用:0)
+     * @param authorization token
+     * @param id            部门主键id
+     * @param map           状态(启用:1，禁用:0)
      * @return 空或异常
      */
     @ApiOperation(value = "部门启用禁用", notes = "根据部门状态启用禁用部门。")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> enableDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
+    public ResponseEntity<Void> enableDepartment(@RequestHeader(value = "Authorization") String authorization,
+                                                 @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
                                                  @RequestBody @ApiParam(value = "部门状态", required = true) Map<String, Integer> map) {
+        Long userId = getUserIdFromToken(authorization);
         int count = departmentService.countUserById(id);
         if (count > 0) {
             throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以禁用。");
         }
         int status = map.get("status");
-        departmentService.enableDepartment(id, status);
+        departmentService.enableDepartment(id, status, userId);
         return ResponseEntity.ok().build();
     }
 
     /**
      * 删除部门。
      *
-     * @param id 部门主键id
+     * @param authorization token
+     * @param id            部门主键id
      * @return 空或异常
      */
     @ApiOperation(value = "部门删除", notes = "根据部门Id删除一个部门。")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+    public ResponseEntity<Void> deleteDepartment(@RequestHeader(value = "Authorization") String authorization,
+                                                 @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id) {
+        Long userId = getUserIdFromToken(authorization);
         int count = departmentService.countUserById(id);
         if (count > 0) {
             throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以删除。");
         }
-        departmentService.deleteDepartment(id);
+        departmentService.deleteDepartment(id, userId);
         return ResponseEntity.ok().build();
     }
 
     /**
      * 同层级部门的平移。
      *
-     * @param sourceId 源id
-     * @param targetId 目标id
+     * @param authorization token
+     * @param sourceId      源id
+     * @param targetId      目标id
      * @return 空或异常
      */
     @ApiOperation(value = "部门移动", notes = "将当前部门上移或下移。")
     @PutMapping
-    public ResponseEntity<Void> moveDepartment(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+    public ResponseEntity<Void> moveDepartment(@RequestHeader(value = "Authorization") String authorization,
+                                               @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
                                                @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId) {
+        Long userId = getUserIdFromToken(authorization);
         if (null == targetId || null == sourceId) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
-        departmentService.moveDepartment(sourceId, targetId);
+        departmentService.moveDepartment(sourceId, targetId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 获取用户主键id
+     *
+     * @param authorization token
+     * @return 用户id
+     */
+    private Long getUserIdFromToken(String authorization) {
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        return userService.getUserByIdOrName(null, jwtAccount.getAppId()).getId();
     }
 
 }

@@ -49,13 +49,13 @@ public class UserController {
     /**
      * 根据token获取用户信息。
      *
-     * @param Authorization token
+     * @param authorization token
      * @return 用户信息，用户权限对应的菜单信息
      */
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息。")
     @GetMapping("/info")
-    public Map<String, Object> getUserAndMenu(@RequestHeader(value = "Authorization") String Authorization) {
-        String jwt = JsonWebTokenUtil.unBearer(Authorization);
+    public Map<String, Object> getUserAndMenu(@RequestHeader(value = "Authorization") String authorization) {
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserByIdOrName(null, jwtAccount.getAppId());
