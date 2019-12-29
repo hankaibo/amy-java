@@ -40,13 +40,17 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listByUserId" resultMap="departmentMap">
+    <select id="listByUserId" resultMap="departmentMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
         </include>
         FROM sys_department t
-        WHERE t.id IN (
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        AND t.id IN (
             SELECT du.department_id
             FROM sys_department_user du
             WHERE du.user_id=#{userId}
