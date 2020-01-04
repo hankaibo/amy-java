@@ -67,21 +67,21 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     /**
      * 部门左值加N
      *
-     * @param map {id:部门id, amount:大于id左值的部门，加上的数值(正数相当于加，负数相当于减)}
+     * @param map {id:部门id, amount:大于id左值的部门，加上的数值(正数相当于加，负数相当于减), range:范围值}
      */
     void lftAdd(Map<String, Number> map);
 
     /**
      * 部门右值加N
      *
-     * @param map {id:部门id, amount:大于id右值的部门，加上的数值(正数相当于加，负数相当于减)}
+     * @param map {id:部门id, amount:大于id右值的部门，加上的数值(正数相当于加，负数相当于减), range:范围值}
      */
     void rgtAdd(Map<String, Number> map);
 
     /**
      * 当前部门集合都加上n
      *
-     * @param map {idList:部门id集合, amount:部门及子孙都要加上的数值}
+     * @param map {idList:部门id集合, amount:部门及子孙都要加上的数值, level:原层级加N}
      */
     void selfAndDescendant(Map<String, Object> map);
 
@@ -91,5 +91,12 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * @param map {idList:部门id集合, status:状态(1:启用，0:禁用)}
      */
     void enableDescendants(Map<String, Object> map);
+
+    /**
+     * 锁定数据，防止被修改左右值
+     *
+     * @param map {idList:部门id集合, isUpdate: 是否可更新状态(1:可更新，0:不可更新)}
+     */
+    void locking(Map<String, Object> map);
 
 }

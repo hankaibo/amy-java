@@ -33,7 +33,7 @@
         <logger name="cn.mypandora.springboot.modular.system.mapper" level="DEBUG" additivity="false">
             <appender-ref ref="file"/>
         </logger>
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="console"/>
         </root>
     </springProfile>
