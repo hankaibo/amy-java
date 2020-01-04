@@ -85,6 +85,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setLft(parentDepartment.getRgt());
         department.setRgt(parentDepartment.getRgt() + 1);
         department.setLevel(parentDepartment.getLevel() + 1);
+        department.setIsUpdate(1);
 
         Map<String, Number> map = new HashMap<>(2);
         map.put("id", department.getParentId());
@@ -112,6 +113,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         return department;
     }
 
+    /**
+     * 部门修改如果涉及父级部门变动则非常复杂，在这里先使用isUpdate锁住被移动部门，保证不修改它的左右值，方便后续操作。
+     *
+     * @param department 部门信息
+     * @param userId     用户id
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateDepartment(Department department, Long userId) {
         // 修改部门时，必须保证父部门存在，并只能更改自己权限范围内的部门
@@ -125,37 +133,50 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         Department info = getDepartmentById(department.getId(), userId);
         // 如果父级部门相等，则直接修改其它属性
-        if (info.getParentId().equals(department.getParentId())) {
-            departmentMapper.updateByPrimaryKeySelective(department);
-        } else {
+        if (!info.getParentId().equals(department.getParentId())) {
+            // 求出新旧两个父部门的最近共同祖先部门，确定修改范围
+            Department newParentDepartment = getDepartmentById(department.getParentId(), userId);
+            Department oldParentDepartment = getDepartmentById(info.getParentId(), userId);
+            Department commonAncestry = getCommonAncestry(newParentDepartment, oldParentDepartment);
             // 要修改的部门及子孙部门共多少个
             List<Long> updateIdList = listDescendantId(department.getId());
             int departmentNum = updateIdList.size();
-            // 新父部门
-            Department parentDepartment = getDepartmentById(department.getParentId(), userId);
-            int rgtParent = parentDepartment.getRgt();
-            int lftCurrent = info.getLft();
+            // 首先锁定被修改部门及子孙部门，保证左右值不会被下面操作修改。
+            Map<String, Object> lockMap = new HashMap<>(2);
+            lockMap.put("idList", updateIdList);
+            lockMap.put("isUpdate", 0);
+            departmentMapper.locking(lockMap);
+            // 旧父部门之后左右值修改
+            Map<String, Number> oldParentMap = new HashMap<>(3);
+            oldParentMap.put("id", info.getId());
+            oldParentMap.put("amount", departmentNum * -2);
+            oldParentMap.put("range", commonAncestry.getRgt());
+            departmentMapper.lftAdd(oldParentMap);
+            departmentMapper.rgtAdd(oldParentMap);
+            // 新父部门之后左右值修改
+            Map<String, Number> newsParentMap = new HashMap<>(2);
+            newsParentMap.put("id", newParentDepartment.getId());
+            newsParentMap.put("amount", departmentNum * 2);
+            newsParentMap.put("range", commonAncestry.getRgt());
+            departmentMapper.lftAdd(newsParentMap);
+            departmentMapper.rgtAdd(newsParentMap);
+            departmentMapper.parentRgtAdd(newsParentMap);
             // 被修改部门及子孙部门左右值修改
-            Map<String, Object> updateMap = new HashMap<>(2);
+            lockMap.put("isUpdate", 1);
+            departmentMapper.locking(lockMap);
+            int amount = getDepartmentById(department.getParentId(), userId).getRgt() - info.getRgt() - 1;
+            int level = newParentDepartment.getLevel() + 1 - info.getLevel();
+            Map<String, Object> updateMap = new HashMap<>(3);
             updateMap.put("idList", updateIdList);
-            updateMap.put("amount", rgtParent - lftCurrent);
+            updateMap.put("amount", amount);
+            updateMap.put("level", level);
             departmentMapper.selfAndDescendant(updateMap);
-            // 被修改部门的父部门右值修改
-            Map<String, Number> parentMap = new HashMap<>(2);
-            parentMap.put("id", department.getParentId());
-            parentMap.put("amount", departmentNum * 2);
-            departmentMapper.parentRgtAdd(parentMap);
-            // 计算从那个值开始调整左右值
-            Map<String, Number> map = new HashMap<>(2);
-            map.put("id", lftCurrent - rgtParent > 0 ? department.getParentId() : info.getParentId());
-            map.put("amount", departmentNum * 2);
-            departmentMapper.lftAdd(map);
-            departmentMapper.rgtAdd(map);
             // 修改本身
             LocalDateTime now = LocalDateTime.now();
             department.setUpdateTime(now);
-            departmentMapper.updateByPrimaryKeySelective(department);
+            department.setLevel(newParentDepartment.getLevel() + 1);
         }
+        departmentMapper.updateByPrimaryKeySelective(department);
     }
 
     @Override
@@ -305,6 +326,35 @@ public class DepartmentServiceImpl implements DepartmentService {
         parent.setId(department.getParentId());
         Department parentDepartment = departmentMapper.selectByPrimaryKey(parent);
         return !(parentDepartment.getLft() >= childDepartment.getLft() && parentDepartment.getRgt() <= childDepartment.getRgt());
+    }
+
+
+    /**
+     * 获取两个部门最近的共同祖先部门。
+     *
+     * @param department1 第一个部门
+     * @param department2 第二个部门
+     * @return 最近的祖先部门
+     */
+    private Department getCommonAncestry(Department department1, Department department2) {
+        Map<String, Number> newParentMap = new HashMap<>(2);
+        newParentMap.put("id", department1.getId());
+        newParentMap.put("status", 1);
+        List<Department> newParentAncestries = departmentMapper.listAncestries(newParentMap);
+        if (newParentAncestries.size() == 0) {
+            newParentAncestries.add(department1);
+        }
+
+        Map<String, Number> oldParentMap = new HashMap<>(2);
+        oldParentMap.put("id", department2.getId());
+        oldParentMap.put("status", 1);
+        List<Department> oldParentAncestries = departmentMapper.listAncestries(oldParentMap);
+        if (oldParentAncestries.size() == 0) {
+            oldParentAncestries.add(department2);
+        }
+
+        Comparator<Department> comparator = Comparator.comparing(Department::getLft);
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).get();
     }
 
 }

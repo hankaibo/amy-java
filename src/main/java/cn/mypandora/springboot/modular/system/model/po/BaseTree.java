@@ -54,4 +54,11 @@ public abstract class BaseTree extends BaseEntity {
      */
     @ApiModelProperty(value = "父节点id")
     protected Long parentId;
+
+    /**
+     * 可更新（1可更新，0不可更新）
+     */
+    @ApiModelProperty(hidden = true)
+    @Positive
+    protected Integer isUpdate;
 }
