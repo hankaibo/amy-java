@@ -14,6 +14,7 @@ import javax.validation.constraints.Positive;
  * @author hankaibo
  * @date 2019/7/17
  * @see <a href="https://www.iteye.com/topic/602979">hierarchical-data</a>
+ * @see <a href="https://www.jianshu.com/p/38179b0c816f">hierarchical-data</a>
  */
 @Data
 @NameStyle(Style.camelhumpAndLowercase)
