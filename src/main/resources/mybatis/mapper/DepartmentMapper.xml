@@ -9,6 +9,7 @@
         <result column="rgt" jdbcType="INTEGER" property="rgt"/>
         <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_update" jdbcType="INTEGER" property="isUpdate"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
@@ -154,7 +155,6 @@
                 AND t.rgt < #{range}
             ]]>
         </if>
-
     </update>
 
     <update id="selfAndDescendant" parameterType="map">

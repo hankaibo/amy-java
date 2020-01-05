@@ -1,25 +1,24 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
-import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
+import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ResourceController
@@ -34,11 +33,13 @@ public class ResourceController {
 
     private ResourceService resourceService;
     private RoleService roleService;
+    private UserService userService;
 
     @Autowired
-    public ResourceController(ResourceService resourceService, RoleService roleService) {
+    public ResourceController(ResourceService resourceService, RoleService roleService, UserService userService) {
         this.resourceService = resourceService;
         this.roleService = roleService;
+        this.userService = userService;
     }
 
     /**
@@ -53,34 +54,12 @@ public class ResourceController {
     public List<ResourceTree> listResource(@RequestHeader(value = "Authorization") String authorization,
                                            @RequestParam("type") @ApiParam(value = "资源类型(1菜单，2接口)") Integer type,
                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        // 获取当前登录者的所有角色
-        String jwt = JsonWebTokenUtil.unBearer(authorization);
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        String[] roles = StringUtils.split(jwtAccount.getRoles(), ",");
-        // 获取所有后代角色
-        Set<Role> roleSet = new HashSet<>();
-        for (String name : roles) {
-            roleSet.addAll(roleService.listDescendantRole(name));
-        }
-        // 获取角色的资源
-        Set<Resource> resourceSet = new HashSet<>();
-        for (Role role : roleSet) {
-            resourceSet.addAll(resourceService.listResourceByRoleId(role.getId()));
-        }
-        List<Resource> allResourceList = resourceSet.stream().filter(item -> {
-            if (null != type) {
-                return item.getType().equals(type);
-            }
-            if (null != status) {
-                return item.getStatus().equals(status);
-            }
-            return true;
-        }).collect(Collectors.toList());
-//        Map<String, Object> map = new HashMap<>(2);
-//        map.put("type", type);
-//        map.put("status", status);
-//        List<Resource> resourceList = resourceService.listAll(map);
-        return TreeUtil.resource2Tree(allResourceList);
+        Long userid = getUserIdFromToken(authorization);
+        Map<String, Object> map = new HashMap<>(1);
+        map.put("userId", userid);
+        map.put("status", status);
+        List<Resource> resourceList = resourceService.listResource(map);
+        return TreeUtil.resource2Tree(resourceList);
     }
 
     /**
@@ -93,10 +72,14 @@ public class ResourceController {
      */
     @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
-    public List<Resource> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+    public List<Resource> listChildrenResource(@RequestHeader(value = "Authorization") String authorization,
+                                               @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                @RequestParam("type") @ApiParam(value = "资源类型（1菜单，2接口）") Integer type,
                                                @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        Map<String, Object> map = new HashMap<>(2);
+        Long userId = getUserIdFromToken(authorization);
+
+        Map<String, Object> map = new HashMap<>(3);
+        map.put("userId", userId);
         map.put("type", type);
         map.put("status", status);
         return resourceService.listChildren(id, map);
@@ -107,8 +90,10 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源新建", notes = "根据数据新建。")
     @PostMapping
-    public void addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
-        resourceService.addResource(resource);
+    public void addResource(@RequestHeader(value = "Authorization") String authorization,
+                            @RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+        Long userId = getUserIdFromToken(authorization);
+        resourceService.addResource(resource, userId);
     }
 
     /**
@@ -119,11 +104,10 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源详情", notes = "根据资源id查询资源详情。")
     @GetMapping("/{id}")
-    public Resource listResourceById(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
-        Resource resource = resourceService.getResourceById(id);
-        if (resource == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-        }
+    public Resource listResourceById(@RequestHeader(value = "Authorization") String authorization,
+                                     @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
+        Long userId = getUserIdFromToken(authorization);
+        Resource resource = resourceService.getResourceById(id, userId);
         resource.setRgt(null);
         resource.setLft(null);
         resource.setLevel(null);
@@ -139,8 +123,10 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源更新", notes = "根据资源数据更新资源。")
     @PutMapping("/{id}")
-    public void updateResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
-        resourceService.updateResource(resource);
+    public void updateResource(@RequestHeader(value = "Authorization") String authorization,
+                               @RequestBody @ApiParam(value = "资源数据", required = true) Resource resource) {
+        Long userId = getUserIdFromToken(authorization);
+        resourceService.updateResource(resource, userId);
     }
 
     /**
@@ -152,8 +138,11 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源状态启用禁用", notes = "根据状态启用禁用资源。")
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
+    public ResponseEntity<Void> enableResource(@RequestHeader(value = "Authorization") String authorization,
+                                               @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
                                                @RequestBody @ApiParam(value = "资源状态", required = true) Map<String, Object> map) {
+        Long userId = getUserIdFromToken(authorization);
+        map.put("userId", userId);
         resourceService.enableResource(id, map);
         return ResponseEntity.ok().build();
     }
@@ -165,8 +154,10 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源删除", notes = "根据资源Id删除资源。")
     @DeleteMapping("/{id}")
-    public void deleteResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
-        resourceService.deleteResource(id);
+    public void deleteResource(@RequestHeader(value = "Authorization") String authorization,
+                               @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id) {
+        Long userId = getUserIdFromToken(authorization);
+        resourceService.deleteResource(id, userId);
     }
 
     /**
@@ -178,13 +169,27 @@ public class ResourceController {
      */
     @ApiOperation(value = "资源移动", notes = "将当前资源上移或下移。")
     @PutMapping
-    public ResponseEntity<Void> move(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+    public ResponseEntity<Void> move(@RequestHeader(value = "Authorization") String authorization,
+                                     @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
                                      @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId) {
+        Long userId = getUserIdFromToken(authorization);
         if (null == targetId || null == sourceId) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
-        resourceService.moveResource(sourceId, targetId);
+        resourceService.moveResource(sourceId, targetId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 获取用户主键id
+     *
+     * @param authorization token
+     * @return 用户id
+     */
+    private Long getUserIdFromToken(String authorization) {
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        return userService.getUserByIdOrName(null, jwtAccount.getAppId()).getId();
     }
 
 }

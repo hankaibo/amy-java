@@ -137,7 +137,7 @@ public class DepartmentController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> enableDepartment(@RequestHeader(value = "Authorization") String authorization,
                                                  @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
-                                                 @RequestBody @ApiParam(value = "部门状态", required = true) Map<String, Integer> map) {
+                                                 @RequestBody @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Map<String, Integer> map) {
         Long userId = getUserIdFromToken(authorization);
         int count = departmentService.countUserById(id);
         if (count > 0) {

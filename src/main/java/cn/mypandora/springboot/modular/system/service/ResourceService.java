@@ -22,28 +22,28 @@ public interface ResourceService {
     List<RolePermRule> listRolePermRules();
 
     /**
-     * 获取所有资源（一次性全部加载，适合数据量少的情况）。
+     * 获取指定用户的资源树（一次性全部加载，适合数据量少的情况）。
      *
-     * @param map {type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用)}
-     * @return 所有资源数据
+     * @param map {type:资源类型(1菜单，2接口), status:状态(1:启用，0:禁用), userId: 用户id}
+     * @return 资源列表
      */
-    List<Resource> listAll(Map<String, Object> map);
+    List<Resource> listResource(Map<String, Object> map);
 
     /**
      * 获得本资源的孩子资源。
      *
      * @param id  当前操作资源id
-     * @param map {type: 资源类型, status: 资源状态}
+     * @param map {type: 资源类型, status: 资源状态, userId: 用户id}
      * @return 指定资源下的所有资源
      */
-    List<Resource> listChildren(Long id, Map<String,Object> map);
+    List<Resource> listChildren(Long id, Map<String, Object> map);
 
     /**
-     * 添加孩子资源
+     * 添加资源
      *
-     * @param resource 子资源的信息
+     * @param resource 资源的信息
      */
-    void addResource(Resource resource);
+    void addResource(Resource resource, Long userId);
 
     /**
      * 查询一个资源。
@@ -51,20 +51,20 @@ public interface ResourceService {
      * @param id 当前操作资源id
      * @return 一个资源
      */
-    Resource getResourceById(Long id);
+    Resource getResourceById(Long id, Long usreId);
 
     /**
      * 更新一个资源。
      *
      * @param resource 资源信息
      */
-    void updateResource(Resource resource);
+    void updateResource(Resource resource, Long userId);
 
     /**
      * 启用禁用部门。
      *
      * @param id  当前操作资源id
-     * @param map {type: 资源类型, status: 资源状态}
+     * @param map {type: 资源类型, status: 资源状态, userId: 用户id}
      */
     void enableResource(Long id, Map<String, Object> map);
 
@@ -73,7 +73,7 @@ public interface ResourceService {
      *
      * @param id 要删除的资源ID
      */
-    void deleteResource(Long id);
+    void deleteResource(Long id, Long userId);
 
     /**
      * 平移某个资源
@@ -81,7 +81,7 @@ public interface ResourceService {
      * @param sourceId 源ID
      * @param targetId 目标ID
      */
-    void moveResource(Long sourceId, Long targetId);
+    void moveResource(Long sourceId, Long targetId, Long userId);
 
     /**
      * 查询角色所包含的所有资源。

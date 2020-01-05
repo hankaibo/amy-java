@@ -18,7 +18,7 @@ import java.util.Map;
 public interface DepartmentMapper extends MyBaseMapper<Department> {
 
     /**
-     * 获取整棵树（一次性全部加载，适合数据量少的情况）
+     * 获取整棵树（一次性全部加载，适合数据量少的情况）。
      *
      * @param map {status:状态(1:启用，0:禁用)}
      * @return 整棵树
@@ -28,13 +28,13 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     /**
      * 根据用户id查询其所有部门。
      *
-     * @param map {userId 用户id,status:状态(1:启用，0:禁用)}
+     * @param map {userId:用户id, status:状态(1:启用，0:禁用)}
      * @return 用户所有部门
      */
     List<Department> listByUserId(Map<String, Number> map);
 
     /**
-     * 获得本部门的所有祖先部门
+     * 获得本部门的所有祖先部门。
      *
      * @param map {id:当前操作部门id, status:状态(1:启用，0:禁用)}
      * @return 本部门的所有祖先部门
@@ -42,7 +42,7 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     List<Department> listAncestries(Map<String, Number> map);
 
     /**
-     * 获得本部门的所有后代部门
+     * 获得本部门的所有后代部门。
      *
      * @param map {id:当前操作部门id, status:状态(1:启用，0:禁用)}
      * @return 本部门的所有后代部门
@@ -50,7 +50,7 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     List<Department> listDescendants(Map<String, Number> map);
 
     /**
-     * 获得本部门的孩子部门
+     * 获得本部门的孩子部门。
      *
      * @param map {id:当前操作部门id, status:状态(1:启用，0:禁用)}
      * @return 本部门的孩子部门
@@ -58,42 +58,42 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     List<Department> listChildren(Map<String, Number> map);
 
     /**
-     * 父部门右值加N
+     * 父部门右值加N。
      *
      * @param map {id:部门id, amount:大于id左值的部门，加上的数值(正数相当于加，负数相当于减)}
      */
     void parentRgtAdd(Map<String, Number> map);
 
     /**
-     * 部门左值加N
+     * 部门左值加N。
      *
      * @param map {id:部门id, amount:大于id左值的部门，加上的数值(正数相当于加，负数相当于减), range:范围值}
      */
     void lftAdd(Map<String, Number> map);
 
     /**
-     * 部门右值加N
+     * 部门右值加N。
      *
      * @param map {id:部门id, amount:大于id右值的部门，加上的数值(正数相当于加，负数相当于减), range:范围值}
      */
     void rgtAdd(Map<String, Number> map);
 
     /**
-     * 当前部门集合都加上n
+     * 当前部门集合都加上N。
      *
      * @param map {idList:部门id集合, amount:部门及子孙都要加上的数值, level:原层级加N}
      */
     void selfAndDescendant(Map<String, Object> map);
 
     /**
-     * 启用禁用部门状态
+     * 启用禁用部门状态。
      *
      * @param map {idList:部门id集合, status:状态(1:启用，0:禁用)}
      */
     void enableDescendants(Map<String, Object> map);
 
     /**
-     * 锁定数据，防止被修改左右值
+     * 锁定数据，防止被修改左右值。
      *
      * @param map {idList:部门id集合, isUpdate: 是否可更新状态(1:可更新，0:不可更新)}
      */

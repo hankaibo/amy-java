@@ -14,28 +14,23 @@ import java.util.Map;
 public interface RoleService {
 
     /**
-     * 获取所有角色（一次性全部加载，适合数据量少的情况）。
+     * 获得指定用户的角色树（一次性全部加载，适合数据量少的情况）。
      *
      * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
-     * @return 整棵角色树
-     */
-    List<Role> listAllRole(Integer status);
-
-    /**
-     * 获得本角色的后代角色。
-     *
-     * @param name 角色名称
+     * @param userId 用户id
      * @return 角色列表
      */
-    List<Role> listDescendantRole(String name);
+    List<Role> listRole(Integer status, Long userId);
 
     /**
      * 获得本角色的直接子角色。
      *
-     * @param role 角色条件
+     * @param id     当前操作角色id
+     * @param status 状态(1:启用，0:禁用)
+     * @param userId 用户id
      * @return 角色列表
      */
-    List<Role> listChildrenRole(Role role);
+    List<Role> listChildrenRole(Long id, Integer status, Long userId);
 
     /**
      * 根据条件查询角色。
@@ -48,40 +43,54 @@ public interface RoleService {
     /**
      * 新增角色。
      *
-     * @param role 角色
+     * @param role   角色
+     * @param userId 用户id
      */
-    void addRole(Role role);
+    void addRole(Role role, Long userId);
 
     /**
      * 根据角色Id或者名称查询角色。
      *
-     * @param id   角色id
-     * @param name 角色名称
+     * @param id     角色id
+     * @param name   角色名称
+     * @param userId 用户id
      * @return 角色信息
      */
-    Role getRoleByIdOrName(Long id, String name);
+    Role getRoleByIdOrName(Long id, String name, Long userId);
 
     /**
      * 更新角色。
      *
-     * @param role 角色
+     * @param role   角色
+     * @param userId 用户id
      */
-    void updateRole(Role role);
+    void updateRole(Role role, Long userId);
 
     /**
-     * 启用|禁用角色。 1：开启；0：禁用。
+     * 启用|禁用角色。
      *
      * @param id     角色id
      * @param status 启用(1),禁用(0)
+     * @param userId 用户id
      */
-    void enableRole(Long id, Integer status);
+    void enableRole(Long id, Integer status, Long userId);
 
     /**
      * 删除角色。
      *
-     * @param id 角色id
+     * @param id     角色id
+     * @param userId 用户id
      */
-    void deleteRole(Long id);
+    void deleteRole(Long id, Long userId);
+
+    /**
+     * 平移角色。
+     *
+     * @param sourceId 源id
+     * @param targetId 目标id
+     * @param userId   用户id
+     */
+    void moveRole(Long sourceId, Long targetId, Long userId);
 
     /**
      * 赋予角色某资源。

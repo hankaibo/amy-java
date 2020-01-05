@@ -106,11 +106,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 查询
         Department department = new Department();
         department.setId(id);
-        department = departmentMapper.selectByPrimaryKey(department);
-        if (department == null) {
+        Department info = departmentMapper.selectByPrimaryKey(department);
+        if (info == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(), "部门不存在。");
         }
-        return department;
+        return info;
     }
 
     /**
@@ -154,13 +154,13 @@ public class DepartmentServiceImpl implements DepartmentService {
             departmentMapper.lftAdd(oldParentMap);
             departmentMapper.rgtAdd(oldParentMap);
             // 新父部门之后左右值修改
-            Map<String, Number> newsParentMap = new HashMap<>(2);
-            newsParentMap.put("id", newParentDepartment.getId());
-            newsParentMap.put("amount", departmentNum * 2);
-            newsParentMap.put("range", commonAncestry.getRgt());
-            departmentMapper.lftAdd(newsParentMap);
-            departmentMapper.rgtAdd(newsParentMap);
-            departmentMapper.parentRgtAdd(newsParentMap);
+            Map<String, Number> newParentMap = new HashMap<>(2);
+            newParentMap.put("id", newParentDepartment.getId());
+            newParentMap.put("amount", departmentNum * 2);
+            newParentMap.put("range", commonAncestry.getRgt());
+            departmentMapper.lftAdd(newParentMap);
+            departmentMapper.rgtAdd(newParentMap);
+            departmentMapper.parentRgtAdd(newParentMap);
             // 被修改部门及子孙部门左右值修改
             lockMap.put("isUpdate", 1);
             departmentMapper.locking(lockMap);
