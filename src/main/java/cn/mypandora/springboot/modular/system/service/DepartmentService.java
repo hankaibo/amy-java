@@ -17,7 +17,7 @@ public interface DepartmentService {
      *
      * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
      * @param userId 用户id
-     * @return 整棵部门树
+     * @return 部门列表
      */
     List<Department> listDepartment(Integer status, Long userId);
 

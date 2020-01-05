@@ -10,6 +10,7 @@
         <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="code" jdbcType="VARCHAR" property="code"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_update" jdbcType="INTEGER" property="isUpdate"/>
         <result column="uri" jdbcType="VARCHAR" property="uri"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="method" jdbcType="VARCHAR" property="method"/>
@@ -58,6 +59,32 @@
         ORDER BY t.lft ASC
     </select>
 
+    <select id="listAncestries" resultMap="resourceMap" parameterType="map">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type != null">
+            AND t.type=#{type}
+        </if>
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft<(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            AND t.rgt>(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft ASC
+    </select>
+
     <select id="listDescendants" resultMap="resourceMap" parameterType="map">
         SELECT
         <include refid="baseColumns">
@@ -102,28 +129,47 @@
     <update id="parentRgtAdd" parameterType="map">
         UPDATE sys_resource t
         SET t.rgt=(t.rgt + #{amount}), t.update_time=now()
-        WHERE id = #{id, jdbcType=NUMERIC}
+        WHERE 1=1
+        AND t.is_update =1
+        AND id = #{id}
     </update>
 
     <update id="lftAdd" parameterType="map">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update =1
         <![CDATA[
-        WHERE t.lft > f.rgt
+            AND t.lft > f.rgt
         ]]>
+        <if test="range!=null">
+            <![CDATA[
+                AND t.lft < #{range}
+            ]]>
+        </if>
     </update>
 
     <update id="rgtAdd" parameterType="map">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update = 1
         <![CDATA[
-        WHERE t.rgt > f.rgt
+            AND t.rgt > f.rgt
         ]]>
+        <if test="range!=null">
+            <![CDATA[
+                AND t.rgt < #{range}
+            ]]>
+        </if>
     </update>
 
     <update id="selfAndDescendant" parameterType="map">
         UPDATE sys_resource t
         SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
+        <if test="level!=null">
+            ,t.level=(t.level + #{level})
+        </if>
         WHERE 1 = 1
         AND t.id in
         <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
@@ -134,6 +180,16 @@
     <update id="enableDescendants" parameterType="map">
         UPDATE sys_resource t
         SET t.status= #{status}, t.update_time=now()
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="locking" parameterType="map">
+        UPDATE sys_resource t
+        SET t.is_update= #{isUpdate}
         WHERE 1 = 1
         AND t.id in
         <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
