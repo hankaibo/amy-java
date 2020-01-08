@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentMapper;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
@@ -37,10 +38,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<Department> listDepartment(Integer status, Long userId) {
         // 获取用户的所有部门并过滤掉子孙部门，以减少后面重复部门的获取。
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("userId", userId);
-        map.put("status", status);
-        List<Department> allDepartmentList = departmentMapper.listByUserId(map);
+        List<Department> allDepartmentList = departmentMapper.listByUserId(userId, status);
 
         List<Department> departmentList = listTopAncestryDepartment(allDepartmentList);
         // 自身
@@ -49,10 +47,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         for (Department department : departmentList) {
             // 将自己上级置为空，方便工具类构建树。
             department.setParentId(null);
-            Map<String, Number> descendantMap = new HashMap<>(2);
-            descendantMap.put("id", department.getId());
-            descendantMap.put("status", status);
-            List<Department> departmentDescendantList = departmentMapper.listDescendants(descendantMap);
+            Long id = department.getId();
+            List<Department> departmentDescendantList = departmentMapper.listDescendants(id, status);
             departmentSet.addAll(departmentDescendantList);
         }
         return departmentSet.stream().sorted(Comparator.comparing(Department::getLft)).collect(Collectors.toList());
@@ -63,10 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 获取当前用户的部门范围
         List<Department> allDepartmentList = listDepartment(status, userId);
         // 查询子部门并过滤出合适数据
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", id);
-        map.put("status", status);
-        List<Department> departmentList = departmentMapper.listChildren(map);
+        List<Department> departmentList = departmentMapper.listChildren(id, status);
         return departmentList.stream().filter(allDepartmentList::contains).collect(Collectors.toList());
     }
 
@@ -74,7 +67,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void addDepartment(Department department, Long userId) {
         // 获取父部门范围并判断(只能添加到同级及下级部门)
-        List<Department> departmentList = listDepartment(1, userId);
+        List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门选择错误。");
         }
@@ -87,19 +80,18 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setLevel(parentDepartment.getLevel() + 1);
         department.setIsUpdate(1);
 
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", department.getParentId());
-        map.put("amount", 2);
-        departmentMapper.lftAdd(map);
-        departmentMapper.rgtAdd(map);
+        Long id = department.getParentId();
+        Integer amount = 2;
+        departmentMapper.lftAdd(id, amount, null);
+        departmentMapper.rgtAdd(id, amount, null);
         departmentMapper.insert(department);
-        departmentMapper.parentRgtAdd(map);
+        departmentMapper.parentRgtAdd(id, amount);
     }
 
     @Override
     public Department getDepartmentById(Long id, Long userId) {
         // 获取部门范围防止用户查看自身权限外的部门信息
-        List<Department> departmentList = listDepartment(1, userId);
+        List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(id))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "无法查看该部门。");
         }
@@ -123,7 +115,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void updateDepartment(Department department, Long userId) {
         // 修改部门时，必须保证父部门存在，并只能更改自己权限范围内的部门
-        List<Department> departmentList = listDepartment(1, userId);
+        List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门错误。");
         }
@@ -142,35 +134,25 @@ public class DepartmentServiceImpl implements DepartmentService {
             List<Long> updateIdList = listDescendantId(department.getId());
             int departmentNum = updateIdList.size();
             // 首先锁定被修改部门及子孙部门，保证左右值不会被下面操作修改。
-            Map<String, Object> lockMap = new HashMap<>(2);
-            lockMap.put("idList", updateIdList);
-            lockMap.put("isUpdate", 0);
-            departmentMapper.locking(lockMap);
+            departmentMapper.locking(updateIdList, 0);
             // 旧父部门之后左右值修改
-            Map<String, Number> oldParentMap = new HashMap<>(3);
-            oldParentMap.put("id", info.getId());
-            oldParentMap.put("amount", departmentNum * -2);
-            oldParentMap.put("range", commonAncestry.getRgt());
-            departmentMapper.lftAdd(oldParentMap);
-            departmentMapper.rgtAdd(oldParentMap);
+            Long oldId = info.getId();
+            Integer oldAmount = departmentNum * -2;
+            Integer oldRange = commonAncestry.getRgt();
+            departmentMapper.lftAdd(oldId, oldAmount, oldRange);
+            departmentMapper.rgtAdd(oldId, oldAmount, oldRange);
             // 新父部门之后左右值修改
-            Map<String, Number> newParentMap = new HashMap<>(2);
-            newParentMap.put("id", newParentDepartment.getId());
-            newParentMap.put("amount", departmentNum * 2);
-            newParentMap.put("range", commonAncestry.getRgt());
-            departmentMapper.lftAdd(newParentMap);
-            departmentMapper.rgtAdd(newParentMap);
-            departmentMapper.parentRgtAdd(newParentMap);
+            Long newId = newParentDepartment.getId();
+            Integer newAmount = departmentNum * 2;
+            Integer newRange = commonAncestry.getRgt();
+            departmentMapper.lftAdd(newId, newAmount, newRange);
+            departmentMapper.rgtAdd(newId, newAmount, newRange);
+            departmentMapper.parentRgtAdd(newId, newAmount);
             // 被修改部门及子孙部门左右值修改
-            lockMap.put("isUpdate", 1);
-            departmentMapper.locking(lockMap);
+            departmentMapper.locking(updateIdList, 1);
             int amount = getDepartmentById(department.getParentId(), userId).getRgt() - info.getRgt() - 1;
             int level = newParentDepartment.getLevel() + 1 - info.getLevel();
-            Map<String, Object> updateMap = new HashMap<>(3);
-            updateMap.put("idList", updateIdList);
-            updateMap.put("amount", amount);
-            updateMap.put("level", level);
-            departmentMapper.selfAndDescendant(updateMap);
+            departmentMapper.selfAndDescendant(updateIdList, amount, level);
             // 修改本身
             LocalDateTime now = LocalDateTime.now();
             department.setUpdateTime(now);
@@ -181,21 +163,28 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void enableDepartment(Long id, Integer status, Long userId) {
+        int count = departmentUserMapper.countUserByDepartmentId(id);
+        if (count > 0) {
+            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以禁用。");
+        }
+
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> list = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!list.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
         }
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("idList", idList);
-        map.put("status", status);
-        departmentMapper.enableDescendants(map);
+        departmentMapper.enableDescendants(idList, status);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteDepartment(Long id, Long userId) {
+        int count = departmentUserMapper.countUserByDepartmentId(id);
+        if (count > 0) {
+            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以删除。");
+        }
+
         // 获得可删除的部门范围
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> list = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -210,11 +199,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department info = departmentMapper.selectByPrimaryKey(department);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此部门之后的相关部门左右值
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", id);
-        map.put("amount", -deleteAmount);
-        departmentMapper.lftAdd(map);
-        departmentMapper.rgtAdd(map);
+        departmentMapper.lftAdd(id, -deleteAmount, null);
+        departmentMapper.rgtAdd(id, -deleteAmount, null);
         // 求出要删除的部门所有子孙部门
         List<Long> idList = listDescendantId(id);
         String ids = StringUtils.join(idList, ',');
@@ -257,20 +243,9 @@ public class DepartmentServiceImpl implements DepartmentService {
             targetAmount *= -1;
         }
         // 源部门及子孙部门左右值 targetAmount
-        Map<String, Object> sourceMap = new HashMap<>(2);
-        sourceMap.put("idList", sourceIdList);
-        sourceMap.put("amount", targetAmount);
-        departmentMapper.selfAndDescendant(sourceMap);
+        departmentMapper.selfAndDescendant(sourceIdList, targetAmount, 0);
         // 目标部门及子孙部门左右值 sourceAmount
-        Map<String, Object> targetMap = new HashMap<>(2);
-        targetMap.put("idList", targetIdList);
-        targetMap.put("amount", sourceAmount);
-        departmentMapper.selfAndDescendant(targetMap);
-    }
-
-    @Override
-    public int countUserById(Long id) {
-        return departmentUserMapper.countUserByDepartmentId(id);
+        departmentMapper.selfAndDescendant(targetIdList, sourceAmount, 0);
     }
 
     /**
@@ -280,9 +255,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @return 部门主键id集合
      */
     private List<Long> listDescendantId(Long id) {
-        Map<String, Number> map = new HashMap<>(1);
-        map.put("id", id);
-        List<Department> departmentList = departmentMapper.listDescendants(map);
+        List<Department> departmentList = departmentMapper.listDescendants(id, null);
         List<Long> idList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;
@@ -337,18 +310,14 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @return 最近的祖先部门
      */
     private Department getCommonAncestry(Department department1, Department department2) {
-        Map<String, Number> newParentMap = new HashMap<>(2);
-        newParentMap.put("id", department1.getId());
-        newParentMap.put("status", 1);
-        List<Department> newParentAncestries = departmentMapper.listAncestries(newParentMap);
+        Long newId = department1.getId();
+        List<Department> newParentAncestries = departmentMapper.listAncestries(newId, StatusEnum.ENABLED.getValue());
         if (newParentAncestries.size() == 0) {
             newParentAncestries.add(department1);
         }
 
-        Map<String, Number> oldParentMap = new HashMap<>(2);
-        oldParentMap.put("id", department2.getId());
-        oldParentMap.put("status", 1);
-        List<Department> oldParentAncestries = departmentMapper.listAncestries(oldParentMap);
+        Long oldId = department2.getId();
+        List<Department> oldParentAncestries = departmentMapper.listAncestries(oldId, StatusEnum.ENABLED.getValue());
         if (oldParentAncestries.size() == 0) {
             oldParentAncestries.add(department2);
         }
