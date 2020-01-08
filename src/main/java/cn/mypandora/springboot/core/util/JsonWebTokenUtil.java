@@ -37,11 +37,12 @@ public class JsonWebTokenUtil {
      * @param period    有效时间（毫秒），分解为以下两个
      *                  iat         header中(issued at) 在什么时候签发的
      *                  exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
+     * @param userId    用户id
      * @param roles     payload中的角色信息
      * @param resources payload中的资源信息
      * @return jwt
      */
-    public static String createJwt(String id, String issuer, String subject, Long period, String roles, String resources) {
+    public static String createJwt(String id, String issuer, String subject, Long period, Long userId, String roles, String resources) {
         long currentTimeMillis = System.currentTimeMillis();
 
         JwtBuilder jwtBuilder = Jwts.builder();
@@ -60,6 +61,9 @@ public class JsonWebTokenUtil {
             jwtBuilder.setExpiration(new Date(currentTimeMillis + period * 1000));
         }
         // 设置 Custom Claim 信息
+        if (userId != null) {
+            jwtBuilder.claim("userId", userId);
+        }
         if (StringUtils.isNotEmpty(roles)) {
             jwtBuilder.claim("roles", roles);
         }
@@ -97,6 +101,8 @@ public class JsonWebTokenUtil {
         jwtAccount.setIssuedAt(claims.getIssuedAt());
         // 接收方
         jwtAccount.setAudience(claims.getAudience());
+        //
+        jwtAccount.setUserId(claims.get("userId", Long.class));
         // 访问主张-角色
         jwtAccount.setRoles(claims.get("roles", String.class));
         // 访问主张-权限
