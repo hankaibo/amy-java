@@ -82,12 +82,4 @@ public interface DepartmentService {
      */
     void moveDepartment(Long sourceId, Long targetId, Long userId);
 
-    /**
-     * 根据部门Id查询用户数量（包含子孙部门的用户数量）。
-     *
-     * @param id 部门id
-     * @return 用户数量
-     */
-    int countUserById(Long id);
-
 }
