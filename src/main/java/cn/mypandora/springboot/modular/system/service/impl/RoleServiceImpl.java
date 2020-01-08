@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
@@ -41,22 +42,16 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Role> listRole(Integer status, Long userId) {
         // 获取用户的所有角色并过滤掉子孙角色，以减少后面重复角色的获取。
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("userId", userId);
-        map.put("status", status);
-        List<Role> allRoleList = roleMapper.listByUserIdOrName(map);
+        List<Role> allRoleList = roleMapper.listByUserIdOrName(userId, null, status);
 
         List<Role> roleList = listTopAncestryRole(allRoleList);
-
         // 自身
         Set<Role> roleSet = new HashSet<>(roleList);
         // 所有后代角色
         for (Role role : roleList) {
-            role.setParentId(null);
-            Map<String, Number> descendantMap = new HashMap<>(2);
-            descendantMap.put("id", role.getId());
-            descendantMap.put("status", status);
-            List<Role> roleDescendantList = roleMapper.listDescendants(descendantMap);
+//            role.setParentId(null);
+            Long id = role.getId();
+            List<Role> roleDescendantList = roleMapper.listDescendants(id, status);
             roleSet.addAll(roleDescendantList);
         }
         return roleSet.stream().sorted(Comparator.comparing(Role::getLft)).collect(Collectors.toList());
@@ -66,10 +61,7 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> listChildrenRole(Long id, Integer status, Long userId) {
         List<Role> allRoleList = listRole(status, userId);
 
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", id);
-        map.put("status", status);
-        List<Role> roleList = roleMapper.listChildren(map);
+        List<Role> roleList = roleMapper.listChildren(id, status);
         return roleList.stream().filter(allRoleList::contains).collect(Collectors.toList());
     }
 
@@ -87,7 +79,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addRole(Role role, Long userId) {
-        List<Role> roleList = listRole(1, userId);
+        List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getParentId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级角色选择错误。");
         }
@@ -100,18 +92,17 @@ public class RoleServiceImpl implements RoleService {
         role.setLevel(parentRole.getLevel() + 1);
         role.setIsUpdate(1);
 
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", role.getParentId());
-        map.put("amount", 2);
-        roleMapper.lftAdd(map);
-        roleMapper.rgtAdd(map);
+        Long id = role.getParentId();
+        int amount = 2;
+        roleMapper.lftAdd(id, amount, null);
+        roleMapper.rgtAdd(id, amount, null);
         roleMapper.insert(role);
-        roleMapper.parentRgtAdd(map);
+        roleMapper.parentRgtAdd(id, amount);
     }
 
     @Override
     public Role getRoleByIdOrName(Long id, String name, Long userId) {
-        List<Role> roleList = listRole(1, userId);
+        List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(id))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "f无法查看该角色。");
         }
@@ -126,9 +117,10 @@ public class RoleServiceImpl implements RoleService {
         return info;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateRole(Role role, Long userId) {
-        List<Role> roleList = listRole(1, userId);
+        List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getParentId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级角色错误。");
         }
@@ -146,35 +138,25 @@ public class RoleServiceImpl implements RoleService {
             List<Long> updateIdList = listDescendantId(role.getId());
             int roleNum = updateIdList.size();
 
-            Map<String, Object> lockMap = new HashMap<>(2);
-            lockMap.put("idList", updateIdList);
-            lockMap.put("isUpdate", 0);
-            roleMapper.locking(lockMap);
+            roleMapper.locking(updateIdList, 0);
 
-            Map<String, Number> oldParentMap = new HashMap<>(3);
-            oldParentMap.put("id", info.getId());
-            oldParentMap.put("amount", roleNum * -2);
-            oldParentMap.put("range", commonAncestry.getRgt());
-            roleMapper.lftAdd(oldParentMap);
-            roleMapper.rgtAdd(oldParentMap);
+            Long oldId = info.getId();
+            int oldAmount = roleNum * -2;
+            int oldRange = commonAncestry.getRgt();
+            roleMapper.lftAdd(oldId, oldAmount, oldRange);
+            roleMapper.rgtAdd(oldId, oldAmount, oldRange);
 
-            Map<String, Number> newParentMap = new HashMap<>(2);
-            newParentMap.put("id", newParentRole.getId());
-            newParentMap.put("amount", roleNum * 2);
-            newParentMap.put("range", commonAncestry.getRgt());
-            roleMapper.lftAdd(newParentMap);
-            roleMapper.rgtAdd(newParentMap);
-            roleMapper.parentRgtAdd(newParentMap);
+            Long newId = newParentRole.getId();
+            int newAmount = roleNum * 2;
+            int newRange = commonAncestry.getRgt();
+            roleMapper.lftAdd(newId, newAmount, newRange);
+            roleMapper.rgtAdd(newId, newAmount, newRange);
+            roleMapper.parentRgtAdd(newId, newAmount);
 
-            lockMap.put("isUpdate", 1);
-            roleMapper.locking(lockMap);
+            roleMapper.locking(updateIdList, 1);
             int amount = getRoleByIdOrName(role.getParentId(), null, userId).getRgt() - info.getRgt() - 1;
             int level = newParentRole.getLevel() + 1 - info.getLevel();
-            Map<String, Object> updateMap = new HashMap<>(3);
-            updateMap.put("idList", updateIdList);
-            updateMap.put("amount", amount);
-            updateMap.put("level", level);
-            roleMapper.selfAndDescendant(updateMap);
+            roleMapper.selfAndDescendant(updateIdList, amount, level);
 
             LocalDateTime now = LocalDateTime.now();
             role.setUpdateTime(now);
@@ -191,10 +173,7 @@ public class RoleServiceImpl implements RoleService {
         if (!list.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
         }
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("idList", idList);
-        map.put("status", status);
-        roleMapper.enableDescendants(map);
+        roleMapper.enableDescendants(idList, status);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -213,11 +192,8 @@ public class RoleServiceImpl implements RoleService {
         Role info = roleMapper.selectByPrimaryKey(role);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此角色之后的相关角色左右值
-        Map<String, Number> map = new HashMap<>(2);
-        map.put("id", id);
-        map.put("amount", -deleteAmount);
-        roleMapper.lftAdd(map);
-        roleMapper.rgtAdd(map);
+        roleMapper.lftAdd(id, -deleteAmount, null);
+        roleMapper.rgtAdd(id, -deleteAmount, null);
         // 求出要删除的角色所有子孙角色
         List<Long> idList = listDescendantId(id);
         String ids = StringUtils.join(idList, ',');
@@ -263,15 +239,9 @@ public class RoleServiceImpl implements RoleService {
             targetAmount *= -1;
         }
         // 源角色及子孙角色左右值 targetAmount
-        Map<String, Object> sourceMap = new HashMap<>(2);
-        sourceMap.put("idList", sourceIdList);
-        sourceMap.put("amount", targetAmount);
-        roleMapper.selfAndDescendant(sourceMap);
+        roleMapper.selfAndDescendant(sourceIdList, targetAmount, 0);
         // 目标角色及子孙角色左右值 sourceAmount
-        Map<String, Object> targetMap = new HashMap<>(2);
-        targetMap.put("idList", targetIdList);
-        targetMap.put("amount", sourceAmount);
-        roleMapper.selfAndDescendant(targetMap);
+        roleMapper.selfAndDescendant(targetIdList, sourceAmount, 0);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -289,10 +259,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> listRoleByUserIdOrName(Long userId, String username) {
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("userId", userId);
-        map.put("username", username);
-        return roleMapper.listByUserIdOrName(map);
+        return roleMapper.listByUserIdOrName(userId, username, null);
     }
 
     /**
@@ -302,9 +269,7 @@ public class RoleServiceImpl implements RoleService {
      * @return 角色集合
      */
     private List<Long> listDescendantId(Long id) {
-        Map<String, Number> map = new HashMap<>(1);
-        map.put("id", id);
-        List<Role> roleList = roleMapper.listDescendants(map);
+        List<Role> roleList = roleMapper.listDescendants(id, null);
         List<Long> idList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         idList.add(id);
         return idList;
@@ -358,18 +323,14 @@ public class RoleServiceImpl implements RoleService {
      * @return 最近的祖先角色
      */
     private Role getCommonAncestry(Role role1, Role role2) {
-        Map<String, Number> newParentMap = new HashMap<>(2);
-        newParentMap.put("id", role1.getId());
-        newParentMap.put("status", 1);
-        List<Role> newParentAncestries = roleMapper.listAncestries(newParentMap);
+        Long newId = role1.getId();
+        List<Role> newParentAncestries = roleMapper.listAncestries(newId, StatusEnum.ENABLED.getValue());
         if (newParentAncestries.size() == 0) {
             newParentAncestries.add(role1);
         }
 
-        Map<String, Number> oldParentMap = new HashMap<>(2);
-        oldParentMap.put("id", role2.getId());
-        oldParentMap.put("status", 1);
-        List<Role> oldParentAncestries = roleMapper.listAncestries(oldParentMap);
+        Long oldId = role2.getId();
+        List<Role> oldParentAncestries = roleMapper.listAncestries(oldId, StatusEnum.ENABLED.getValue());
         if (oldParentAncestries.size() == 0) {
             oldParentAncestries.add(role2);
         }

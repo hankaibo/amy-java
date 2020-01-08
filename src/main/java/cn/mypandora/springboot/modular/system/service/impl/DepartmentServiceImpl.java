@@ -81,7 +81,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setIsUpdate(1);
 
         Long id = department.getParentId();
-        Integer amount = 2;
+        int amount = 2;
         departmentMapper.lftAdd(id, amount, null);
         departmentMapper.rgtAdd(id, amount, null);
         departmentMapper.insert(department);
@@ -137,14 +137,14 @@ public class DepartmentServiceImpl implements DepartmentService {
             departmentMapper.locking(updateIdList, 0);
             // 旧父部门之后左右值修改
             Long oldId = info.getId();
-            Integer oldAmount = departmentNum * -2;
-            Integer oldRange = commonAncestry.getRgt();
+            int oldAmount = departmentNum * -2;
+            int oldRange = commonAncestry.getRgt();
             departmentMapper.lftAdd(oldId, oldAmount, oldRange);
             departmentMapper.rgtAdd(oldId, oldAmount, oldRange);
             // 新父部门之后左右值修改
             Long newId = newParentDepartment.getId();
-            Integer newAmount = departmentNum * 2;
-            Integer newRange = commonAncestry.getRgt();
+            int newAmount = departmentNum * 2;
+            int newRange = commonAncestry.getRgt();
             departmentMapper.lftAdd(newId, newAmount, newRange);
             departmentMapper.rgtAdd(newId, newAmount, newRange);
             departmentMapper.parentRgtAdd(newId, newAmount);

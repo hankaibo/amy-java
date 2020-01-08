@@ -16,7 +16,7 @@ public interface RoleService {
     /**
      * 获得指定用户的角色树（一次性全部加载，适合数据量少的情况）。
      *
-     * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
+     * @param status 状态(1:启用，0:禁用)，默认为空查询所有
      * @param userId 用户id
      * @return 角色列表
      */
@@ -67,7 +67,7 @@ public interface RoleService {
     void updateRole(Role role, Long userId);
 
     /**
-     * 启用|禁用角色。
+     * 启用禁用角色。
      *
      * @param id     角色id
      * @param status 启用(1),禁用(0)
