@@ -71,6 +71,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
 
                     // 当存储在redis的JWT没有过期，即refresh time 没有过期
                     String username = SecurityUtils.getSubject().getPrincipal().toString();
+                    Long userId = userService.getUserByIdOrName(null, username).getId();
                     String jwt = JsonWebTokenUtil.unBearer(WebUtils.toHttp(servletRequest).getHeader("Authorization"));
                     String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
@@ -82,9 +83,9 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         String resources = String.join(",", resourceList);
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
-                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, roles, resources);
+                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, userId, roles, resources);
                         redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
-                        RequestResponseUtil.responseWrite(HttpStatus.OK.value(),HttpStatus.OK.getReasonPhrase(), servletResponse);
+                        RequestResponseUtil.responseWrite(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), servletResponse);
                         return false;
                     } else {
                         // jwt时间失效过期,jwt refresh time失效 返回jwt过期客户端重新登录

@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
+import cn.mypandora.springboot.config.filter.CustomFilter;
 import cn.mypandora.springboot.config.shiro.RestPathMatchingFilterChainResolver;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.core.support.SpringContextHolder;
@@ -64,6 +65,10 @@ public class FilterChainManager {
         JwtFilter jwtFilter = new JwtFilter(userService, roleService, resourceService, redisTemplate);
         filters.put("jwt", jwtFilter);
 
+        // 配置自定义过滤器，注入userId参数
+        CustomFilter customFilter = new CustomFilter();
+        filters.put("userIdFilter", customFilter);
+
         return filters;
     }
 
@@ -90,7 +95,7 @@ public class FilterChainManager {
                 rolePermRules.forEach(rule -> {
                     StringBuilder chain = rule.toFilterChain();
                     if (null != chain) {
-                        filterChainDefinitionMap.putIfAbsent(rule.getUrl(), chain.toString());
+                        filterChainDefinitionMap.putIfAbsent(rule.getUrl(), chain.toString() + ",userIdFilter");
                     }
                 });
             }

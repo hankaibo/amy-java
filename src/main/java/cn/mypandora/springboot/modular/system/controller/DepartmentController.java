@@ -42,16 +42,16 @@ public class DepartmentController {
     /**
      * 获取部门树。
      *
-     * @param authorization token
-     * @param status        状态(启用:1，禁用:0)
+     * @param userId token
+     * @param status 状态(启用:1，禁用:0)
      * @return 部门树
      */
     @ApiOperation(value = "部门树", notes = "根据状态获取部门树。")
     @GetMapping
-    public List<DepartmentTree> listDepartmentTree(@RequestHeader(value = "Authorization") String authorization,
+    public List<DepartmentTree> listDepartmentTree(Long userId,
                                                    @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        Long userId = getUserIdFromToken(authorization);
-        List<Department> departmentList = departmentService.listDepartment(status, userId);
+        System.out.println(userId);
+        List<Department> departmentList = departmentService.listDepartment(status, 1L);
         return TreeUtil.department2Tree(departmentList);
     }
 
