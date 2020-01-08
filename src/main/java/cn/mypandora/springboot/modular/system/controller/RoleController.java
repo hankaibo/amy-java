@@ -2,25 +2,21 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
-import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.TreeUtil;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
-import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
-import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * RoleController
@@ -35,29 +31,26 @@ public class RoleController {
 
     private RoleService roleService;
     private ResourceService resourceService;
-    private UserService userService;
     private FilterChainManager filterChainManager;
 
     @Autowired
-    public RoleController(RoleService roleService, ResourceService resourceService, UserService userService, FilterChainManager filterChainManager) {
+    public RoleController(RoleService roleService, ResourceService resourceService, FilterChainManager filterChainManager) {
         this.roleService = roleService;
         this.resourceService = resourceService;
-        this.userService = userService;
         this.filterChainManager = filterChainManager;
     }
 
     /**
      * 获取角色树。
      *
-     * @param authorization token
-     * @param status        状态(启用:1，禁用:0)
+     * @param status 状态(启用:1，禁用:0)
+     * @param userId 用户id
      * @return 角色树
      */
     @ApiOperation(value = "角色树", notes = "根据状态获取整棵角色树。")
     @GetMapping
-    public List<RoleTree> listRoleTree(@RequestHeader(value = "Authorization") String authorization,
-                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        Long userId = getUserIdFromToken(authorization);
+    public List<RoleTree> listRoleTree(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+                                       Long userId) {
         List<Role> roleList = roleService.listRole(status, userId);
         return TreeUtil.role2Tree(roleList);
     }
@@ -65,17 +58,16 @@ public class RoleController {
     /**
      * 获取子角色。
      *
-     * @param authorization token
-     * @param id            主键id
-     * @param status        状态(1:启用，0:禁用)
+     * @param id     主键id
+     * @param status 状态(1:启用，0:禁用)
+     * @param userId 用户id
      * @return 某个角色的分页子数据
      */
     @ApiOperation(value = "子角色列表", notes = "根据角色id查询其下的所有直接子角色。")
     @GetMapping("/{id}/children")
-    public List<Role> listRoleChildren(@RequestHeader(value = "Authorization") String authorization,
-                                       @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status) {
-        Long userId = getUserIdFromToken(authorization);
+    public List<Role> listRoleChildren(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+                                       @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+                                       Long userId) {
         return roleService.listChildrenRole(id, status, userId);
     }
 
@@ -86,23 +78,22 @@ public class RoleController {
      */
     @ApiOperation(value = "角色新建", notes = "根据数据新建一个角色。")
     @PostMapping
-    public void addRole(@RequestHeader(value = "Authorization") String authorization,
-                        @RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
-        Long userId = getUserIdFromToken(authorization);
+    public void addRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role,
+                        Long userId) {
         roleService.addRole(role, userId);
     }
 
     /**
      * 查询角色详细数据。
      *
-     * @param id 角色主键id
+     * @param id     角色主键id
+     * @param userId 用户id
      * @return 角色信息
      */
     @ApiOperation(value = "角色详情", notes = "根据角色id查询角色详情。")
     @GetMapping("/{id}")
-    public Role getRole(@RequestHeader(value = "Authorization") String authorization,
-                        @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
-        Long userId = getUserIdFromToken(authorization);
+    public Role getRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                        Long userId) {
         Role role = roleService.getRoleByIdOrName(id, null, userId);
         role.setRgt(null);
         role.setLft(null);
@@ -115,58 +106,56 @@ public class RoleController {
     /**
      * 更新角色。
      *
-     * @param role 角色数据
+     * @param role   角色数据
+     * @param userId 用户id
      */
     @ApiOperation(value = "角色更新", notes = "根据角色数据更新角色。")
     @PutMapping("/{id}")
-    public void updateRole(@RequestHeader(value = "Authorization") String authorization,
-                           @RequestBody @ApiParam(value = "角色数据", required = true) Role role) {
-        Long userId = getUserIdFromToken(authorization);
+    public void updateRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role,
+                           Long userId) {
         roleService.updateRole(role, userId);
     }
 
     /**
      * 启用禁用角色。
      *
-     * @param id  角色主键id
-     * @param map 状态(1:启用，0:禁用)
+     * @param id     角色主键id
+     * @param status 状态(1:启用，0:禁用)
+     * @param userId 用户id
      */
     @ApiOperation(value = "角色状态启用禁用", notes = "根据角色状态启用禁用角色。")
     @PatchMapping("/{id}/status")
-    public void enableRole(@RequestHeader(value = "Authorization") String authorization,
-                           @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-                           @RequestBody @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Map<String, Integer> map) {
-        Long userId = getUserIdFromToken(authorization);
-        int status = map.get("status");
+    public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                           @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
+                           Long userId) {
         roleService.enableRole(id, status, userId);
     }
 
     /**
      * 删除角色。
      *
-     * @param id 角色主键id
+     * @param id     角色主键id
+     * @param userId 用户id
      */
     @ApiOperation(value = "角色删除", notes = "根据角色Id删除角色。")
     @DeleteMapping("/{id}")
-    public void deleteRole(@RequestHeader(value = "Authorization") String authorization,
-                           @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id) {
-        Long userId = getUserIdFromToken(authorization);
+    public void deleteRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                           Long userId) {
         roleService.deleteRole(id, userId);
     }
 
     /**
      * 同层级角色的平移。
      *
-     * @param authorization token
-     * @param sourceId      源id
-     * @param targetId      目标id
+     * @param sourceId 源id
+     * @param targetId 目标id
+     * @param userId   用户id
      */
     @ApiOperation(value = "角色移动", notes = "将当前角色上移或下移。")
     @PutMapping
-    public void moveRole(@RequestHeader(value = "Authorization") String authorization,
-                         @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
-                         @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId) {
-        Long userId = getUserIdFromToken(authorization);
+    public void moveRole(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+                         @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
+                         Long userId) {
         if (null == targetId || null == sourceId) {
             throw new CustomException(HttpStatus.NOT_MODIFIED.value(), "该角色不可以移动。");
         }
@@ -181,33 +170,10 @@ public class RoleController {
      */
     @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
-    public Map<String, List> listRoleResource(@RequestHeader(value = "Authorization") String authorization,
+    public List<ResourceTree> listRoleResource(@RequestHeader(value = "Authorization") String authorization,
                                               @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
-        Map<String, Object> params = new HashMap<>(1);
-        params.put("status", status);
-        // 获取当前登录者的所有角色
-        String jwt = JsonWebTokenUtil.unBearer(authorization);
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        String[] roles = StringUtils.split(jwtAccount.getRoles(), ",");
-        // 获取所有后代角色
-        Set<Role> roleSet = new HashSet<>();
-        for (String name : roles) {
-//            roleSet.addAll(roleService.listResourceByRoleId(1L));
-        }
-        // 获取角色的资源
-        Set<Resource> resourceSet = new HashSet<>();
-        for (Role role : roleSet) {
-            resourceSet.addAll(resourceService.listResourceByRoleId(role.getId()));
-        }
-        List<Resource> allResourceList = new ArrayList<>(resourceSet);
-        List<Resource> roleResourceList = resourceService.listResourceByRoleId(id);
-        List<ResourceTree> resourceTreeList = TreeUtil.resource2Tree(allResourceList);
-
-        Map<String, List> map = new HashMap<>(2);
-        map.put("resTree", resourceTreeList);
-        map.put("resSelected", roleResourceList);
-        return map;
+        return null;
     }
 
     /**
@@ -226,18 +192,6 @@ public class RoleController {
         long[] minusId = minusResource.stream().distinct().mapToLong(it -> it).toArray();
         roleService.grantRoleResource(id, plusId, minusId);
         filterChainManager.reloadFilterChain();
-    }
-
-    /**
-     * 获取用户主键id
-     *
-     * @param authorization token
-     * @return 用户id
-     */
-    private Long getUserIdFromToken(String authorization) {
-        String jwt = JsonWebTokenUtil.unBearer(authorization);
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        return userService.getUserByIdOrName(null, jwtAccount.getAppId()).getId();
     }
 
 }
