@@ -2,12 +2,8 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.exception.CustomException;
-import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
-import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
-import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
@@ -22,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * UserController
@@ -35,36 +30,30 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private final String DEFAULT_PASSWORD = "123456";
+
     private UserService userService;
     private RoleService roleService;
-    private ResourceService resourceService;
 
     @Autowired
-    public UserController(UserService userService, RoleService roleService, ResourceService resourceService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.resourceService = resourceService;
     }
 
     /**
-     * 根据token获取用户信息。
+     * 获取当前登录用户信息。
      *
-     * @param authorization token
+     * @param userId 用户主键id
      * @return 用户信息，用户权限对应的菜单信息
      */
     @ApiOperation(value = "获取当前登录用户信息", notes = "根据用户的token，查询用户的相关信息。")
     @GetMapping("/info")
-    public Map<String, Object> getUserAndMenu(@RequestHeader(value = "Authorization") String authorization) {
-        String jwt = JsonWebTokenUtil.unBearer(authorization);
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        Map<String, Object> map = new HashMap<>(2);
-        User user = userService.getUserByIdOrName(null, jwtAccount.getAppId());
+    public User getCurrentUser(Long userId) {
+        User user = userService.getUserByIdOrName(userId, null);
         user.setPassword(null);
         user.setSalt(null);
-        List<String> menuList = resourceService.listResourceMenuByUserId(user.getId()).stream().map(Resource::getCode).distinct().collect(Collectors.toList());
-        map.put("user", user);
-        map.put("menuList", menuList);
-        return map;
+        return user;
     }
 
     /**
@@ -123,8 +112,7 @@ public class UserController {
     public void addUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         // 管理员新建用户时，如果密码为空，则统一使用默认密码。
         if (StringUtils.isBlank(user.getPassword())) {
-            String defaultPassword = "123456";
-            user.setPassword(defaultPassword);
+            user.setPassword(DEFAULT_PASSWORD);
         }
         userService.addUser(user);
     }
@@ -139,10 +127,7 @@ public class UserController {
     @ApiOperation(value = "用户详情", notes = "根据用户id查询用户详情。")
     @GetMapping("/{id}")
     public User getUserById(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        User user = userService.getUserById(id);
-        if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
-        }
+        User user = userService.getUserByIdOrName(id, null);
         user.setLastLoginTime(null);
         user.setCreateTime(null);
         user.setUpdateTime(null);
@@ -161,16 +146,15 @@ public class UserController {
     }
 
     /**
-     * 启用|禁用用户。
+     * 启用禁用用户。
      *
-     * @param id  用户主键id
-     * @param map 状态(启用:1，禁用:0)
+     * @param id     用户主键id
+     * @param status 状态(启用:1，禁用:0)
      */
     @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
     @PatchMapping("/{id}/status")
     public void enableUser(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                           @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
-        Integer status = map.get("status");
+                           @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
         userService.enableUser(id, status);
     }
 
@@ -199,10 +183,7 @@ public class UserController {
     public void updatePassword(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
                                @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
         String oldPassword = map.get("oldPassword");
-        User user = userService.getUserById(id);
-        if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
-        }
+        User user = userService.getUserByIdOrName(id, null);
         if (!user.getPassword().equals(BCrypt.hashpw(oldPassword, user.getSalt()))) {
             throw new CustomException(HttpStatus.CONFLICT.value(), "密码错误。");
         }

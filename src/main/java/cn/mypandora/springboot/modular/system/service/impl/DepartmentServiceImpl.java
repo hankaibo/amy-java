@@ -55,7 +55,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> listDepartmentChildren(Long id, Integer status, Long userId) {
+    public List<Department> listChildrenDepartment(Long id, Integer status, Long userId) {
         // 获取当前用户的部门范围
         List<Department> allDepartmentList = listDepartment(status, userId);
         // 查询子部门并过滤出合适数据
@@ -123,6 +123,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (!isCanUpdateParent(department)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子部门作为自己的父级。");
         }
+
         Department info = getDepartmentById(department.getId(), userId);
         // 如果父级部门相等，则直接修改其它属性
         if (!info.getParentId().equals(department.getParentId())) {
@@ -249,7 +250,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     /**
-     * 获取此部门及其子孙部门的id
+     * 获取此部门及其子孙部门的id。
      *
      * @param id 部门主键id
      * @return 部门主键id集合

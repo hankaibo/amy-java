@@ -49,7 +49,6 @@ public class RoleServiceImpl implements RoleService {
         Set<Role> roleSet = new HashSet<>(roleList);
         // 所有后代角色
         for (Role role : roleList) {
-//            role.setParentId(null);
             Long id = role.getId();
             List<Role> roleDescendantList = roleMapper.listDescendants(id, status);
             roleSet.addAll(roleDescendantList);
@@ -104,13 +103,13 @@ public class RoleServiceImpl implements RoleService {
     public Role getRoleByIdOrName(Long id, String name, Long userId) {
         List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(id))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "f无法查看该角色。");
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "无法查看该角色。");
         }
 
         Role role = new Role();
         role.setId(id);
         role.setName(name);
-        Role info = roleMapper.selectOne(role);
+        Role info = roleMapper.selectByPrimaryKey(role);
         if (info == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(), "角色不存在。");
         }
@@ -128,6 +127,7 @@ public class RoleServiceImpl implements RoleService {
         if (!isCanUpdateParent(role)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子角色作为自己的父级。");
         }
+
         Role info = getRoleByIdOrName(role.getId(), null, userId);
 
         if (!info.getParentId().equals(role.getParentId())) {
@@ -246,7 +246,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void grantRoleResource(Long roleId, long[] plusId, long[] minusId) {
+    public void grantRoleResource(Long roleId, long[] plusId, long[] minusId, Long userId) {
         // 删除旧的资源
         if (minusId.length > 0) {
             roleResourceMapper.deleteRoleSomeResource(roleId, minusId);
@@ -263,10 +263,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
-     * 获取此角色及其子孙角色的id
+     * 获取此角色及其子孙角色的id。
      *
      * @param id 角色
-     * @return 角色集合
+     * @return 角色主键id集合
      */
     private List<Long> listDescendantId(Long id) {
         List<Role> roleList = roleMapper.listDescendants(id, null);

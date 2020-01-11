@@ -40,10 +40,13 @@ public class CustomFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
         String authorization = ((HttpServletRequest) request).getHeader("authorization");
         String jwt = JsonWebTokenUtil.unBearer(authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         Long userId = jwtAccount.getUserId();
+        String roles = jwtAccount.getRoles();
+
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
             public String[] getParameterValues(String name) {

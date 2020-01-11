@@ -30,19 +30,20 @@ public class JsonWebTokenUtil {
     /**
      * 创建jwt.
      *
-     * @param id        令牌id
-     * @param issuer    header中该JWT的签发者
-     * @param subject   header中该JWT所面向的用户
-     *                  audience    header中接收该JWT的一方
-     * @param period    有效时间（毫秒），分解为以下两个
-     *                  iat         header中(issued at) 在什么时候签发的
-     *                  exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
-     * @param userId    用户id
-     * @param roles     payload中的角色信息
-     * @param resources payload中的资源信息
+     * @param id            令牌id
+     * @param issuer        header中该JWT的签发者
+     * @param subject       header中该JWT所面向的用户
+     *                      audience    header中接收该JWT的一方
+     * @param period        有效时间（毫秒），分解为以下两个
+     *                      iat         header中(issued at) 在什么时候签发的
+     *                      exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
+     * @param userId        payload中的用户id
+     * @param roleIds       payload中的角色信息
+     * @param roleCodes     payload中的角色信息
+     * @param resourceCodes payload中的资源信息
      * @return jwt
      */
-    public static String createJwt(String id, String issuer, String subject, Long period, Long userId, String roles, String resources) {
+    public static String createJwt(String id, String issuer, String subject, Long period, Long userId, String roleIds, String roleCodes, String resourceCodes) {
         long currentTimeMillis = System.currentTimeMillis();
 
         JwtBuilder jwtBuilder = Jwts.builder();
@@ -64,11 +65,14 @@ public class JsonWebTokenUtil {
         if (userId != null) {
             jwtBuilder.claim("userId", userId);
         }
-        if (StringUtils.isNotEmpty(roles)) {
-            jwtBuilder.claim("roles", roles);
+        if (StringUtils.isNotEmpty(roleIds)) {
+            jwtBuilder.claim("roleIds", roleIds);
         }
-        if (StringUtils.isNotEmpty(resources)) {
-            jwtBuilder.claim("resources", resources);
+        if (StringUtils.isNotEmpty(roleCodes)) {
+            jwtBuilder.claim("roleCodes", roleCodes);
+        }
+        if (StringUtils.isNotEmpty(resourceCodes)) {
+            jwtBuilder.claim("resourceCodes", resourceCodes);
         }
         // 使用密钥进行签名
         // signWith(key)会让jjwt自动根据key的长度选择算法，在计算出签名的同时，会在header中写入alg键值对。

@@ -2,6 +2,9 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
@@ -55,6 +58,18 @@ public class LoginController {
 
     /**
      * 用户登录，返回token。
+     * 关于当前登录用户是否有操作部门、角色、资源的权限，有如下两种方案。
+     * 方案一：
+     * 用户登录时，获取当前登录用户的userId,departmentIds,roleIds,roleCodes,resourceIds,resourceCodes，并作为token数据返回给前端。
+     * 用户操作部门、角色和资源时，从token中取出上述资源，进行用户是否有权限的判断。
+     * 优点：每次从token中获取，不用再查询数据库，减少了sql操作。
+     * 缺点：如果动态修改了当前用户的部门、角色和资源，只要他不退出重新登录就依然有操作权限。
+     * <p>
+     * 方案二：
+     * 用户登录时，获取当前登录用户的userId，并作为token数据返回给前端。
+     * 用户操作部门、角色和资源时，从token中取出userId，通过userId从数据库中查询出相应的部门、角色和资源。然后再进行操作权限的判断。
+     * 优点：每次都是基于不变的用户userId动态从数据库中查询最新权限，修改可即时生效。
+     * 缺点：每次操作都查询数据库，sql压力大。
      *
      * @param request request
      * @return token
@@ -67,26 +82,47 @@ public class LoginController {
     })
     @PostMapping("/login")
     public Token login(HttpServletRequest request) {
+        // 获取用户信息
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
-        Long userId = userService.getUserByIdOrName(null, username).getId();
+        User user = userService.getUserByIdOrName(null, username);
+        Long userId = user.getId();
 
-        List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
-        String roles = String.join(",", roleList);
+        // 获取角色信息
+        List<Role> roleList = roleService.listRoleByUserIdOrName(null, username);
+        List<String> roleCodeList = roleList.stream().map(Role::getCode).collect(Collectors.toList());
+        List<Long> roleIdList = roleList.stream().map(Role::getId).collect(Collectors.toList());
 
-        List<String> resourceList = resourceService.listResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
-        String resources = String.join(",", resourceList);
+        String roleCodes = String.join(",", roleCodeList);
+        String roleIds = StringUtils.join(roleIdList, ',');
+
+        // 获取资源信息
+        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username);
+        List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
+
+        String resourceCodes = String.join(",", resourceCodeList);
 
         // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
         long refreshPeriodTime = 36000L;
-        String jwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, userId, roles, resources);
-        // 将签发的JWT存储到Redis： {JWT-ID-{username} , jwt}
+
+        // 生成jwt并将签发的JWT存储到Redis： {JWT-ID-{username} , jwt}
+        String jwt = JsonWebTokenUtil.createJwt(
+                UUID.randomUUID().toString(),
+                "token-server",
+                username,
+                refreshPeriodTime >> 1,
+                userId,
+                roleIds,
+                roleCodes,
+                resourceCodes
+        );
         redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), jwt, refreshPeriodTime, TimeUnit.SECONDS);
 
+        // 返回给前台数据
         Token token = new Token();
         token.setToken(jwt);
-        token.setRole(roles);
-        token.setResources(resources);
+        token.setRoles(roleCodes);
+        token.setResources(resourceCodes);
 
         return token;
     }

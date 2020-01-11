@@ -43,7 +43,7 @@
         ${alias}.update_time
     </sql>
 
-    <select id="listAll" resultMap="resourceMap" parameterType="map">
+    <select id="listAll" resultMap="resourceMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -59,7 +59,35 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listAncestries" resultMap="resourceMap" parameterType="map">
+    <select id="listByUserIdOrName" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type!=null">
+            AND t.type=#{type}
+        </if>
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        AND t.id IN (
+        SELECT rr.resource_id
+        FROM sys_role_resource rr
+        JOIN (
+        SELECT ur.role_id AS role_id
+        FROM sys_user_role ur
+        WHERE ur.user_id =(
+        SELECT id AS userId
+        FROM sys_user u
+        WHERE u.username=#{username} OR u.id=#{userId}
+        )
+        ) temp ON rr.role_id=temp.role_id
+        )
+    </select>
+
+    <select id="listAncestries" resultMap="resourceMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -85,7 +113,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listDescendants" resultMap="resourceMap" parameterType="map">
+    <select id="listDescendants" resultMap="resourceMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -111,7 +139,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <select id="listChildren" resultMap="resourceMap" parameterType="map">
+    <select id="listChildren" resultMap="resourceMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -126,7 +154,7 @@
         ORDER BY t.lft ASC
     </select>
 
-    <update id="parentRgtAdd" parameterType="map">
+    <update id="parentRgtAdd">
         UPDATE sys_resource t
         SET t.rgt=(t.rgt + #{amount}), t.update_time=now()
         WHERE 1=1
@@ -134,7 +162,7 @@
         AND id = #{id}
     </update>
 
-    <update id="lftAdd" parameterType="map">
+    <update id="lftAdd">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         WHERE 1=1
@@ -149,7 +177,7 @@
         </if>
     </update>
 
-    <update id="rgtAdd" parameterType="map">
+    <update id="rgtAdd">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         WHERE 1=1
@@ -164,7 +192,7 @@
         </if>
     </update>
 
-    <update id="selfAndDescendant" parameterType="map">
+    <update id="selfAndDescendant">
         UPDATE sys_resource t
         SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
         <if test="level!=null">
@@ -177,7 +205,7 @@
         </foreach>
     </update>
 
-    <update id="enableDescendants" parameterType="map">
+    <update id="enableDescendants">
         UPDATE sys_resource t
         SET t.status= #{status}, t.update_time=now()
         WHERE 1 = 1
@@ -187,7 +215,7 @@
         </foreach>
     </update>
 
-    <update id="locking" parameterType="map">
+    <update id="locking">
         UPDATE sys_resource t
         SET t.is_update= #{isUpdate}
         WHERE 1 = 1
@@ -209,7 +237,7 @@
         ORDER BY url DESC
     </select>
 
-    <select id="listByRoleId" resultMap="resourceMap" parameterType="long">
+    <select id="listByRoleIds" resultMap="resourceMap">
         SELECT
         <include refid="baseColumns">
             <property name="alias" value="t"/>
@@ -217,49 +245,10 @@
         FROM sys_resource t
         INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
         WHERE 1 = 1
-        AND rr.role_id = #{id}
-    </select>
-
-    <select id="listResourceMenuByUserId" resultMap="resourceMap" parameterType="long">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_resource t
-        WHERE t.type=1
-        AND t.status=1
-        AND t.id IN (
-        SELECT rr.resource_id
-        FROM sys_role_resource rr
-        JOIN (
-        SELECT ur.role_id AS role_id
-        FROM sys_user_role ur
-        WHERE ur.user_id =#{userId}
-        ) temp
-        ON rr.role_id=temp.role_id
-        )
-    </select>
-
-    <select id="listByUserIdOrName" resultMap="resourceMap">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="t"/>
-        </include>
-        FROM sys_resource t
-        WHERE 1=1
-        AND t.id IN (
-        SELECT rr.resource_id
-        FROM sys_role_resource rr
-        JOIN (
-        SELECT ur.role_id AS role_id
-        FROM sys_user_role ur
-        WHERE ur.user_id =(
-        SELECT id AS userId
-        FROM sys_user u
-        WHERE u.username=#{username} OR u.id=#{userId}
-        )
-        ) temp ON rr.role_id=temp.role_id
-        )
+        AND rr.role_id in
+        <foreach collection="roleIds" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

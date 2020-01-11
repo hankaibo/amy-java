@@ -28,7 +28,7 @@ public class Token {
      * 角色
      */
     @ApiModelProperty(value = "角色值", required = true)
-    private String role;
+    private String roles;
 
     /**
      * 资源

@@ -60,7 +60,7 @@ public class DepartmentController {
     public List<Department> listDepartmentChildren(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                    @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
                                                    Long userId) {
-        return departmentService.listDepartmentChildren(id, status, userId);
+        return departmentService.listChildrenDepartment(id, status, userId);
     }
 
     /**

@@ -6,7 +6,6 @@ import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
-import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,13 +29,11 @@ import java.util.Map;
 public class RoleController {
 
     private RoleService roleService;
-    private ResourceService resourceService;
     private FilterChainManager filterChainManager;
 
     @Autowired
-    public RoleController(RoleService roleService, ResourceService resourceService, FilterChainManager filterChainManager) {
+    public RoleController(RoleService roleService, FilterChainManager filterChainManager) {
         this.roleService = roleService;
-        this.resourceService = resourceService;
         this.filterChainManager = filterChainManager;
     }
 
@@ -74,7 +71,8 @@ public class RoleController {
     /**
      * 新建角色。
      *
-     * @param role 角色数据
+     * @param role   角色数据
+     * @param userId 用户id
      */
     @ApiOperation(value = "角色新建", notes = "根据数据新建一个角色。")
     @PostMapping
@@ -164,6 +162,7 @@ public class RoleController {
 
     /**
      * 查询该角色所包含的资源。
+     * TODO
      *
      * @param id 角色主键id
      * @return 角色所包含的资源
@@ -171,8 +170,8 @@ public class RoleController {
     @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
     public List<ResourceTree> listRoleResource(@RequestHeader(value = "Authorization") String authorization,
-                                              @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-                                              @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
+                                               @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
         return null;
     }
 
@@ -185,12 +184,13 @@ public class RoleController {
     @ApiOperation(value = "赋予角色一些资源。", notes = "根据角色id赋予其一些资源。")
     @PostMapping("/{id}/resources")
     public void grantRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-                                  @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> map) {
+                                  @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> map,
+                                  Long userId) {
         List<Long> plusResource = map.get("plusResource");
         List<Long> minusResource = map.get("minusResource");
         long[] plusId = plusResource.stream().distinct().mapToLong(it -> it).toArray();
         long[] minusId = minusResource.stream().distinct().mapToLong(it -> it).toArray();
-        roleService.grantRoleResource(id, plusId, minusId);
+        roleService.grantRoleResource(id, plusId, minusId, userId);
         filterChainManager.reloadFilterChain();
     }
 
