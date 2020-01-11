@@ -22,15 +22,6 @@ public interface UserService {
     PageInfo<User> pageUser(int pageNum, int pageSize, User user);
 
     /**
-     * 根据用户Id或者名称查询用户。
-     *
-     * @param id       用户Id
-     * @param username 用户名称
-     * @return 用户信息
-     */
-    User getUserByIdOrName(Long id, String username);
-
-    /**
      * 添加用户。
      *
      * @param user 用户
@@ -38,12 +29,13 @@ public interface UserService {
     void addUser(User user);
 
     /**
-     * 根据用户Id查询用户。
+     * 根据用户Id或者名称查询用户。
      *
-     * @param id 用户Id
+     * @param id       用户Id
+     * @param username 用户名称
      * @return 用户信息
      */
-    User getUserById(Long id);
+    User getUserByIdOrName(Long id, String username);
 
     /**
      * 更新用户。

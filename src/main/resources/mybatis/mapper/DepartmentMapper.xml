@@ -159,11 +159,10 @@
 
     <update id="selfAndDescendant">
         UPDATE sys_department t
-        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}),
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
         <if test="level!=null">
-            t.level=(t.level + #{level}),
+            ,t.level=(t.level + #{level})
         </if>
-        t.update_time=now()
         WHERE 1 = 1
         AND t.id in
         <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">

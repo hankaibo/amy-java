@@ -4,6 +4,9 @@ import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.util.IpUtil;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.RequestResponseUtil;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
+import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
@@ -70,20 +73,44 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                     // refresh也过期则告知客户端JWT时间过期重新认证
 
                     // 当存储在redis的JWT没有过期，即refresh time 没有过期
+                    // 获取用户信息
                     String username = SecurityUtils.getSubject().getPrincipal().toString();
-                    Long userId = userService.getUserByIdOrName(null, username).getId();
+                    User user = userService.getUserByIdOrName(null, username);
+                    Long userId = user.getId();
+
                     String jwt = JsonWebTokenUtil.unBearer(WebUtils.toHttp(servletRequest).getHeader("Authorization"));
                     String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
+
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
                         // 重新申请新的JWT
                         // 根据 username 获取其对应所拥有的角色(这里设计为角色对应资源，没有权限对应资源)
-                        List<String> roleList = roleService.listRoleByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
-                        String roles = String.join(",", roleList);
-                        List<String> resourceList = resourceService.listResourceByUserIdOrName(null, username).stream().map(item -> item.getCode()).collect(Collectors.toList());
-                        String resources = String.join(",", resourceList);
+                        // 获取角色信息
+                        List<Role> roleList = roleService.listRoleByUserIdOrName(null, username);
+                        List<String> roleCodeList = roleList.stream().map(Role::getCode).collect(Collectors.toList());
+                        List<Long> roleIdList = roleList.stream().map(Role::getId).collect(Collectors.toList());
+
+                        String roleCodes = String.join(",", roleCodeList);
+                        String roleIds = StringUtils.join(roleIdList, ',');
+
+                        // 获取资源信息
+                        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username);
+                        List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
+
+                        String resourceCodes = String.join(",", resourceCodeList);
+
                         //seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
-                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username, refreshPeriodTime >> 1, userId, roles, resources);
+
+                        String newJwt = JsonWebTokenUtil.createJwt(
+                                UUID.randomUUID().toString(),
+                                "token-server",
+                                username,
+                                refreshPeriodTime >> 1,
+                                userId,
+                                roleIds,
+                                roleCodes,
+                                resourceCodes
+                        );
                         redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
                         RequestResponseUtil.responseWrite(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), servletResponse);
                         return false;

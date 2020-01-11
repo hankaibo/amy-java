@@ -94,12 +94,14 @@ public interface RoleService {
 
     /**
      * 赋予角色某资源。
+     * TODO
      *
      * @param roleId  角色Id
      * @param plusId  增加资源Id集合
      * @param minusId 删除资源Id集合
+     * @param userId  用户id
      */
-    void grantRoleResource(Long roleId, long[] plusId, long[] minusId);
+    void grantRoleResource(Long roleId, long[] plusId, long[] minusId, Long userId);
 
     /**
      * 根据用户id或者名称查询用户的所有角色。

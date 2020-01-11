@@ -15,7 +15,7 @@ public interface DepartmentService {
     /**
      * 获取指定用户的部门树（一次性全部加载，适合数据量少的情况）。
      *
-     * @param status 状态(1:启用，0:禁用)，默认为空查询所有。
+     * @param status 状态(1:启用，0:禁用)，默认为空查询所有
      * @param userId 用户id
      * @return 部门列表
      */
@@ -29,7 +29,7 @@ public interface DepartmentService {
      * @param userId 用户id
      * @return 指定部门下的所有部门
      */
-    List<Department> listDepartmentChildren(Long id, Integer status, Long userId);
+    List<Department> listChildrenDepartment(Long id, Integer status, Long userId);
 
     /**
      * 添加部门。

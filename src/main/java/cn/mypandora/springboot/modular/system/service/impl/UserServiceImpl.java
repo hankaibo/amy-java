@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
@@ -11,6 +12,7 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +51,12 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setId(id);
         user.setUsername(username);
-        return this.userMapper.selectOne(user);
+
+        User info = userMapper.selectOne(user);
+        if (info == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
+        }
+        return info;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -70,11 +77,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public User getUserById(Long id) {
-        return this.userMapper.getUser(id);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUser(User user) {
@@ -82,7 +84,11 @@ public class UserServiceImpl implements UserService {
         user.setUpdateTime(now);
 
         userMapper.updateByPrimaryKeySelective(user);
-        departmentUserMapper.updateByUserId(user.getId(), user.getDepartmentId());
+
+        User info = userMapper.getUser(user.getId());
+        if (!info.getDepartmentId().equals(user.getDepartmentId())) {
+            departmentUserMapper.updateByUserId(user.getId(), user.getDepartmentId());
+        }
     }
 
     @Override
