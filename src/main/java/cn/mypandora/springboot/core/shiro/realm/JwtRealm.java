@@ -40,14 +40,14 @@ public class JwtRealm extends AuthorizingRealm {
 
         if (payload.startsWith(JWT) && payload.charAt(NUM_4) == LEFT && payload.charAt(payload.length() - 1) == RIGHT) {
             Map<String, Object> payloadMap = JsonWebTokenUtil.readValue(payload.substring(4));
-            Set<String> roles = JsonWebTokenUtil.split((String) payloadMap.get("roles"));
-            Set<String> resources = JsonWebTokenUtil.split((String) payloadMap.get("resources"));
+            Set<String> roles = JsonWebTokenUtil.split((String) payloadMap.get("roleCodes"));
+            Set<String> resources = JsonWebTokenUtil.split((String) payloadMap.get("resourceCodes"));
 
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-            if (null != roles && !roles.isEmpty()) {
+            if (!roles.isEmpty()) {
                 info.setRoles(roles);
             }
-            if (null != resources && !resources.isEmpty()) {
+            if (!resources.isEmpty()) {
                 info.setStringPermissions(resources);
             }
             return info;
@@ -63,7 +63,7 @@ public class JwtRealm extends AuthorizingRealm {
 
         JwtToken jwtToken = (JwtToken) token;
         String jwt = (String) jwtToken.getCredentials();
-        String payload = null;
+        String payload;
         try {
             // 预先解析Payload
             // 没有做任何的签名校验
@@ -74,10 +74,6 @@ public class JwtRealm extends AuthorizingRealm {
         } catch (Exception e) {
             //令牌无效
             throw new AuthenticationException("errsJwt");
-        }
-        if (null == payload) {
-            //令牌无效
-            throw new AuthenticationException("errJwt");
         }
         return new SimpleAuthenticationInfo("jwt:" + payload, jwt, this.getName());
     }

@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.core.shiro.matcher;
 
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
-import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -25,16 +24,12 @@ public class JwtMatcher implements CredentialsMatcher {
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         String jwt = (String) info.getCredentials();
-        JwtAccount jwtAccount = null;
         try {
-            jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+            JsonWebTokenUtil.parseJwt(jwt);
         } catch (SignatureException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | ExpiredJwtException e) {
             throw new AuthenticationException("errJwt");
         } catch (Exception e) {
             throw new AuthenticationException("expiredJwt");
-        }
-        if (null == jwtAccount) {
-            throw new AuthenticationException("errJwt");
         }
         return true;
     }

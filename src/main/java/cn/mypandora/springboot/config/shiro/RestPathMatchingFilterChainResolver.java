@@ -5,6 +5,7 @@ import org.apache.shiro.web.filter.mgt.FilterChainManager;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
 
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -18,6 +19,14 @@ import javax.servlet.ServletResponse;
 public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChainResolver {
 
     private static final String DEFAULT_PATH_SEPARATOR = "/";
+
+    public RestPathMatchingFilterChainResolver() {
+        super();
+    }
+
+    public RestPathMatchingFilterChainResolver(FilterConfig filterConfig) {
+        super(filterConfig);
+    }
 
     /**
      * 重写filterChain匹配

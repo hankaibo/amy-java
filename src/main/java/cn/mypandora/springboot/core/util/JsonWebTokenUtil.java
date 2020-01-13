@@ -108,9 +108,9 @@ public class JsonWebTokenUtil {
         //
         jwtAccount.setUserId(claims.get("userId", Long.class));
         // 访问主张-角色
-        jwtAccount.setRoles(claims.get("roles", String.class));
+        jwtAccount.setRoles(claims.get("roleCodes", String.class));
         // 访问主张-权限
-        jwtAccount.setResources(claims.get("resources", String.class));
+        jwtAccount.setResourceCodes(claims.get("resourceCodes", String.class));
         return jwtAccount;
     }
 
@@ -130,8 +130,9 @@ public class JsonWebTokenUtil {
         map.put("sub", claims.getSubject());
         map.put("iat", claims.getIssuedAt());
         map.put("exp", claims.getExpiration());
-        map.put("roles", claims.get("roles"));
-        map.put("resources", claims.get("resources"));
+        map.put("roleIds", claims.get("roleIds"));
+        map.put("roleCodes", claims.get("roleCodes"));
+        map.put("resourceCodes", claims.get("resourceCodes"));
 
         return JSON.toJSONString(map);
     }

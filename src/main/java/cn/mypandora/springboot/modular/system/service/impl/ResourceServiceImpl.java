@@ -82,7 +82,7 @@ public class ResourceServiceImpl implements ResourceService {
         resource.setCreateTime(now);
         resource.setLft(parentResource.getRgt());
         resource.setRgt(parentResource.getRgt() + 1);
-        resource.setLft(parentResource.getLevel() + 1);
+        resource.setLevel(parentResource.getLevel() + 1);
         resource.setIsUpdate(1);
 
         Long id = resource.getParentId();
@@ -99,7 +99,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public Resource getResourceById(Long id, Long userId) {
-        List<Resource> resourceList = listResource(1, StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> resourceList = listResource(null, StatusEnum.ENABLED.getValue(), userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(id))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "无法查看该资源。");
         }

@@ -33,7 +33,7 @@ public class RolePermRule implements Serializable {
      * 将url needRoles转化成shiro可识别的过滤器链：
      * url=jwt[角色1、角色2、角色3]
      *
-     * @return
+     * @return url=jwt[角色1、角色2、角色3] || null
      */
     public StringBuilder toFilterChain() {
         if (null == this.url || this.url.isEmpty()) {
