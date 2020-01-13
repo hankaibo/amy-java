@@ -24,9 +24,13 @@ public class JwtAccount implements Serializable {
     private String issuer;
     private Date issuedAt;
     private String audience;
-    private String roles;
     private Long userId;
-    private String resources;
+    /**
+     * 角色。
+     * 与shiro的roles属性相对应
+     */
+    private String roles;
+    private String resourceCodes;
     private String host;
 
 }

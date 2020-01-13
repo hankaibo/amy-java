@@ -45,7 +45,6 @@ public class CustomFilter implements Filter {
         String jwt = JsonWebTokenUtil.unBearer(authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         Long userId = jwtAccount.getUserId();
-        String roles = jwtAccount.getRoles();
 
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override

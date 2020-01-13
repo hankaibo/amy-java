@@ -93,14 +93,14 @@ public class LoginController {
         List<String> roleCodeList = roleList.stream().map(Role::getCode).collect(Collectors.toList());
         List<Long> roleIdList = roleList.stream().map(Role::getId).collect(Collectors.toList());
 
-        String roleCodes = String.join(",", roleCodeList);
+        String roleCodes = StringUtils.join(roleCodeList, ',');
         String roleIds = StringUtils.join(roleIdList, ',');
 
         // 获取资源信息
         List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username);
         List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
 
-        String resourceCodes = String.join(",", resourceCodeList);
+        String resourceCodes = StringUtils.join(resourceCodeList, ',');
 
         // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
         long refreshPeriodTime = 36000L;
