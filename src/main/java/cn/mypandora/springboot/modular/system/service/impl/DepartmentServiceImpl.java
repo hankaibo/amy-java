@@ -72,7 +72,8 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门选择错误。");
         }
         // 添加
-        Department parentDepartment = getDepartmentById(department.getParentId(), userId);
+        Long parentId = department.getParentId();
+        Department parentDepartment = getDepartmentById(parentId, userId);
         LocalDateTime now = LocalDateTime.now();
         department.setCreateTime(now);
         department.setLft(parentDepartment.getRgt());
@@ -80,12 +81,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setLevel(parentDepartment.getLevel() + 1);
         department.setIsUpdate(1);
 
-        Long id = department.getParentId();
         int amount = 2;
-        departmentMapper.lftAdd(id, amount, null);
-        departmentMapper.rgtAdd(id, amount, null);
+        departmentMapper.lftAdd(parentId, amount, null);
+        departmentMapper.rgtAdd(parentId, amount, null);
         departmentMapper.insert(department);
-        departmentMapper.parentRgtAdd(id, amount);
+        departmentMapper.parentRgtAdd(parentId, amount);
     }
 
     @Override
@@ -123,11 +123,15 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (!isCanUpdateParent(department)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子部门作为自己的父级。");
         }
+        // 修改部门时，不可以修改自己权限之外的部门。
+        if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getId()))) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
+        }
 
         Department info = getDepartmentById(department.getId(), userId);
         // 如果父级部门相等，则直接修改其它属性
         if (!info.getParentId().equals(department.getParentId())) {
-            // 求出新旧两个父部门的最近共同祖先部门，确定修改范围
+            // 求出新旧两个父部门的最近共同祖先部门，减小修改范围。
             Department newParentDepartment = getDepartmentById(department.getParentId(), userId);
             Department oldParentDepartment = getDepartmentById(info.getParentId(), userId);
             Department commonAncestry = getCommonAncestry(newParentDepartment, oldParentDepartment);
@@ -171,8 +175,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> idList = listDescendantId(id);
-        List<Long> list = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.retainAll(idList)) {
+        List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
         }
         departmentMapper.enableDescendants(idList, status);
@@ -188,8 +192,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         // 获得可删除的部门范围
         List<Department> departmentList = listDepartment(null, userId);
-        List<Long> list = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.contains(id)) {
+        List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.contains(id)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
         }
 
@@ -216,8 +220,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<Long> idList = new ArrayList<>();
         idList.add(sourceId);
         idList.add(targetId);
-        List<Long> list = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.retainAll(idList)) {
+        List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
         }
 
@@ -237,7 +241,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<Long> sourceIdList = listDescendantId(sourceId);
         List<Long> targetIdList = listDescendantId(targetId);
 
-        // 确定方向，目标大于源：下称；反之：上移。
+        // 确定方向，目标大于源：下移；反之：上移。
         if (targetInfo.getRgt() > sourceInfo.getRgt()) {
             sourceAmount *= -1;
         } else {
@@ -324,7 +328,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         Comparator<Department> comparator = Comparator.comparing(Department::getLft);
-        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).get();
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).orElseThrow(RuntimeException::new);
     }
 
 }

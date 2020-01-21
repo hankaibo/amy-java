@@ -2,8 +2,10 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
+import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
@@ -29,8 +31,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-
-    private final String DEFAULT_PASSWORD = "123456";
 
     private UserService userService;
     private RoleService roleService;
@@ -112,7 +112,8 @@ public class UserController {
     public void addUser(@RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         // 管理员新建用户时，如果密码为空，则统一使用默认密码。
         if (StringUtils.isBlank(user.getPassword())) {
-            user.setPassword(DEFAULT_PASSWORD);
+            String defaultPassword = "123456";
+            user.setPassword(defaultPassword);
         }
         userService.addUser(user);
     }
@@ -149,7 +150,7 @@ public class UserController {
      * 启用禁用用户。
      *
      * @param id     用户主键id
-     * @param status 状态(启用:1，禁用:0)
+     * @param status 状态(1:启用，0:禁用)
      */
     @ApiOperation(value = "用户状态启用禁用", notes = "根据用户id启用或禁用其状态。")
     @PatchMapping("/{id}/status")
@@ -217,21 +218,26 @@ public class UserController {
      * 查询该用户所包含的角色。
      *
      * @param id     角色主键id
-     * @param status 状态(启用:1，禁用:0)
+     * @param status 状态(1:启用，0:禁用)
      * @return 用户所包含的角色
      */
     @ApiOperation(value = "查询用户的所有角色", notes = "根据用户id查询其包含的所有角色。")
     @GetMapping("/{id}/roles")
-    public Map<String, List<Role>> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-                                                @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
-        Map<String, Object> params = new HashMap<>(1);
-        params.put("status", status);
-        List<Role> roleList = roleService.listRoleByCondition(params);
+    public Map<String, List> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+                                          @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+                                          Long userId) {
+        // 获取当前登录用户的所有角色
+        List<Role> roleList = roleService.listRole(status, userId);
+        List<RoleTree> roleTrees = TreeUtil.role2Tree(roleList);
+
+        // 获取指定角色的所有资源
         List<Role> roleSelectedList = roleService.listRoleByUserIdOrName(id, null);
 
-        Map<String, List<Role>> map = new HashMap<>(2);
-        map.put("roleList", roleList);
+
+        Map<String, List> map = new HashMap<>(2);
+        map.put("roleList", roleTrees);
         map.put("roleSelectedList", roleSelectedList);
+
         return map;
     }
 

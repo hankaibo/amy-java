@@ -21,7 +21,7 @@ public interface ResourceService {
     List<RolePermRule> listRolePermRules();
 
     /**
-     * 获取指定用户的资源树（一次性全部加载，适合数据量少的情况）。
+     * 获得指定用户的资源树（一次性全部加载，适合数据量少的情况）。
      *
      * @param type   资源类型(1:菜单，2:接口)
      * @param status 状态(1:启用，0:禁用)
@@ -34,10 +34,10 @@ public interface ResourceService {
      * 获得本资源的直接子资源。
      *
      * @param id     当前操作资源id
-     * @param type   资源类型
+     * @param type   资源类型(1:菜单，2:接口)
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
-     * @return 指定资源下的所有资源
+     * @return 资源列表
      */
     List<Resource> listChildrenResource(Long id, Integer type, Integer status, Long userId);
 
@@ -97,10 +97,12 @@ public interface ResourceService {
      * 查询角色所包含的所有资源。
      *
      * @param roleIds 角色主键id
+     * @param type    资源类型(1:菜单，2:接口)
+     * @param status  状态(1:启用，0:禁用)
      * @param userId  用户id
      * @return 所有资源数据
      */
-    List<Resource> listResourceByRoleIds(Long[] roleIds, Long userId);
+    List<Resource> listResourceByRoleIds(Long[] roleIds, Integer type, Integer status, Long userId);
 
     /**
      * 查询用户的所有资源。
@@ -108,8 +110,10 @@ public interface ResourceService {
      *
      * @param userId   用户id
      * @param username 用户名称
+     * @param type     资源类型(1:菜单，2:接口)
+     * @param status   状态(1:启用，0:禁用)
      * @return 角色资源
      */
-    List<Resource> listResourceByUserIdOrName(Long userId, String username);
+    List<Resource> listResourceByUserIdOrName(Long userId, String username, Integer type, Integer status);
 
 }

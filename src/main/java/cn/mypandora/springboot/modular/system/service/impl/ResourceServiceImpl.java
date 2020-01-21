@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
 import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
@@ -72,12 +73,13 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addResource(Resource resource, Long userId) {
-        List<Resource> resourceList = listResource(1, StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> resourceList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级资源选择错误。");
         }
 
-        Resource parentResource = getResourceById(resource.getParentId(), userId);
+        Long parentId = resource.getParentId();
+        Resource parentResource = getResourceById(parentId, userId);
         LocalDateTime now = LocalDateTime.now();
         resource.setCreateTime(now);
         resource.setLft(parentResource.getRgt());
@@ -85,12 +87,11 @@ public class ResourceServiceImpl implements ResourceService {
         resource.setLevel(parentResource.getLevel() + 1);
         resource.setIsUpdate(1);
 
-        Long id = resource.getParentId();
         int amount = 2;
-        resourceMapper.lftAdd(id, amount, null);
-        resourceMapper.rgtAdd(id, amount, null);
+        resourceMapper.lftAdd(parentId, amount, null);
+        resourceMapper.rgtAdd(parentId, amount, null);
         resourceMapper.insert(resource);
-        resourceMapper.parentRgtAdd(id, amount);
+        resourceMapper.parentRgtAdd(parentId, amount);
         // 所有资源默认添加到根角色
         Role role = getRootRole();
         long[] plusId = {resource.getId()};
@@ -115,13 +116,17 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public void updateResource(Resource resource, Long userId) {
-        List<Resource> resourceList = listResource(1, StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> resourceList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级资源错误。");
         }
 
         if (!isCanUpdateParent(resource)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子资源作为自己的父级。");
+        }
+
+        if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getId()))) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
         }
 
         Resource info = getResourceById(resource.getId(), userId);
@@ -165,8 +170,8 @@ public class ResourceServiceImpl implements ResourceService {
     public void enableResource(Long id, Integer type, Integer status, Long userId) {
         List<Resource> resourceList = listResource(type, status, userId);
         List<Long> idList = listDescendantId(id);
-        List<Long> list = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.retainAll(idList)) {
+        List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
         }
         resourceMapper.enableDescendants(idList, status);
@@ -175,9 +180,9 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteResource(Long id, Long userId) {
-        List<Resource> resourceList = listResource(1, null, userId);
-        List<Long> list = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.contains(id)) {
+        List<Resource> resourceList = listResource(null, null, userId);
+        List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.contains(id)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
         }
 
@@ -205,8 +210,8 @@ public class ResourceServiceImpl implements ResourceService {
         List<Long> idList = new ArrayList<>();
         idList.add(sourceId);
         idList.add(targetId);
-        List<Long> list = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.retainAll(idList)) {
+        List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
         }
 
@@ -237,13 +242,16 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> listResourceByRoleIds(Long[] roleIds, Long userId) {
-        return resourceMapper.listByRoleIds(roleIds, null, null);
+    public List<Resource> listResourceByRoleIds(Long[] roleIds, Integer type, Integer status, Long userId) {
+        List<Resource> allResourceList = listResource(type, status, userId);
+
+        List<Resource> resourceList = resourceMapper.listByRoleIds(roleIds, type, status);
+        return resourceList.stream().filter(allResourceList::contains).collect(Collectors.toList());
     }
 
     @Override
-    public List<Resource> listResourceByUserIdOrName(Long userId, String username) {
-        return resourceMapper.listByUserIdOrName(userId, username, null, null);
+    public List<Resource> listResourceByUserIdOrName(Long userId, String username, Integer type, Integer status) {
+        return resourceMapper.listByUserIdOrName(userId, username, type, status);
     }
 
     /**
@@ -297,7 +305,7 @@ public class ResourceServiceImpl implements ResourceService {
         }
 
         Comparator<Resource> comparator = Comparator.comparing(Resource::getLft);
-        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).get();
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).orElseThrow(RuntimeException::new);
     }
 
     /**

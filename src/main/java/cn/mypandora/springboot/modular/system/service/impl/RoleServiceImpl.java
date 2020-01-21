@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Condition;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -64,17 +63,6 @@ public class RoleServiceImpl implements RoleService {
         return roleList.stream().filter(allRoleList::contains).collect(Collectors.toList());
     }
 
-    @Override
-    public List<Role> listRoleByCondition(Map<String, Object> map) {
-        Condition condition = new Condition(Role.class);
-        Condition.Criteria criteria = condition.createCriteria();
-        final String status = "status";
-        if (map.get(status) != null) {
-            criteria.andEqualTo(status, map.get(status));
-        }
-        return roleMapper.selectByCondition(condition);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addRole(Role role, Long userId) {
@@ -83,7 +71,8 @@ public class RoleServiceImpl implements RoleService {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级角色选择错误。");
         }
 
-        Role parentRole = getRoleByIdOrName(role.getParentId(), null, userId);
+        Long parentId = role.getParentId();
+        Role parentRole = getRoleByIdOrName(parentId, null, userId);
         LocalDateTime now = LocalDateTime.now();
         role.setCreateTime(now);
         role.setLft(parentRole.getRgt());
@@ -91,12 +80,11 @@ public class RoleServiceImpl implements RoleService {
         role.setLevel(parentRole.getLevel() + 1);
         role.setIsUpdate(1);
 
-        Long id = role.getParentId();
         int amount = 2;
-        roleMapper.lftAdd(id, amount, null);
-        roleMapper.rgtAdd(id, amount, null);
+        roleMapper.lftAdd(parentId, amount, null);
+        roleMapper.rgtAdd(parentId, amount, null);
         roleMapper.insert(role);
-        roleMapper.parentRgtAdd(id, amount);
+        roleMapper.parentRgtAdd(parentId, amount);
     }
 
     @Override
@@ -126,6 +114,10 @@ public class RoleServiceImpl implements RoleService {
 
         if (!isCanUpdateParent(role)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子角色作为自己的父级。");
+        }
+
+        if (roleList.stream().noneMatch(item -> item.getId().equals(role.getId()))) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
         }
 
         Role info = getRoleByIdOrName(role.getId(), null, userId);
@@ -169,8 +161,8 @@ public class RoleServiceImpl implements RoleService {
     public void enableRole(Long id, Integer status, Long userId) {
         List<Role> roleList = listRole(null, userId);
         List<Long> idList = listDescendantId(id);
-        List<Long> list = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.retainAll(idList)) {
+        List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
         }
         roleMapper.enableDescendants(idList, status);
@@ -180,8 +172,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRole(Long id, Long userId) {
         List<Role> roleList = listRole(null, userId);
-        List<Long> list = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.contains(id)) {
+        List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.contains(id)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
         }
 
@@ -211,8 +203,8 @@ public class RoleServiceImpl implements RoleService {
         List<Long> idList = new ArrayList<>();
         idList.add(sourceId);
         idList.add(targetId);
-        List<Long> list = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!list.retainAll(idList)) {
+        List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        if (!allIdList.retainAll(idList)) {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
         }
 
@@ -336,7 +328,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Comparator<Role> comparator = Comparator.comparing(Role::getLft);
-        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).get();
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).orElseThrow(RuntimeException::new);
     }
 
 }

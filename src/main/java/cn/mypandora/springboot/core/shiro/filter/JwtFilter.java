@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.util.IpUtil;
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
@@ -93,7 +94,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         String roleIds = StringUtils.join(roleIdList, ',');
 
                         // 获取资源信息
-                        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username);
+                        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
                         List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
 
                         String resourceCodes = String.join(",", resourceCodeList);

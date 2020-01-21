@@ -96,7 +96,7 @@ public class DictionaryController {
      * 启用|禁用字典。
      *
      * @param id  字典主键id
-     * @param map 状态(启用:1，禁用:0)
+     * @param map 状态(1:启用，0:禁用)
      */
     @ApiOperation(value = "字典状态启用禁用", notes = "根据字典id启用或禁用其状态。")
     @PatchMapping("/{id}")

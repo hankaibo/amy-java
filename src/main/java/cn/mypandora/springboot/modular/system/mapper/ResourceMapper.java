@@ -33,7 +33,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * @param status   状态(1:启用，0:禁用)
      * @return 用户的所有资源
      */
-    List<Resource> listByUserIdOrName(@Param(value = "userId") Long userId, @Param(value = "username") String username, @Param("type") Integer type, @Param("status") Integer status);
+    List<Resource> listByUserIdOrName(@Param("userId") Long userId, @Param("username") String username, @Param("type") Integer type, @Param("status") Integer status);
 
     /**
      * 获得本资源的所有祖先资源。
