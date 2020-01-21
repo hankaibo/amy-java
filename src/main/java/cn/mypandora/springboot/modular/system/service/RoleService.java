@@ -3,7 +3,6 @@ package cn.mypandora.springboot.modular.system.service;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * RoleService
@@ -33,17 +32,9 @@ public interface RoleService {
     List<Role> listChildrenRole(Long id, Integer status, Long userId);
 
     /**
-     * 根据条件查询角色。
+     * 添加角色。
      *
-     * @param params 角色条件
-     * @return 角色列表
-     */
-    List<Role> listRoleByCondition(Map<String, Object> params);
-
-    /**
-     * 新增角色。
-     *
-     * @param role   角色
+     * @param role   角色数据
      * @param userId 用户id
      */
     void addRole(Role role, Long userId);
@@ -61,7 +52,7 @@ public interface RoleService {
     /**
      * 更新角色。
      *
-     * @param role   角色
+     * @param role   角色数据
      * @param userId 用户id
      */
     void updateRole(Role role, Long userId);

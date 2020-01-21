@@ -35,7 +35,7 @@ public class DepartmentController {
     /**
      * 获取部门树。
      *
-     * @param status 状态(启用:1，禁用:0)
+     * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      * @return 部门树
      */
@@ -70,7 +70,7 @@ public class DepartmentController {
      * @param userId     用户id
      * @return 空或异常
      */
-    @ApiOperation(value = "部门新建", notes = "根据数据新建一个部门。")
+    @ApiOperation(value = "部门新建", notes = "根据数据新建部门。")
     @PostMapping
     public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department,
                                               Long userId) {
@@ -83,7 +83,7 @@ public class DepartmentController {
      *
      * @param id     部门主键id
      * @param userId 用户id
-     * @return 部门对象或空
+     * @return 部门信息
      */
     @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
@@ -117,7 +117,7 @@ public class DepartmentController {
      * 启用禁用部门。
      *
      * @param id     部门主键id
-     * @param status 状态(启用:1，禁用:0)
+     * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      * @return 空或异常
      */

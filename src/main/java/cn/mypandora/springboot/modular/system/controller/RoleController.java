@@ -3,9 +3,11 @@ package cn.mypandora.springboot.modular.system.controller;
 import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.core.util.TreeUtil;
+import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
+import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,22 +32,24 @@ import java.util.Map;
 public class RoleController {
 
     private RoleService roleService;
+    private ResourceService resourceService;
     private FilterChainManager filterChainManager;
 
     @Autowired
-    public RoleController(RoleService roleService, FilterChainManager filterChainManager) {
+    public RoleController(RoleService roleService, ResourceService resourceService, FilterChainManager filterChainManager) {
         this.roleService = roleService;
+        this.resourceService = resourceService;
         this.filterChainManager = filterChainManager;
     }
 
     /**
      * 获取角色树。
      *
-     * @param status 状态(启用:1，禁用:0)
+     * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      * @return 角色树
      */
-    @ApiOperation(value = "角色树", notes = "根据状态获取整棵角色树。")
+    @ApiOperation(value = "角色树", notes = "根据状态获取角色树。")
     @GetMapping
     public List<RoleTree> listRoleTree(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
                                        Long userId) {
@@ -58,7 +63,7 @@ public class RoleController {
      * @param id     主键id
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
-     * @return 某个角色的分页子数据
+     * @return 某个角色的直接子角色
      */
     @ApiOperation(value = "子角色列表", notes = "根据角色id查询其下的所有直接子角色。")
     @GetMapping("/{id}/children")
@@ -69,7 +74,7 @@ public class RoleController {
     }
 
     /**
-     * 新建角色。
+     * 添加角色。
      *
      * @param role   角色数据
      * @param userId 用户id
@@ -82,7 +87,7 @@ public class RoleController {
     }
 
     /**
-     * 查询角色详细数据。
+     * 查询角色。
      *
      * @param id     角色主键id
      * @param userId 用户id
@@ -121,7 +126,7 @@ public class RoleController {
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      */
-    @ApiOperation(value = "角色状态启用禁用", notes = "根据角色状态启用禁用角色。")
+    @ApiOperation(value = "角色启用禁用", notes = "根据角色状态启用禁用角色。")
     @PatchMapping("/{id}/status")
     public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                            @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
@@ -162,17 +167,28 @@ public class RoleController {
 
     /**
      * 查询该角色所包含的资源。
-     * TODO
      *
      * @param id 角色主键id
      * @return 角色所包含的资源
      */
     @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
-    public List<ResourceTree> listRoleResource(@RequestHeader(value = "Authorization") String authorization,
-                                               @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status) {
-        return null;
+    public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+                                              @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+                                              Long userId) {
+        // 获取当前登录用户的所有资源
+        List<Resource> allResourceList = resourceService.listResourceByUserIdOrName(userId, null, null, status);
+        List<ResourceTree> resourceTrees = TreeUtil.resource2Tree(allResourceList);
+
+        // 获取指定角色的所有资源
+        Long[] roleId = new Long[]{id};
+        List<Resource> resourceList = resourceService.listResourceByRoleIds(roleId, null, status, userId);
+
+        Map<String, List> map = new HashMap<>(2);
+        map.put("resTree", resourceTrees);
+        map.put("resSelected", resourceList);
+
+        return map;
     }
 
     /**

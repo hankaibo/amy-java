@@ -13,7 +13,7 @@ import java.util.List;
 public interface DepartmentService {
 
     /**
-     * 获取指定用户的部门树（一次性全部加载，适合数据量少的情况）。
+     * 获得指定用户的部门树（一次性全部加载，适合数据量少的情况）。
      *
      * @param status 状态(1:启用，0:禁用)，默认为空查询所有
      * @param userId 用户id
@@ -27,7 +27,7 @@ public interface DepartmentService {
      * @param id     当前操作部门id
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
-     * @return 指定部门下的所有部门
+     * @return 部门列表
      */
     List<Department> listChildrenDepartment(Long id, Integer status, Long userId);
 
@@ -42,16 +42,16 @@ public interface DepartmentService {
     /**
      * 查询一个部门。
      *
-     * @param id     当前操作部门id
+     * @param id     部门id
      * @param userId 用户id
      * @return 部门信息
      */
     Department getDepartmentById(Long id, Long userId);
 
     /**
-     * 更新一个部门。
+     * 更新部门。
      *
-     * @param department 部门信息
+     * @param department 部门数据
      * @param userId     用户id
      */
     void updateDepartment(Department department, Long userId);

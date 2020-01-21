@@ -73,17 +73,17 @@
             AND t.status=#{status}
         </if>
         AND t.id IN (
-        SELECT rr.resource_id
-        FROM sys_role_resource rr
-        JOIN (
-        SELECT ur.role_id AS role_id
-        FROM sys_user_role ur
-        WHERE ur.user_id =(
-        SELECT id AS userId
-        FROM sys_user u
-        WHERE u.username=#{username} OR u.id=#{userId}
-        )
-        ) temp ON rr.role_id=temp.role_id
+            SELECT rr.resource_id
+            FROM sys_role_resource rr
+            JOIN (
+                SELECT ur.role_id AS role_id
+                FROM sys_user_role ur
+                WHERE ur.user_id =(
+                    SELECT id AS userId
+                    FROM sys_user u
+                    WHERE u.username=#{username} OR u.id=#{userId}
+                )
+            ) temp ON rr.role_id=temp.role_id
         )
     </select>
 

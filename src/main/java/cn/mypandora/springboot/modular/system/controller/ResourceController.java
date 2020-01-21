@@ -35,14 +35,14 @@ public class ResourceController {
     }
 
     /**
-     * 获取整棵资源树。
+     * 获取资源树。
      *
      * @param type   资源类型(1:菜单，2:接口)
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      * @return 资源树
      */
-    @ApiOperation(value = "资源列表", notes = "获取整棵资源树。")
+    @ApiOperation(value = "资源树", notes = "获取资源树。")
     @GetMapping
     public List<ResourceTree> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1:菜单，2:接口)") Integer type,
                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
@@ -52,13 +52,13 @@ public class ResourceController {
     }
 
     /**
-     * 查询子资源
+     * 查询子资源。
      *
      * @param id     主键id
      * @param type   资源类型(1:菜单，2:接口)
-     * @param status 状态(启用:1，禁用:0)
+     * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
-     * @return 某个资源的所有直接子资源
+     * @return 某个资源的直接子资源
      */
     @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
@@ -75,7 +75,7 @@ public class ResourceController {
      * @param resource 资源数据
      * @param userId   用户id
      */
-    @ApiOperation(value = "资源新建", notes = "根据数据新建。")
+    @ApiOperation(value = "资源新建", notes = "根据数据新建资源。")
     @PostMapping
     public void addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource,
                             Long userId) {
@@ -83,7 +83,7 @@ public class ResourceController {
     }
 
     /**
-     * 查询资源详细数据。
+     * 查询资源。
      *
      * @param id     资源主键id
      * @param userId 用户id
@@ -122,16 +122,14 @@ public class ResourceController {
      * @param type   资源类型(1:菜单，2:接口)
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
-     * @return 更新结果
      */
     @ApiOperation(value = "资源状态启用禁用", notes = "根据状态启用禁用资源。")
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
-                                               @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
-                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-                                               Long userId) {
+    public void enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
+                               @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
+                               @RequestParam("status") @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+                               Long userId) {
         resourceService.enableResource(id, type, status, userId);
-        return ResponseEntity.ok().build();
     }
 
     /**
