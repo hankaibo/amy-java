@@ -2,6 +2,7 @@ package cn.mypandora.springboot.modular.system.mapper;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
 import cn.mypandora.springboot.modular.system.model.po.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,9 +25,10 @@ public interface UserMapper extends MyBaseMapper<User> {
     /**
      * 根据用户id查询用户信息，带部门id。
      *
-     * @param id 用户Id
+     * @param id       用户Id
+     * @param username 用户姓名
      * @return 带部门的用户信息
      */
-    User getUser(Long id);
+    User getUser(@Param("id") Long id, @Param("username") String username);
 
 }

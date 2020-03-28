@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -292,6 +293,14 @@ public class ResourceServiceImpl implements ResourceService {
      * @return 最近的祖先资源
      */
     private Resource getCommonAncestry(Resource resource1, Resource resource2) {
+        // 首先判断两者是否是包含关系
+        if(resource1.getLft()<resource2.getLft() && resource1.getRgt()>resource2.getRgt()){
+            return resource1;
+        }
+        if(resource2.getLft()<resource1.getLft() && resource2.getRgt()>resource1.getRgt()){
+            return resource2;
+        }
+        // 两者没有包含关系的情况下
         Long newId = resource1.getId();
         List<Resource> newParentAncestries = resourceMapper.listAncestries(newId, null, StatusEnum.ENABLED.getValue());
         if (newParentAncestries.size() == 0) {
@@ -319,7 +328,9 @@ public class ResourceServiceImpl implements ResourceService {
         Role role = new Role();
         role.setLevel(1);
         role.setParentId(null);
-        return roleMapper.selectOne(role);
+        Example example = new Example(Role.class);
+        example.createCriteria().andEqualTo("level",1).andIsNull("parentId");
+        return roleMapper.selectOneByExample(example);
     }
 
 }

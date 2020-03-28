@@ -6,6 +6,8 @@
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
         <result column="real_name" jdbcType="VARCHAR" property="realName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="salt" jdbcType="VARCHAR" property="salt"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
@@ -23,6 +25,8 @@
         ${alias}.username,
         ${alias}.nickname,
         ${alias}.real_name,
+        ${alias}.password,
+        ${alias}.salt,
         ${alias}.status,
         ${alias}.avatar,
         ${alias}.email,
@@ -70,6 +74,7 @@
         JOIN sys_department_user du on u.id = du.user_id
         WHERE 1 = 1
         AND u.id = #{id}
+        OR u.username = #{username}
     </select>
 
 </mapper>

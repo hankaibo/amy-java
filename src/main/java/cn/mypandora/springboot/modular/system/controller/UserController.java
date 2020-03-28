@@ -132,6 +132,8 @@ public class UserController {
         user.setLastLoginTime(null);
         user.setCreateTime(null);
         user.setUpdateTime(null);
+        user.setPassword(null);
+        user.setSalt(null);
         return user;
     }
 
