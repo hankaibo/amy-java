@@ -48,11 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByIdOrName(Long id, String username) {
-        User user = new User();
-        user.setId(id);
-        user.setUsername(username);
-
-        User info = userMapper.selectOne(user);
+        User info = userMapper.getUser(id, username);
         if (info == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
         }
@@ -85,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
         userMapper.updateByPrimaryKeySelective(user);
 
-        User info = userMapper.getUser(user.getId());
+        User info = userMapper.getUser(user.getId(), null);
         if (!info.getDepartmentId().equals(user.getDepartmentId())) {
             departmentUserMapper.updateByUserId(user.getId(), user.getDepartmentId());
         }
