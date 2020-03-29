@@ -39,7 +39,7 @@ public class DepartmentController {
      * @param userId 用户id
      * @return 部门树
      */
-    @ApiOperation(value = "部门树", notes = "根据状态获取部门树。")
+    @ApiOperation(value = "获取部门树", notes = "根据状态获取部门树。")
     @GetMapping
     public List<DepartmentTree> listDepartmentTree(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
                                                    Long userId) {
@@ -48,14 +48,14 @@ public class DepartmentController {
     }
 
     /**
-     * 获取子部门。
+     * 获取子部门列表。
      *
      * @param id     主键id
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      * @return 某个部门的直接子部门
      */
-    @ApiOperation(value = "子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
+    @ApiOperation(value = "获取子部门列表", notes = "根据部门id查询其下的所有直接子部门。")
     @GetMapping("/{id}/children")
     public List<Department> listDepartmentChildren(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                    @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
@@ -64,13 +64,13 @@ public class DepartmentController {
     }
 
     /**
-     * 添加部门。
+     * 新建部门。
      *
      * @param department 部门数据
      * @param userId     用户id
      * @return 空或异常
      */
-    @ApiOperation(value = "部门新建", notes = "根据数据新建部门。")
+    @ApiOperation(value = "新建部门", notes = "根据数据新建部门。")
     @PostMapping
     public ResponseEntity<Void> addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department,
                                               Long userId) {
@@ -79,13 +79,13 @@ public class DepartmentController {
     }
 
     /**
-     * 查询部门。
+     * 获取部门详情。
      *
      * @param id     部门主键id
      * @param userId 用户id
      * @return 部门信息
      */
-    @ApiOperation(value = "部门详情", notes = "根据部门id查询部门详情。")
+    @ApiOperation(value = "获取部门详情", notes = "根据部门id查询部门详情。")
     @GetMapping("/{id}")
     public Department getDepartmentById(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
                                         Long userId) {
@@ -105,7 +105,7 @@ public class DepartmentController {
      * @param userId     用户id
      * @return 空或异常
      */
-    @ApiOperation(value = "部门更新", notes = "根据部门数据更新部门。")
+    @ApiOperation(value = "更新部门", notes = "根据部门数据更新。")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department,
                                                  Long userId) {
@@ -121,7 +121,7 @@ public class DepartmentController {
      * @param userId 用户id
      * @return 空或异常
      */
-    @ApiOperation(value = "部门启用禁用", notes = "根据部门状态启用禁用部门。")
+    @ApiOperation(value = "启用禁用部门", notes = "启用禁用部门。")
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> enableDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
                                                  @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
@@ -137,7 +137,7 @@ public class DepartmentController {
      * @param userId 用户id
      * @return 空或异常
      */
-    @ApiOperation(value = "部门删除", notes = "根据部门Id删除一个部门。")
+    @ApiOperation(value = "删除部门", notes = "根据部门Id删除一个部门。")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
                                                  Long userId) {
@@ -153,7 +153,7 @@ public class DepartmentController {
      * @param userId   用户id
      * @return 空或异常
      */
-    @ApiOperation(value = "部门移动", notes = "将当前部门上移或下移。")
+    @ApiOperation(value = "移动部门", notes = "将当前部门上移或下移。")
     @PutMapping
     public ResponseEntity<Void> moveDepartment(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
                                                @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,

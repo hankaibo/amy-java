@@ -1,7 +1,8 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.config.exception.BusinessException;
+import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.StatusEnum;
-import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentMapper;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
@@ -9,7 +10,6 @@ import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +69,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 获取父部门范围并判断(只能添加到同级及下级部门)
         List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门选择错误。");
+            throw new BusinessException(Department.class, "父级部门选择错误。");
         }
         // 添加
         Long parentId = department.getParentId();
@@ -93,14 +93,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 获取部门范围防止用户查看自身权限外的部门信息
         List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(id))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "无法查看该部门。");
+            throw new BusinessException(Department.class, "无法查看该部门。");
         }
         // 查询
         Department department = new Department();
         department.setId(id);
         Department info = departmentMapper.selectByPrimaryKey(department);
         if (info == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "部门不存在。");
+            throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
         return info;
     }
@@ -117,15 +117,15 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 修改部门时，必须保证父部门存在，并只能更改自己权限范围内的部门
         List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级部门错误。");
+            throw new BusinessException(Department.class, "父级部门错误。");
         }
         // 修改部门时，不可以指定自己的下级为父部门。
         if (!isCanUpdateParent(department)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子部门作为自己的父级。");
+            throw new BusinessException(Department.class, "不可以选择子部门作为自己的父级。");
         }
         // 修改部门时，不可以修改自己权限之外的部门。
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
+            throw new BusinessException(Department.class, "部门错误。");
         }
 
         Department info = getDepartmentById(department.getId(), userId);
@@ -170,14 +170,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void enableDepartment(Long id, Integer status, Long userId) {
         int count = departmentUserMapper.countUserByDepartmentId(id);
         if (count > 0) {
-            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以禁用。");
+            throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
         }
 
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
+            throw new BusinessException(Department.class, "部门错误。");
         }
         departmentMapper.enableDescendants(idList, status);
     }
@@ -187,14 +187,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void deleteDepartment(Long id, Long userId) {
         int count = departmentUserMapper.countUserByDepartmentId(id);
         if (count > 0) {
-            throw new CustomException(HttpStatus.FORBIDDEN.value(), "该部门或子部门有关联用户，不可以删除。");
+            throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以删除。");
         }
 
         // 获得可删除的部门范围
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.contains(id)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
+            throw new BusinessException(Department.class, "部门错误。");
         }
 
         Department department = new Department();
@@ -222,7 +222,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         idList.add(targetId);
         List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "部门错误。");
+            throw new BusinessException(Department.class, "部门错误。");
         }
 
         // 先取出源部门与目标部门两者的信息
