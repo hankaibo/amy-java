@@ -1,7 +1,8 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.config.exception.BusinessException;
+import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.StatusEnum;
-import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
@@ -10,7 +11,6 @@ import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +68,7 @@ public class RoleServiceImpl implements RoleService {
     public void addRole(Role role, Long userId) {
         List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getParentId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级角色选择错误。");
+            throw new BusinessException(Role.class, "父级角色选择错误。");
         }
 
         Long parentId = role.getParentId();
@@ -91,7 +91,7 @@ public class RoleServiceImpl implements RoleService {
     public Role getRoleByIdOrName(Long id, String name, Long userId) {
         List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(id))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "无法查看该角色。");
+            throw new BusinessException(Role.class, "无法查看该角色。");
         }
 
         Role role = new Role();
@@ -99,7 +99,7 @@ public class RoleServiceImpl implements RoleService {
         role.setName(name);
         Role info = roleMapper.selectByPrimaryKey(role);
         if (info == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "角色不存在。");
+            throw new EntityNotFoundException(Role.class, "角色不存在。");
         }
         return info;
     }
@@ -109,15 +109,15 @@ public class RoleServiceImpl implements RoleService {
     public void updateRole(Role role, Long userId) {
         List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getParentId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级角色错误。");
+            throw new BusinessException(Role.class, "父级角色错误。");
         }
 
         if (!isCanUpdateParent(role)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子角色作为自己的父级。");
+            throw new BusinessException(Role.class, "不可以选择子角色作为自己的父级。");
         }
 
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
+            throw new BusinessException(Role.class, "角色错误。");
         }
 
         Role info = getRoleByIdOrName(role.getId(), null, userId);
@@ -163,7 +163,7 @@ public class RoleServiceImpl implements RoleService {
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
+            throw new BusinessException(Role.class, "角色错误。");
         }
         roleMapper.enableDescendants(idList, status);
     }
@@ -174,7 +174,7 @@ public class RoleServiceImpl implements RoleService {
         List<Role> roleList = listRole(null, userId);
         List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.contains(id)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
+            throw new BusinessException(Role.class, "角色错误。");
         }
 
         Role role = new Role();
@@ -199,13 +199,17 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void moveRole(Long sourceId, Long targetId, Long userId) {
+        if (null == targetId || null == sourceId) {
+            throw new EntityNotFoundException(Role.class, "该角色不可以移动。");
+        }
+
         List<Role> roleList = listRole(null, userId);
         List<Long> idList = new ArrayList<>();
         idList.add(sourceId);
         idList.add(targetId);
         List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "角色错误。");
+            throw new BusinessException(Role.class, "角色错误。");
         }
 
         // 先取出源角色与目标角色两者的信息

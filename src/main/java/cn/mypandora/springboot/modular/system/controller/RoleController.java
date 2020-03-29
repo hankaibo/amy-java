@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
@@ -13,7 +12,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -159,9 +157,6 @@ public class RoleController {
     public void moveRole(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
                          @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
                          Long userId) {
-        if (null == targetId || null == sourceId) {
-            throw new CustomException(HttpStatus.NOT_MODIFIED.value(), "该角色不可以移动。");
-        }
         roleService.moveRole(sourceId, targetId, userId);
     }
 
