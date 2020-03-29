@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;

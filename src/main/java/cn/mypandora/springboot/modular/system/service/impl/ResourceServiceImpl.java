@@ -1,8 +1,9 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.config.exception.BusinessException;
+import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
 import cn.mypandora.springboot.core.enums.StatusEnum;
-import cn.mypandora.springboot.core.exception.CustomException;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.mapper.ResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
@@ -13,7 +14,6 @@ import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -76,7 +76,7 @@ public class ResourceServiceImpl implements ResourceService {
     public void addResource(Resource resource, Long userId) {
         List<Resource> resourceList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级资源选择错误。");
+            throw new BusinessException(Resource.class, "父级资源选择错误。");
         }
 
         Long parentId = resource.getParentId();
@@ -101,33 +101,33 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public Resource getResourceById(Long id, Long userId) {
-        List<Resource> resourceList = listResource(null, StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> resourceList = listResource(null, null, userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(id))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "无法查看该资源。");
+            throw new BusinessException(Resource.class, "无法查看该资源。");
         }
 
         Resource resource = new Resource();
         resource.setId(id);
         Resource info = resourceMapper.selectByPrimaryKey(resource);
         if (info == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "资源不存在。");
+            throw new EntityNotFoundException(Resource.class, "资源不存在。");
         }
         return info;
     }
 
     @Override
     public void updateResource(Resource resource, Long userId) {
-        List<Resource> resourceList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> resourceList = listResource(resource.getType(), null, userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "父级资源错误。");
+            throw new BusinessException(Resource.class, "父级资源错误。");
         }
 
         if (!isCanUpdateParent(resource)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "不可以选择子资源作为自己的父级。");
+            throw new BusinessException(Resource.class, "不可以选择子资源作为自己的父级。");
         }
 
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
+            throw new BusinessException(Resource.class, "资源错误。");
         }
 
         Resource info = getResourceById(resource.getId(), userId);
@@ -169,11 +169,11 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public void enableResource(Long id, Integer type, Integer status, Long userId) {
-        List<Resource> resourceList = listResource(type, status, userId);
+        List<Resource> resourceList = listResource(type, null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
+            throw new BusinessException(Resource.class, "资源错误。");
         }
         resourceMapper.enableDescendants(idList, status);
     }
@@ -184,7 +184,7 @@ public class ResourceServiceImpl implements ResourceService {
         List<Resource> resourceList = listResource(null, null, userId);
         List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.contains(id)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
+            throw new BusinessException(Resource.class, "资源错误。");
         }
 
         Resource resource = new Resource();
@@ -207,13 +207,13 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void moveResource(Long sourceId, Long targetId, Long userId) {
-        List<Resource> resourceList = listResource(1, null, userId);
+        List<Resource> resourceList = listResource(null, null, userId);
         List<Long> idList = new ArrayList<>();
         idList.add(sourceId);
         idList.add(targetId);
         List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "资源错误。");
+            throw new BusinessException(Resource.class, "资源错误。");
         }
 
         Resource sourceResource = new Resource();
@@ -294,10 +294,10 @@ public class ResourceServiceImpl implements ResourceService {
      */
     private Resource getCommonAncestry(Resource resource1, Resource resource2) {
         // 首先判断两者是否是包含关系
-        if(resource1.getLft()<resource2.getLft() && resource1.getRgt()>resource2.getRgt()){
+        if (resource1.getLft() < resource2.getLft() && resource1.getRgt() > resource2.getRgt()) {
             return resource1;
         }
-        if(resource2.getLft()<resource1.getLft() && resource2.getRgt()>resource1.getRgt()){
+        if (resource2.getLft() < resource1.getLft() && resource2.getRgt() > resource1.getRgt()) {
             return resource2;
         }
         // 两者没有包含关系的情况下
@@ -329,7 +329,7 @@ public class ResourceServiceImpl implements ResourceService {
         role.setLevel(1);
         role.setParentId(null);
         Example example = new Example(Role.class);
-        example.createCriteria().andEqualTo("level",1).andIsNull("parentId");
+        example.createCriteria().andEqualTo("level", 1).andIsNull("parentId");
         return roleMapper.selectOneByExample(example);
     }
 

@@ -1,4 +1,4 @@
-package cn.mypandora.springboot.core.exception;
+package cn.mypandora.springboot.config.exception;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

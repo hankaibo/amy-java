@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
