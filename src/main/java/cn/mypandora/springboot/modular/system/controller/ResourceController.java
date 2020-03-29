@@ -124,7 +124,7 @@ public class ResourceController {
      * @param userId 用户id
      */
     @ApiOperation(value = "资源状态启用禁用", notes = "根据状态启用禁用资源。")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/status")
     public void enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
                                @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
                                @RequestParam("status") @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,

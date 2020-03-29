@@ -117,7 +117,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public void updateResource(Resource resource, Long userId) {
-        List<Resource> resourceList = listResource(resource.getType(), null, userId);
+        List<Resource> resourceList = listResource(null, null, userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
             throw new BusinessException(Resource.class, "父级资源错误。");
         }
@@ -238,7 +238,6 @@ public class ResourceServiceImpl implements ResourceService {
             targetAmount *= -1;
         }
         resourceMapper.selfAndDescendant(sourceIdList, targetAmount, 0);
-
         resourceMapper.selfAndDescendant(targetIdList, sourceAmount, 0);
     }
 
