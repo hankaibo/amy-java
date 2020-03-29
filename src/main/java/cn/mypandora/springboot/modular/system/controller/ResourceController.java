@@ -42,7 +42,7 @@ public class ResourceController {
      * @param userId 用户id
      * @return 资源树
      */
-    @ApiOperation(value = "资源树", notes = "获取资源树。")
+    @ApiOperation(value = "获取资源树", notes = "获取资源树。")
     @GetMapping
     public List<ResourceTree> listResource(@RequestParam("type") @ApiParam(value = "资源类型(1:菜单，2:接口)") Integer type,
                                            @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
@@ -52,7 +52,7 @@ public class ResourceController {
     }
 
     /**
-     * 查询子资源。
+     * 查询子资源列表。
      *
      * @param id     主键id
      * @param type   资源类型(1:菜单，2:接口)
@@ -60,7 +60,7 @@ public class ResourceController {
      * @param userId 用户id
      * @return 某个资源的直接子资源
      */
-    @ApiOperation(value = "子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
+    @ApiOperation(value = "获取子资源列表", notes = "根据资源id查询其下的所有直接子资源。")
     @GetMapping("/{id}/children")
     public List<Resource> listChildrenResource(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                                @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
@@ -70,12 +70,12 @@ public class ResourceController {
     }
 
     /**
-     * 添加资源。
+     * 新建资源。
      *
      * @param resource 资源数据
      * @param userId   用户id
      */
-    @ApiOperation(value = "资源新建", notes = "根据数据新建资源。")
+    @ApiOperation(value = "新建资源", notes = "根据数据新建资源。")
     @PostMapping
     public void addResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource,
                             Long userId) {
@@ -83,13 +83,13 @@ public class ResourceController {
     }
 
     /**
-     * 查询资源。
+     * 获取资源详情。
      *
      * @param id     资源主键id
      * @param userId 用户id
      * @return 资源信息
      */
-    @ApiOperation(value = "资源详情", notes = "根据资源id查询资源详情。")
+    @ApiOperation(value = "获取资源详情", notes = "根据资源id查询资源详情。")
     @GetMapping("/{id}")
     public Resource listResourceById(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
                                      Long userId) {
@@ -108,7 +108,7 @@ public class ResourceController {
      * @param resource 资源数据
      * @param userId   用户id
      */
-    @ApiOperation(value = "资源更新", notes = "根据资源数据更新资源。")
+    @ApiOperation(value = "更新资源", notes = "根据资源数据更新资源。")
     @PutMapping("/{id}")
     public void updateResource(@RequestBody @ApiParam(value = "资源数据", required = true) Resource resource,
                                Long userId) {
@@ -123,7 +123,7 @@ public class ResourceController {
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      */
-    @ApiOperation(value = "资源状态启用禁用", notes = "根据状态启用禁用资源。")
+    @ApiOperation(value = "启用禁用资源", notes = "根据状态启用禁用资源。")
     @PatchMapping("/{id}/status")
     public void enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
                                @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
@@ -138,7 +138,7 @@ public class ResourceController {
      * @param id     资源主键id
      * @param userId 用户id
      */
-    @ApiOperation(value = "资源删除", notes = "根据资源Id删除资源。")
+    @ApiOperation(value = "删除资源", notes = "根据资源Id删除资源。")
     @DeleteMapping("/{id}")
     public void deleteResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
                                Long userId) {
@@ -153,7 +153,7 @@ public class ResourceController {
      * @param userId   用户id
      * @return ok
      */
-    @ApiOperation(value = "资源移动", notes = "将当前资源上移或下移。")
+    @ApiOperation(value = "移动资源", notes = "将当前资源上移或下移。")
     @PutMapping
     public ResponseEntity<Void> move(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
                                      @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
