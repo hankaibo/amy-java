@@ -1,11 +1,14 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import cn.mypandora.springboot.config.exception.CustomException;
+import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.DictionaryMapper;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -57,7 +60,11 @@ public class DictionaryServiceImpl implements DictionaryService {
     public Dictionary getDictionary(Long id) {
         Dictionary dictionary = new Dictionary();
         dictionary.setId(id);
-        return dictionaryMapper.selectByPrimaryKey(dictionary);
+        Dictionary info = dictionaryMapper.selectByPrimaryKey(dictionary);
+        if (info == null) {
+            throw new EntityNotFoundException(Dictionary.class, "字典不存在。");
+        }
+        return info;
     }
 
     @Override

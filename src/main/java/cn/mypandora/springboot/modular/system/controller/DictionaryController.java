@@ -1,14 +1,12 @@
 package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -41,7 +39,7 @@ public class DictionaryController {
      * @param pageSize 每页条数
      * @return 分页数据
      */
-    @ApiOperation(value = "字典列表", notes = "分页查询字典列表。")
+    @ApiOperation(value = "获取字典列表", notes = "分页查询字典列表。")
     @GetMapping
     public PageInfo<Dictionary> pageDictionary(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
                                                @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
@@ -54,7 +52,7 @@ public class DictionaryController {
      *
      * @param dictionary 字典数据
      */
-    @ApiOperation(value = "字典新建", notes = "根据数据新建一个字典。")
+    @ApiOperation(value = "新建字典", notes = "根据数据新建一个字典。")
     @PostMapping
     public void addDictionary(@RequestBody @ApiParam(name = "dictionary", value = "字典数据", required = true) Dictionary dictionary) {
         // 如果没有parentId为空，那么就创建为一个根节点，parentId是null。
@@ -66,19 +64,15 @@ public class DictionaryController {
 
 
     /**
-     * 查询字典某项的详细数据。
+     * 获取字典详情。
      *
      * @param id 字典主键id
      * @return 新建结果
      */
-    @ApiOperation(value = "字典详情", notes = "根据字典id查询字典详情。")
+    @ApiOperation(value = "获取字典详情", notes = "根据字典id查询字典详情。")
     @GetMapping("/{id}")
     public Dictionary getDictionaryById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
-        Dictionary dictionary = dictionaryService.getDictionary(id);
-        if (dictionary == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-        }
-        return dictionary;
+        return dictionaryService.getDictionary(id);
     }
 
     /**
@@ -86,7 +80,7 @@ public class DictionaryController {
      *
      * @param dictionary 字典数据
      */
-    @ApiOperation(value = "字典更新", notes = "根据字典数据更新一个字典。")
+    @ApiOperation(value = "更新字典", notes = "根据字典数据更新一个字典。")
     @PutMapping("/{id}")
     public void updateDictionary(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.updateDictionary(dictionary);
@@ -98,8 +92,8 @@ public class DictionaryController {
      * @param id  字典主键id
      * @param map 状态(1:启用，0:禁用)
      */
-    @ApiOperation(value = "字典状态启用禁用", notes = "根据字典id启用或禁用其状态。")
-    @PatchMapping("/{id}")
+    @ApiOperation(value = "启用禁用字典", notes = "根据字典id启用或禁用其状态。")
+    @PatchMapping("/{id}/status")
     public void enableDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
                                  @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
         Integer status = map.get("status");
@@ -111,7 +105,7 @@ public class DictionaryController {
      *
      * @param dictId 字典主键id
      */
-    @ApiOperation(value = "字典删除", notes = "根据字典Id删除一个字典。")
+    @ApiOperation(value = "删除字典", notes = "根据字典Id删除一个字典。")
     @DeleteMapping("/{id}")
     public void deleteDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long dictId) {
         dictionaryService.deleteDictionary(dictId);
@@ -122,7 +116,7 @@ public class DictionaryController {
      *
      * @param map 字典id数组
      */
-    @ApiOperation(value = "字典删除(批量)", notes = "根据字典Id批量删除字典。")
+    @ApiOperation(value = "批量删除字典", notes = "根据字典Id批量删除字典。")
     @DeleteMapping
     public void deleteBatchDictionary(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, long[]> map) {
         dictionaryService.deleteBatchDictionary(map.get("ids"));

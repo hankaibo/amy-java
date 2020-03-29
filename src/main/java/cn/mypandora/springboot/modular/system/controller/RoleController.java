@@ -47,7 +47,7 @@ public class RoleController {
      * @param userId 用户id
      * @return 角色树
      */
-    @ApiOperation(value = "角色树", notes = "根据状态获取角色树。")
+    @ApiOperation(value = "获取角色树", notes = "根据状态获取角色树。")
     @GetMapping
     public List<RoleTree> listRoleTree(@RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
                                        Long userId) {
@@ -56,14 +56,14 @@ public class RoleController {
     }
 
     /**
-     * 获取子角色。
+     * 获取子角色列表。
      *
      * @param id     主键id
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      * @return 某个角色的直接子角色
      */
-    @ApiOperation(value = "子角色列表", notes = "根据角色id查询其下的所有直接子角色。")
+    @ApiOperation(value = "获取子角色列表", notes = "根据角色id查询其下的所有直接子角色。")
     @GetMapping("/{id}/children")
     public List<Role> listRoleChildren(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
                                        @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
@@ -72,12 +72,12 @@ public class RoleController {
     }
 
     /**
-     * 添加角色。
+     * 新建角色。
      *
      * @param role   角色数据
      * @param userId 用户id
      */
-    @ApiOperation(value = "角色新建", notes = "根据数据新建一个角色。")
+    @ApiOperation(value = "新建角色", notes = "根据数据新建一个角色。")
     @PostMapping
     public void addRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role,
                         Long userId) {
@@ -85,13 +85,13 @@ public class RoleController {
     }
 
     /**
-     * 查询角色。
+     * 获取角色详情。
      *
      * @param id     角色主键id
      * @param userId 用户id
      * @return 角色信息
      */
-    @ApiOperation(value = "角色详情", notes = "根据角色id查询角色详情。")
+    @ApiOperation(value = "获取角色详情", notes = "根据角色id查询角色详情。")
     @GetMapping("/{id}")
     public Role getRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                         Long userId) {
@@ -110,7 +110,7 @@ public class RoleController {
      * @param role   角色数据
      * @param userId 用户id
      */
-    @ApiOperation(value = "角色更新", notes = "根据角色数据更新角色。")
+    @ApiOperation(value = "更新角色", notes = "根据角色数据更新角色。")
     @PutMapping("/{id}")
     public void updateRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role,
                            Long userId) {
@@ -124,7 +124,7 @@ public class RoleController {
      * @param status 状态(1:启用，0:禁用)
      * @param userId 用户id
      */
-    @ApiOperation(value = "角色启用禁用", notes = "根据角色状态启用禁用角色。")
+    @ApiOperation(value = "启用禁用角色", notes = "根据角色状态启用禁用角色。")
     @PatchMapping("/{id}/status")
     public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                            @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
@@ -138,7 +138,7 @@ public class RoleController {
      * @param id     角色主键id
      * @param userId 用户id
      */
-    @ApiOperation(value = "角色删除", notes = "根据角色Id删除角色。")
+    @ApiOperation(value = "删除角色", notes = "根据角色Id删除角色。")
     @DeleteMapping("/{id}")
     public void deleteRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                            Long userId) {
@@ -152,7 +152,7 @@ public class RoleController {
      * @param targetId 目标id
      * @param userId   用户id
      */
-    @ApiOperation(value = "角色移动", notes = "将当前角色上移或下移。")
+    @ApiOperation(value = "移动角色", notes = "将当前角色上移或下移。")
     @PutMapping
     public void moveRole(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
                          @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
@@ -166,7 +166,7 @@ public class RoleController {
      * @param id 角色主键id
      * @return 角色所包含的资源
      */
-    @ApiOperation(value = "查询角色的所有资源", notes = "根据角色id查询其包含的资源数据。")
+    @ApiOperation(value = "获取角色资源", notes = "根据角色id查询其包含的资源数据。")
     @GetMapping("/{id}/resources")
     public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                                               @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
@@ -192,7 +192,7 @@ public class RoleController {
      * @param id  角色id
      * @param map 增加和删除的角色对象
      */
-    @ApiOperation(value = "赋予角色一些资源。", notes = "根据角色id赋予其一些资源。")
+    @ApiOperation(value = "赋予角色资源。", notes = "根据角色id赋予其一些资源。")
     @PostMapping("/{id}/resources")
     public void grantRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
                                   @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> map,
