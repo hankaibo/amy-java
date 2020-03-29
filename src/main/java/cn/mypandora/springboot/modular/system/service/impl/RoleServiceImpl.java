@@ -1,7 +1,7 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import cn.mypandora.springboot.core.enums.StatusEnum;
-import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;

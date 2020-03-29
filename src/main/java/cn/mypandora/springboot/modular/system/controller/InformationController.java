@@ -2,7 +2,7 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import cn.mypandora.springboot.config.websocket.WebSocketConfig;
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.core.exception.CustomException;
+import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.model.po.Information;
 import cn.mypandora.springboot.modular.system.service.InformationService;
 import io.swagger.annotations.Api;
