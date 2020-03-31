@@ -10,8 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * AbstractPathMatchingFilter
- * 重写过滤链路径匹配规则，增加rest风格支持
+ * AbstractPathMatchingFilter 重写过滤链路径匹配规则，增加rest风格支持
  *
  * @author hankaibo
  * @date 2019/6/18
@@ -22,17 +21,19 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
     private static final String DEFAULT_PATH_SEPARATOR = "/";
 
     /**
-     * description 重写URL匹配  加入httpMethod支持
+     * description 重写URL匹配 加入httpMethod支持
      *
-     * @param path    1
-     * @param request 2
+     * @param path
+     *            1
+     * @param request
+     *            2
      * @return boolean
      */
     @Override
     protected boolean pathsMatch(String path, ServletRequest request) {
         String requestURI = this.getPathWithinApplication(request);
         requestURI = safeFormatUrl(requestURI);
-        // path: url==method eg: http://api/menu==GET   需要解析出path中的url和httpMethod
+        // path: url==method eg: http://api/menu==GET 需要解析出path中的url和httpMethod
         String[] strings = path.split("==");
         String URL = strings[0];
         String method = strings[1];
@@ -55,31 +56,40 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
     /**
      * description allowed
      *
-     * @param var1 1
-     * @param var2 2
-     * @param var3 3
+     * @param var1
+     *            1
+     * @param var2
+     *            2
+     * @param var3
+     *            3
      * @return boolean
-     * @throws Exception when
+     * @throws Exception
+     *             when
      */
     protected abstract boolean isAccessAllowed(ServletRequest var1, ServletResponse var2, Object var3) throws Exception;
 
-    protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue)
+        throws Exception {
         return this.onAccessDenied(request, response);
     }
 
     /**
      * description denied
      *
-     * @param var1 1
-     * @param var2 2
+     * @param var1
+     *            1
+     * @param var2
+     *            2
      * @return boolean
-     * @throws Exception when
+     * @throws Exception
+     *             when
      */
     protected abstract boolean onAccessDenied(ServletRequest var1, ServletResponse var2) throws Exception;
 
     @Override
     public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
-        return this.isAccessAllowed(request, response, mappedValue) || this.onAccessDenied(request, response, mappedValue);
+        return this.isAccessAllowed(request, response, mappedValue)
+            || this.onAccessDenied(request, response, mappedValue);
     }
 
     protected void saveRequest(ServletRequest request) {

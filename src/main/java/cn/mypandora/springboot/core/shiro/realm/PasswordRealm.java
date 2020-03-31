@@ -11,8 +11,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * PasswordRealm
- * 登录认证的Realm。
+ * PasswordRealm 登录认证的Realm。
  *
  * @author hankaibo
  * @date 2019/6/18
@@ -40,10 +39,10 @@ public class PasswordRealm extends AuthorizingRealm {
     }
 
     /**
-     * 因为把认证与授权分在两个realm中实现。所以这个登录realm只负责登录认证，不负责授权。
-     * 登录成功之后，通过json web token 授权。
+     * 因为把认证与授权分在两个realm中实现。所以这个登录realm只负责登录认证，不负责授权。 登录成功之后，通过json web token 授权。
      *
-     * @param principalCollection principalCollection
+     * @param principalCollection
+     *            principalCollection
      * @return authorizationInfo
      */
     @Override
@@ -54,9 +53,11 @@ public class PasswordRealm extends AuthorizingRealm {
     /**
      * 认证判断。
      *
-     * @param token 用户名/密码封装成的PasswordToken
+     * @param token
+     *            用户名/密码封装成的PasswordToken
      * @return 认证信息
-     * @throws AuthenticationException 登录异常信息，例如：密码错误、用户错误、次数过多、禁用……
+     * @throws AuthenticationException
+     *             登录异常信息，例如：密码错误、用户错误、次数过多、禁用……
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -68,11 +69,11 @@ public class PasswordRealm extends AuthorizingRealm {
             throw new UnknownAccountException();
         }
 
-        String username = (String) token.getPrincipal();
+        String username = (String)token.getPrincipal();
         User info = userService.getUserByIdOrName(null, username);
         if (info != null) {
             // 与新建用户时所采用的加密方法一致。
-            ((PasswordToken) token).setPassword(BCrypt.hashpw(((PasswordToken) token).getPassword(), info.getSalt()));
+            ((PasswordToken)token).setPassword(BCrypt.hashpw(((PasswordToken)token).getPassword(), info.getSalt()));
             return new SimpleAuthenticationInfo(username, info.getPassword(), getName());
         } else {
             return new SimpleAuthenticationInfo(username, "", getName());

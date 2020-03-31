@@ -41,17 +41,17 @@ public class RestShiroFilterFactoryBean extends ShiroFilterFactoryBean {
 
         FilterChainManager manager = createFilterChainManager();
 
-        //Expose the constructed FilterChainManager by first wrapping it in a
+        // Expose the constructed FilterChainManager by first wrapping it in a
         // FilterChainResolver implementation. The AbstractShiroFilter implementations
         // do not know about FilterChainManagers - only resolvers:
         PathMatchingFilterChainResolver chainResolver = new RestPathMatchingFilterChainResolver();
         chainResolver.setFilterChainManager(manager);
 
-        //Now create a concrete ShiroFilter instance and apply the acquired SecurityManager and built
-        //FilterChainResolver.  It doesn't matter that the instance is an anonymous inner class
-        //here - we're just using it because it is a concrete AbstractShiroFilter instance that accepts
-        //injection of the SecurityManager and FilterChainResolver:
-        return new SpringShiroFilter((WebSecurityManager) securityManager, chainResolver);
+        // Now create a concrete ShiroFilter instance and apply the acquired SecurityManager and built
+        // FilterChainResolver. It doesn't matter that the instance is an anonymous inner class
+        // here - we're just using it because it is a concrete AbstractShiroFilter instance that accepts
+        // injection of the SecurityManager and FilterChainResolver:
+        return new SpringShiroFilter((WebSecurityManager)securityManager, chainResolver);
     }
 
     private static final class SpringShiroFilter extends AbstractShiroFilter {

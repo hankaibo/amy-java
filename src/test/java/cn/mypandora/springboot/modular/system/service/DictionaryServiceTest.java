@@ -12,8 +12,7 @@ public class DictionaryServiceTest extends SpringbootApplicationTest {
     @Autowired
     private DictionaryService dictionaryService;
 
-    public void testPageDictionary() {
-    }
+    public void testPageDictionary() {}
 
     @Test
     public void testAddDictionary() {
@@ -41,14 +40,11 @@ public class DictionaryServiceTest extends SpringbootApplicationTest {
         dictionaryService.addDictionary(dictionary3);
     }
 
-    public void testGetDictionary() {
-    }
+    public void testGetDictionary() {}
 
-    public void testUpdateDictionary() {
-    }
+    public void testUpdateDictionary() {}
 
-    public void testEnableDictionary() {
-    }
+    public void testEnableDictionary() {}
 
     @Test
     public void testDeleteDictionary() {
@@ -57,6 +53,5 @@ public class DictionaryServiceTest extends SpringbootApplicationTest {
         assertEquals(total, 0);
     }
 
-    public void testDeleteBatchDictionary() {
-    }
+    public void testDeleteBatchDictionary() {}
 }

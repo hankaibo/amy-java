@@ -43,7 +43,8 @@ public class FilterChainManager {
 
     @Lazy
     @Autowired
-    public FilterChainManager(UserService userService, RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
+    public FilterChainManager(UserService userService, RoleService roleService, ResourceService resourceService,
+        StringRedisTemplate redisTemplate) {
         this.userService = userService;
         this.roleService = roleService;
         this.resourceService = resourceService;
@@ -80,10 +81,7 @@ public class FilterChainManager {
     public Map<String, String> initFilterChainDefinitionMap() {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // anon 默认过滤器忽略的url
-        List<String> defaultAnon = Arrays.asList(
-                "/css/**",
-                "/js/**"
-        );
+        List<String> defaultAnon = Arrays.asList("/css/**", "/js/**");
         defaultAnon.forEach(ignored -> filterChainDefinitionMap.put(ignored, "anon"));
         // auth 默认需要认证过滤器的URL 走auth--PasswordFilter
         List<String> defaultAuth = Arrays.asList("/api/v1/login", "/api/v1/register");
@@ -111,13 +109,16 @@ public class FilterChainManager {
         AbstractShiroFilter abstractShiroFilter = null;
 
         try {
-            abstractShiroFilter = (AbstractShiroFilter) shiroFilterFactoryBean.getObject();
-            RestPathMatchingFilterChainResolver filterChainResolver = (RestPathMatchingFilterChainResolver) abstractShiroFilter.getFilterChainResolver();
-            DefaultFilterChainManager filterChainManager = (DefaultFilterChainManager) filterChainResolver.getFilterChainManager();
+            abstractShiroFilter = (AbstractShiroFilter)shiroFilterFactoryBean.getObject();
+            RestPathMatchingFilterChainResolver filterChainResolver =
+                (RestPathMatchingFilterChainResolver)abstractShiroFilter.getFilterChainResolver();
+            DefaultFilterChainManager filterChainManager =
+                (DefaultFilterChainManager)filterChainResolver.getFilterChainManager();
             filterChainManager.getFilterChains().clear();
             shiroFilterFactoryBean.getFilterChainDefinitionMap().clear();
             shiroFilterFactoryBean.setFilterChainDefinitionMap(this.initFilterChainDefinitionMap());
-            shiroFilterFactoryBean.getFilterChainDefinitionMap().forEach((k, v) -> filterChainManager.createChain(k, v));
+            shiroFilterFactoryBean.getFilterChainDefinitionMap()
+                .forEach((k, v) -> filterChainManager.createChain(k, v));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

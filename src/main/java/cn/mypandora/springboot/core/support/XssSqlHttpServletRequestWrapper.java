@@ -21,9 +21,10 @@ public class XssSqlHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     /**
-     * description 重写  数组参数过滤
+     * description 重写 数组参数过滤
      *
-     * @param parameter 1
+     * @param parameter
+     *            1
      * @return java.lang.String[]
      */
     @Override
@@ -75,7 +76,8 @@ public class XssSqlHttpServletRequestWrapper extends HttpServletRequestWrapper {
     /**
      * description 过滤字符串数组不安全内容
      *
-     * @param value 1
+     * @param value
+     *            1
      * @return java.lang.String[]
      */
     private String[] filterEntryString(String[] value) {
@@ -88,7 +90,8 @@ public class XssSqlHttpServletRequestWrapper extends HttpServletRequestWrapper {
     /**
      * description 过滤字符串不安全内容
      *
-     * @param value 1
+     * @param value
+     *            1
      * @return java.lang.String
      */
     private String filterParamString(String value) {

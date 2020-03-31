@@ -25,9 +25,12 @@ public class PasswordFilter extends AccessControlFilter {
     /**
      * 表示是否允许访问；mappedValue就是[urls]配置中拦截器参数部分，如果允许访问返回true，否则false；
      *
-     * @param request     HttpServletRequest
-     * @param response    HttpServletResponse
-     * @param mappedValue map
+     * @param request
+     *            HttpServletRequest
+     * @param response
+     *            HttpServletResponse
+     * @param mappedValue
+     *            map
      * @return boolean
      */
     @Override
@@ -41,10 +44,13 @@ public class PasswordFilter extends AccessControlFilter {
     /**
      * 表示当访问拒绝时是否已经处理了；如果返回true表示需要继续处理；如果返回false表示该拦截器实例已经处理了，将直接返回即可。
      *
-     * @param request  request
-     * @param response response
+     * @param request
+     *            request
+     * @param response
+     *            response
      * @return boolean
-     * @throws Exception 认证失败异常
+     * @throws Exception
+     *             认证失败异常
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
@@ -60,7 +66,7 @@ public class PasswordFilter extends AccessControlFilter {
         Subject subject = getSubject(request, response);
         try {
             subject.login(authenticationToken);
-            //登录认证成功,进入请求派发json web token url资源内
+            // 登录认证成功,进入请求派发json web token url资源内
             return true;
         } catch (AuthenticationException e) {
             log.warn(authenticationToken.getPrincipal() + "::" + e.getMessage());

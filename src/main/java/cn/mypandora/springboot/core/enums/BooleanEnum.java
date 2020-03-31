@@ -12,11 +12,9 @@ import lombok.Getter;
 public enum BooleanEnum {
 
     /**
-     * YES: 1
-     * NO: 0
+     * YES: 1 NO: 0
      */
-    YES(1),
-    NO(0);
+    YES(1), NO(0);
 
     private int value;
 

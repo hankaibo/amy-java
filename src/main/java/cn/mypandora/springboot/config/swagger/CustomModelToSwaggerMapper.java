@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * CustomModelToSwaggerMapper
- * 添加access配置，隐藏登录接口header中统一添加的token。
+ * CustomModelToSwaggerMapper 添加access配置，隐藏登录接口header中统一添加的token。
  *
  * @author hankaibo
  * @date 2019/7/5
@@ -27,7 +26,8 @@ public class CustomModelToSwaggerMapper extends ServiceModelToSwagger2MapperImpl
         // 自定义规则，当access="hidden"，不显示
         list = list.stream().filter(p -> !"hidden".equals(p.getParamAccess())).collect(Collectors.toList());
         // list需要根据order|position排序
-        list = list.stream().sorted((p1, p2) -> Integer.compare(p1.getOrder(), p2.getOrder())).collect(Collectors.toList());
+        list = list.stream().sorted((p1, p2) -> Integer.compare(p1.getOrder(), p2.getOrder()))
+            .collect(Collectors.toList());
         return super.parameterListToParameterList(list);
     }
 

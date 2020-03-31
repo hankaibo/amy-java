@@ -23,7 +23,7 @@ spring:
 ## mybatis
 mybatis:
   type-aliases-package: cn.mypandora.springboot.modular.system.model.po
-#  config-location: classpath:mybatis/mybatis-config.xml
+  #  config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath:mybatis/mapper/**/*.xml
 ###############################################################################
 ## mapper

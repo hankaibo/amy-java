@@ -32,7 +32,8 @@ public class RoleServiceImpl implements RoleService {
     private UserRoleMapper userRoleMapper;
 
     @Autowired
-    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper, UserRoleMapper userRoleMapper) {
+    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper,
+        UserRoleMapper userRoleMapper) {
         this.roleMapper = roleMapper;
         this.roleResourceMapper = roleResourceMapper;
         this.userRoleMapper = userRoleMapper;
@@ -261,7 +262,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 获取此角色及其子孙角色的id。
      *
-     * @param id 角色
+     * @param id
+     *            角色
      * @return 角色主键id集合
      */
     private List<Long> listDescendantId(Long id) {
@@ -272,10 +274,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
-     * 获取各角色最顶级的祖先角色。
-     * 如果一个用户在父级角色、本级角色、子级角色都存在，则只过滤出父级角色，以减少后边重复查询。
+     * 获取各角色最顶级的祖先角色。 如果一个用户在父级角色、本级角色、子级角色都存在，则只过滤出父级角色，以减少后边重复查询。
      *
-     * @param roleList 角色列表
+     * @param roleList
+     *            角色列表
      * @return 用户所在各角色的最顶级角色。
      */
     private List<Role> listTopAncestryRole(List<Role> roleList) {
@@ -284,10 +286,8 @@ public class RoleServiceImpl implements RoleService {
             return roleList;
         }
         for (Role role : roleList) {
-            if (roleList
-                    .stream()
-                    .filter(item -> item.getLevel() < role.getLevel())
-                    .noneMatch(item -> item.getLft() < role.getLft() && item.getRgt() > role.getRgt())) {
+            if (roleList.stream().filter(item -> item.getLevel() < role.getLevel())
+                .noneMatch(item -> item.getLft() < role.getLft() && item.getRgt() > role.getRgt())) {
                 result.add(role);
             }
         }
@@ -297,7 +297,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 防止更新角色时，指定自己的下级角色作为自己的父级角色。
      *
-     * @param role 角色
+     * @param role
+     *            角色
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Role role) {
@@ -314,8 +315,10 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 获取两个角色最近的共同祖先角色。
      *
-     * @param role1 第一个角色
-     * @param role2 第二个角色
+     * @param role1
+     *            第一个角色
+     * @param role2
+     *            第二个角色
      * @return 最近的祖先角色
      */
     private Role getCommonAncestry(Role role1, Role role2) {
@@ -332,7 +335,8 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Comparator<Role> comparator = Comparator.comparing(Role::getLft);
-        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).orElseThrow(RuntimeException::new);
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator)
+            .orElseThrow(RuntimeException::new);
     }
 
 }

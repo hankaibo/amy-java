@@ -73,8 +73,7 @@ public class Tree {
     private Boolean disabled;
 
     /**
-     * 自定义图标。
-     * 需要前台根据icon名称构造。
+     * 自定义图标。 需要前台根据icon名称构造。
      */
     @ApiModelProperty(value = "自定义图标", example = "-")
     private String icon;
@@ -86,15 +85,13 @@ public class Tree {
     private Long parentId;
 
     /**
-     * 状态
-     * 冗余字段，列表显示
+     * 状态 冗余字段，列表显示
      */
     @ApiModelProperty(value = "状态(列表显示)", example = "1")
     private Integer status;
 
     /**
-     * 描述
-     * 冗余字段，列表显示
+     * 描述 冗余字段，列表显示
      */
     @ApiModelProperty(value = "描述(列表显示)", example = "description")
     private String description;

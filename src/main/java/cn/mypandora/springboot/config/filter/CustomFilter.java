@@ -1,6 +1,5 @@
 package cn.mypandora.springboot.config.filter;
 
-
 import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 
@@ -28,8 +27,7 @@ public class CustomFilter implements Filter {
     private static final String USER_ID = "userId";
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+    public void init(FilterConfig filterConfig) throws ServletException {}
 
     @Override
     public void destroy() {
@@ -37,11 +35,12 @@ public class CustomFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest)request;
+        HttpServletResponse httpResponse = (HttpServletResponse)response;
 
-        String authorization = ((HttpServletRequest) request).getHeader("authorization");
+        String authorization = ((HttpServletRequest)request).getHeader("authorization");
         String jwt = JsonWebTokenUtil.unBearer(authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
         Long userId = jwtAccount.getUserId();
@@ -50,7 +49,7 @@ public class CustomFilter implements Filter {
             @Override
             public String[] getParameterValues(String name) {
                 if (USER_ID.equals(name)) {
-                    return new String[]{userId.toString()};
+                    return new String[] {userId.toString()};
                 }
                 return super.getParameterValues(name);
             }

@@ -22,7 +22,8 @@ public class XssUtil {
     /**
      * description 过滤XSS脚本内容
      *
-     * @param value 1
+     * @param value
+     *            1
      * @return java.lang.String
      */
     public static String stripXSS(String value) {
@@ -43,18 +44,15 @@ public class XssUtil {
             rlt = scriptPattern.matcher(rlt).replaceAll("");
 
             // Remove any lonesome <script ...> tag
-            scriptPattern = Pattern.compile(STR_SCRIPT3, Pattern.CASE_INSENSITIVE
-                    | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = Pattern.compile(STR_SCRIPT3, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             rlt = scriptPattern.matcher(rlt).replaceAll("");
 
             // Avoid eval(...) expressions
-            scriptPattern = Pattern.compile(STR_EVAL, Pattern.CASE_INSENSITIVE
-                    | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = Pattern.compile(STR_EVAL, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             rlt = scriptPattern.matcher(rlt).replaceAll("");
 
             // Avoid expression(...) expressions
-            scriptPattern = Pattern.compile(STR_EXP, Pattern.CASE_INSENSITIVE
-                    | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = Pattern.compile(STR_EXP, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             rlt = scriptPattern.matcher(rlt).replaceAll("");
 
             // Avoid javascript:... expressions
@@ -66,8 +64,7 @@ public class XssUtil {
             rlt = scriptPattern.matcher(rlt).replaceAll("");
 
             // Avoid onload= expressions
-            scriptPattern = Pattern.compile(STR_ON, Pattern.CASE_INSENSITIVE
-                    | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = Pattern.compile(STR_ON, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             rlt = scriptPattern.matcher(rlt).replaceAll("");
         }
 
@@ -77,7 +74,8 @@ public class XssUtil {
     /**
      * description 过滤SQL注入内容
      *
-     * @param value 1
+     * @param value
+     *            1
      * @return java.lang.String
      */
     public static String stripSqlInjection(String value) {
@@ -87,7 +85,8 @@ public class XssUtil {
     /**
      * description 过滤SQL 和 XSS注入内容
      *
-     * @param value 1
+     * @param value
+     *            1
      * @return java.lang.String
      */
     public static String stripSqlXss(String value) {

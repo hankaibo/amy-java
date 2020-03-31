@@ -14,8 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Realm管理器。
- * 需要注入自己的接口，判断用户认证结果、授权结果。
+ * Realm管理器。 需要注入自己的接口，判断用户认证结果、授权结果。
  *
  * @author hankaibo
  * @date 2019/1/12
@@ -24,8 +23,7 @@ import java.util.List;
 public class RealmManager {
 
     /**
-     * 1. 注入UserService接口，以供登录难时调用数据库获取用户进行比对。
-     * 2. 分别针对登录与接口注入相应的匹配器进行规则匹配。
+     * 1. 注入UserService接口，以供登录难时调用数据库获取用户进行比对。 2. 分别针对登录与接口注入相应的匹配器进行规则匹配。
      */
     private UserService userService;
     private PasswordMatcher passwordMatcher;

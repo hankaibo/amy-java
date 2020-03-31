@@ -29,7 +29,8 @@ import java.util.stream.Collectors;
  *
  * @author hankaibo
  * @date 2019/1/15
- * @see <a href="http://www.spoofer.top/2017/07/14/%E5%9F%BA%E4%BA%8ENested-Sets%E7%9A%84%E6%A0%91%E5%BD%A2%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1">左右节点树操作</a>
+ * @see <a href=
+ *      "http://www.spoofer.top/2017/07/14/%E5%9F%BA%E4%BA%8ENested-Sets%E7%9A%84%E6%A0%91%E5%BD%A2%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1">左右节点树操作</a>
  */
 @Service
 public class ResourceServiceImpl implements ResourceService {
@@ -39,7 +40,8 @@ public class ResourceServiceImpl implements ResourceService {
     private RoleMapper roleMapper;
 
     @Autowired
-    public ResourceServiceImpl(ResourceMapper resourceMapper, RoleResourceMapper roleResourceMapper, RoleMapper roleMapper) {
+    public ResourceServiceImpl(ResourceMapper resourceMapper, RoleResourceMapper roleResourceMapper,
+        RoleMapper roleMapper) {
         this.resourceMapper = resourceMapper;
         this.roleResourceMapper = roleResourceMapper;
         this.roleMapper = roleMapper;
@@ -74,7 +76,8 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addResource(Resource resource, Long userId) {
-        List<Resource> resourceList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> resourceList =
+            listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
         if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
             throw new BusinessException(Resource.class, "父级资源选择错误。");
         }
@@ -257,7 +260,8 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 获取此资源及其子孙资源的id。
      *
-     * @param id 资源
+     * @param id
+     *            资源
      * @return 资源主键id集合
      */
     private List<Long> listDescendantId(Long id) {
@@ -270,7 +274,8 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 防止更新资源时，指定自己的下级资源作为自己的父级资源。
      *
-     * @param resource 资源
+     * @param resource
+     *            资源
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Resource resource) {
@@ -281,14 +286,17 @@ public class ResourceServiceImpl implements ResourceService {
         Resource parent = new Resource();
         parent.setId(resource.getParentId());
         Resource parentResource = resourceMapper.selectByPrimaryKey(parent);
-        return !(parentResource.getLft() >= childResource.getLft() && parentResource.getRgt() <= childResource.getRgt());
+        return !(parentResource.getLft() >= childResource.getLft()
+            && parentResource.getRgt() <= childResource.getRgt());
     }
 
     /**
      * 获取两个资源最近的共同祖先资源。
      *
-     * @param resource1 第一个资源
-     * @param resource2 第二个资源
+     * @param resource1
+     *            第一个资源
+     * @param resource2
+     *            第二个资源
      * @return 最近的祖先资源
      */
     private Resource getCommonAncestry(Resource resource1, Resource resource2) {
@@ -313,7 +321,8 @@ public class ResourceServiceImpl implements ResourceService {
         }
 
         Comparator<Resource> comparator = Comparator.comparing(Resource::getLft);
-        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).orElseThrow(RuntimeException::new);
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator)
+            .orElseThrow(RuntimeException::new);
     }
 
     /**

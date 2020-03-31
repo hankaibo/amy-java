@@ -47,16 +47,19 @@ public class InformationController {
     /**
      * 分页查询信息数据。
      *
-     * @param pageNum  页码
-     * @param pageSize 每页条数
+     * @param pageNum
+     *            页码
+     * @param pageSize
+     *            每页条数
      * @return 分页数据
      */
     @ApiOperation(value = "分页查询信息", notes = "根据分页数据进行查询。")
     @GetMapping
     @ResponseBody
-    public PageInfo<Information> pageInformation(@RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-                                                 @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
-                                                 @RequestParam(value = "type", required = false) @ApiParam(value = "信息类型") Integer type) {
+    public PageInfo<Information> pageInformation(
+        @RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
+        @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数", required = true) int pageSize,
+        @RequestParam(value = "type", required = false) @ApiParam(value = "信息类型") Integer type) {
         Information information = new Information();
         if (type != null) {
             information.setType(type);
@@ -67,7 +70,8 @@ public class InformationController {
     /**
      * 新建信息。
      *
-     * @param information 信息数据
+     * @param information
+     *            信息数据
      */
     @ApiOperation(value = "信息新建", notes = "根据数据新建信息。")
     @PostMapping
@@ -79,7 +83,8 @@ public class InformationController {
     /**
      * 查询信息详细数据。
      *
-     * @param id 信息主键id
+     * @param id
+     *            信息主键id
      * @return 信息信息
      */
     @ApiOperation(value = "信息详情", notes = "根据信息id查询信息详情。")
@@ -96,7 +101,8 @@ public class InformationController {
     /**
      * 更新信息。
      *
-     * @param information 信息数据
+     * @param information
+     *            信息数据
      */
     @ApiOperation(value = "信息更新", notes = "根据信息数据更新信息。")
     @PutMapping("/{id}")
@@ -108,14 +114,16 @@ public class InformationController {
     /**
      * 启用|禁用信息。
      *
-     * @param id  信息主键id
-     * @param map 状态(1:启用，0:禁用)
+     * @param id
+     *            信息主键id
+     * @param map
+     *            状态(1:启用，0:禁用)
      */
     @ApiOperation(value = "信息状态启用禁用", notes = "根据信息id启用或禁用其状态。")
     @PatchMapping("/{id}/status")
     @ResponseBody
     public void enableInformation(@PathVariable("id") @ApiParam(value = "信息主键id", required = true) Long id,
-                                  @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
+        @RequestBody @ApiParam(value = "启用(1)，禁用(0)", required = true) Map<String, Integer> map) {
         Integer status = map.get("status");
         informationService.enableInformation(id, status);
     }
@@ -123,7 +131,8 @@ public class InformationController {
     /**
      * 发布信息。
      *
-     * @param id 信息主键id
+     * @param id
+     *            信息主键id
      */
     @ApiOperation(value = "信息发布", notes = "根据信息Id发布信息。")
     @PatchMapping("/{id}/publication")
@@ -135,19 +144,22 @@ public class InformationController {
     /**
      * 批量发布信息。
      *
-     * @param ids 信息id数组
+     * @param ids
+     *            信息id数组
      */
     @ApiOperation(value = "信息发布(批量)", notes = "根据信息Id批量发布信息。")
     @PutMapping
     @ResponseBody
-    public void publishBatchInformation(@RequestBody @ApiParam(value = "信息主键数组ids", required = true) Map<String, Long[]> ids) {
+    public void
+        publishBatchInformation(@RequestBody @ApiParam(value = "信息主键数组ids", required = true) Map<String, Long[]> ids) {
         informationService.publishBatchInformation(StringUtils.join(ids.get("ids"), ','));
     }
 
     /**
      * 删除信息。
      *
-     * @param id 信息主键id
+     * @param id
+     *            信息主键id
      */
     @ApiOperation(value = "信息删除", notes = "根据信息Id删除信息。")
     @DeleteMapping("/{id}")
@@ -159,22 +171,20 @@ public class InformationController {
     /**
      * 批量删除信息。
      *
-     * @param ids 信息id数组
+     * @param ids
+     *            信息id数组
      */
     @ApiOperation(value = "信息删除(批量)", notes = "根据信息Id批量删除信息。")
     @DeleteMapping
     @ResponseBody
-    public void deleteBatchInformation(@RequestBody @ApiParam(value = "信息主键数组ids", required = true) Map<String, Long[]> ids) {
+    public void
+        deleteBatchInformation(@RequestBody @ApiParam(value = "信息主键数组ids", required = true) Map<String, Long[]> ids) {
         informationService.deleteBatchInformation(StringUtils.join(ids.get("ids"), ','));
     }
 
     @MessageMapping("/test/{id}")
-    public void test(Message message,
-                     MessageHeaders messageHeaders,
-                     @Header("destination") String destination,
-                     @Headers Map<String, Object> headers,
-                     @DestinationVariable long id,
-                     @Payload String body) {
+    public void test(Message message, MessageHeaders messageHeaders, @Header("destination") String destination,
+        @Headers Map<String, Object> headers, @DestinationVariable long id, @Payload String body) {
         log.info("[test] Message: {}", message);
         log.info("[test] MessageHeaders: {}", messageHeaders);
         log.info("[test] Header: {}", destination);
@@ -184,12 +194,12 @@ public class InformationController {
     }
 
     /**
-     * 广播方式之一，使用 SimpMessagingTemplate
-     * 当前端浏览器访问"/api/v1/hello"时，该方法进行响应。
-     * "/api/v1" 即 {@link WebSocketConfig#configureMessageBroker } 配置中定义值。
-     * "/topic/**" 也要与 {@link WebSocketConfig#configureMessageBroker}中相对应。
+     * 广播方式之一，使用 SimpMessagingTemplate 当前端浏览器访问"/api/v1/hello"时，该方法进行响应。 "/api/v1" 即
+     * {@link WebSocketConfig#configureMessageBroker } 配置中定义值。 "/topic/**" 也要与
+     * {@link WebSocketConfig#configureMessageBroker}中相对应。
      *
-     * @param body 信息体
+     * @param body
+     *            信息体
      */
     @MessageMapping("/hello")
     public void hello(@Payload String body) {
@@ -199,7 +209,8 @@ public class InformationController {
     /**
      * 广播方式之二，使用 SendTo 注解
      *
-     * @param body 信息体
+     * @param body
+     *            信息体
      * @return 广播内容
      */
     @MessageMapping("/hello1")
@@ -211,8 +222,10 @@ public class InformationController {
     /**
      * 点播方式之一，使用 SimpMessagingTemplate。
      *
-     * @param body      信息体
-     * @param principal 主体
+     * @param body
+     *            信息体
+     * @param principal
+     *            主体
      */
     public void hello3(@Payload String body, Principal principal) {
         simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/sub/msg", "reply hello3");
@@ -221,8 +234,10 @@ public class InformationController {
     /**
      * 点播方式之二，使用 SendToIinformation 注解。
      *
-     * @param body      信息体
-     * @param principal 主体
+     * @param body
+     *            信息体
+     * @param principal
+     *            主体
      * @return 返回内容
      */
     @MessageMapping("/hello4")

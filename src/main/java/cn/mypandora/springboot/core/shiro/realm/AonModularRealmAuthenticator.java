@@ -11,9 +11,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * AonModularRealmAuthenticator
- * 主要是针对不同的请求使用不同的realm验证。
- * 登录使用PasswordRealm，其它接口使用JwtRealm。
+ * AonModularRealmAuthenticator 主要是针对不同的请求使用不同的realm验证。 登录使用PasswordRealm，其它接口使用JwtRealm。
  *
  * @author hankaibo
  * @date 2019/6/18
@@ -21,12 +19,11 @@ import static java.util.stream.Collectors.toList;
 public class AonModularRealmAuthenticator extends ModularRealmAuthenticator {
 
     @Override
-    protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {
+    protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken)
+        throws AuthenticationException {
         assertRealmsConfigured();
-        List<Realm> realms = this.getRealms()
-                .stream()
-                .filter(realm -> realm.supports(authenticationToken))
-                .collect(toList());
+        List<Realm> realms =
+            this.getRealms().stream().filter(realm -> realm.supports(authenticationToken)).collect(toList());
         if (realms.size() == 1) {
             return doSingleRealmAuthentication(realms.iterator().next(), authenticationToken);
         } else {

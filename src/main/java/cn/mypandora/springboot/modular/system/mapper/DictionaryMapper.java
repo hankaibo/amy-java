@@ -15,14 +15,16 @@ public interface DictionaryMapper extends MyBaseMapper<Dictionary> {
     /**
      * 根据主键id删除字典，包括删除其下的所有子项。
      *
-     * @param id 主键id
+     * @param id
+     *            主键id
      */
     void deleteDictionaryById(Long id);
 
     /**
      * 根据主键id数组删除字典，包括删除其下的所有子项。
      *
-     * @param ids id数组
+     * @param ids
+     *            id数组
      */
     void deleteDictionaryByListId(@Param("ids") long[] ids);
 }

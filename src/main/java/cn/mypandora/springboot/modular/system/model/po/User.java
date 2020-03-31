@@ -105,8 +105,7 @@ public class User extends BaseEntity {
     private Date lastLoginTime;
 
     /**
-     * 用户所在部门主键ID
-     * 方便转换显示，不存数据库
+     * 用户所在部门主键ID 方便转换显示，不存数据库
      */
     @ApiModelProperty(value = "用户部门id")
     @Transient

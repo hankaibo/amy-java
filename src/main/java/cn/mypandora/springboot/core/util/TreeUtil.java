@@ -1,16 +1,16 @@
 package cn.mypandora.springboot.core.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * TreeUtil
@@ -25,7 +25,8 @@ public class TreeUtil {
     /**
      * 将资源数据转换为树。
      *
-     * @param resourceList 资源列表
+     * @param resourceList
+     *            资源列表
      * @return 资源树
      */
     public static List<ResourceTree> resource2Tree(List<Resource> resourceList) {
@@ -70,7 +71,8 @@ public class TreeUtil {
     /**
      * 将部门数据转换为树。
      *
-     * @param departmentList 部门列表
+     * @param departmentList
+     *            部门列表
      * @return 部门树
      */
     public static List<DepartmentTree> department2Tree(List<Department> departmentList) {
@@ -83,6 +85,7 @@ public class TreeUtil {
             departmentTree.setKey(department.getId().toString());
             departmentTree.setValue(department.getId().toString());
             departmentTree.setTitle(department.getName());
+            departmentTree.setDisabled(department.getStatus() == 0);
             departmentTree.setParentId(department.getParentId());
             // 列表字段
             departmentTree.setStatus(department.getStatus());
@@ -112,7 +115,8 @@ public class TreeUtil {
     /**
      * 将角色数据转换为树。
      *
-     * @param roleList 角色列表
+     * @param roleList
+     *            角色列表
      * @return 角色树
      */
     public static List<RoleTree> role2Tree(List<Role> roleList) {
