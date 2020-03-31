@@ -6,5 +6,4 @@ package cn.mypandora.springboot.core.exception;
  * @author hankaibo
  * @date 2020/3/29
  */
-public abstract class ApiSubError {
-}
+public abstract class AbstractApiSubError {}

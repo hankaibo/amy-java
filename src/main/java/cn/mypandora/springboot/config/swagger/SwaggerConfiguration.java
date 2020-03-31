@@ -23,13 +23,11 @@ import java.util.List;
 /**
  * SwaggerConfiguration
  * <p>
- * 配置swagger-ui。
- * 注：
- * 1. @Configuration是指的java Config(Java 配置)，是一个Ioc容器类，相当于传统项目中见到的一个spring的xml配置文件。
+ * 配置swagger-ui。 注： 1. @Configuration是指的java Config(Java 配置)，是一个Ioc容器类，相当于传统项目中见到的一个spring的xml配置文件。
  * 当Spring发现某个类使用了@Configuration标注了，就去将该类下使用@Bean注解的方法创建bean并放入到容器中。
  * 2. @Conditional满足特定条件时才会创建一个Bean放入到IOC容器，@ConditionalOnXxx都是组合@Conditional元注解，
- * 使用了不同的条件Condition。@ConditionalOnProperty指定的属性是否有指定的值。
- * 3. 使用更简洁的Profile代替Conditional判断是否开启swagger。(生产环境下报错，bean注册失败，故去掉。)
+ * 使用了不同的条件Condition。@ConditionalOnProperty指定的属性是否有指定的值。 3.
+ * 使用更简洁的Profile代替Conditional判断是否开启swagger。(生产环境下报错，bean注册失败，故去掉。)
  *
  * @author hankaibo
  * @date 2019/1/14
@@ -53,32 +51,22 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket docketSystem() {
-        Parameter parameter = new ParameterBuilder()
-                .name("Authorization")
-                .description("header带上token")
-                // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
-                .modelRef(new ModelRef("string"))
-                .parameterType("header")
-                .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1)
-                .required(true)
-                .build();
+        Parameter parameter = new ParameterBuilder().name("Authorization").description("header带上token")
+            // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
+            .modelRef(new ModelRef("string")).parameterType("header")
+            .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
 
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName("system API")
-                //这里采用包含注解的方式来确定要显示的接口
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))
-                .paths(PathSelectors.regex("/api/.*"))
-                .build()
-                .useDefaultResponseMessages(false)
-                // 全局信息
-                .globalResponseMessage(RequestMethod.GET, customResponseMessage())
-                .globalResponseMessage(RequestMethod.POST, customResponseMessage())
-                .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
-                .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
-                //请求,带上token
-                .globalOperationParameters(Arrays.asList(parameter));
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("system API")
+            // 这里采用包含注解的方式来确定要显示的接口
+            .select().apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.system.controller"))
+            .paths(PathSelectors.regex("/api/.*")).build().useDefaultResponseMessages(false)
+            // 全局信息
+            .globalResponseMessage(RequestMethod.GET, customResponseMessage())
+            .globalResponseMessage(RequestMethod.POST, customResponseMessage())
+            .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
+            .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
+            // 请求,带上token
+            .globalOperationParameters(Arrays.asList(parameter));
     }
 
     /**
@@ -89,22 +77,18 @@ public class SwaggerConfiguration {
     @Bean
     public Docket docketBusiness() {
         Parameter parameter = new ParameterBuilder().name("Authorization").description("header带上token")
-                // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
-                .modelRef(new ModelRef("string")).parameterType("header").order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName("业务API接口文档")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.your"))
-                .paths(PathSelectors.regex("/api/.*"))
-                .build()
-                .useDefaultResponseMessages(false)
-                .globalResponseMessage(RequestMethod.GET, customResponseMessage())
-                .globalResponseMessage(RequestMethod.POST, customResponseMessage())
-                .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
-                .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
-                //请求,带上token
-                .globalOperationParameters(Arrays.asList(parameter));
+            // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
+            .modelRef(new ModelRef("string")).parameterType("header")
+            .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("业务API接口文档").select()
+            .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.your"))
+            .paths(PathSelectors.regex("/api/.*")).build().useDefaultResponseMessages(false)
+            .globalResponseMessage(RequestMethod.GET, customResponseMessage())
+            .globalResponseMessage(RequestMethod.POST, customResponseMessage())
+            .globalResponseMessage(RequestMethod.PUT, customResponseMessage())
+            .globalResponseMessage(RequestMethod.DELETE, customResponseMessage())
+            // 请求,带上token
+            .globalOperationParameters(Arrays.asList(parameter));
     }
 
     /**
@@ -113,27 +97,26 @@ public class SwaggerConfiguration {
      * @return swagger页面信息
      */
     private ApiInfo apiInfo() {
-        Contact contact = new Contact(
-                projectProperties.getAuthor().getName(),
-                projectProperties.getAuthor().getUrl(),
-                projectProperties.getAuthor().getEmail()
-        );
-        return new ApiInfoBuilder()
-                .version(projectProperties.getVersion())
-                .title(projectProperties.getName())
-                .description(projectProperties.getDescription())
-                .contact(contact)
-                .build();
+        Contact contact = new Contact(projectProperties.getAuthor().getName(), projectProperties.getAuthor().getUrl(),
+            projectProperties.getAuthor().getEmail());
+        return new ApiInfoBuilder().version(projectProperties.getVersion()).title(projectProperties.getName())
+            .description(projectProperties.getDescription()).contact(contact).build();
     }
 
     private List<ResponseMessage> customResponseMessage() {
         List<ResponseMessage> responseMessageList = new ArrayList<>();
-        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.OK.value()).message(HttpStatus.OK.getReasonPhrase()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.BAD_REQUEST.value()).message(HttpStatus.BAD_REQUEST.getReasonPhrase()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.UNAUTHORIZED.value()).message(HttpStatus.UNAUTHORIZED.getReasonPhrase()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.FORBIDDEN.value()).message(HttpStatus.FORBIDDEN.getReasonPhrase()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.NOT_FOUND.value()).message(HttpStatus.NOT_FOUND.getReasonPhrase()).build());
-        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.INTERNAL_SERVER_ERROR.value()).message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).build());
+        responseMessageList.add(
+            new ResponseMessageBuilder().code(HttpStatus.OK.value()).message(HttpStatus.OK.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.BAD_REQUEST.value())
+            .message(HttpStatus.BAD_REQUEST.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.UNAUTHORIZED.value())
+            .message(HttpStatus.UNAUTHORIZED.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.FORBIDDEN.value())
+            .message(HttpStatus.FORBIDDEN.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.NOT_FOUND.value())
+            .message(HttpStatus.NOT_FOUND.getReasonPhrase()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).build());
         return responseMessageList;
     }
 

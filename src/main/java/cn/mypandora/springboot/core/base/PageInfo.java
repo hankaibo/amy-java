@@ -46,7 +46,7 @@ public class PageInfo<T> extends PageSerializable<T> {
     public PageInfo(List<T> list) {
         super(list);
         if (list instanceof Page) {
-            Page page = (Page) list;
+            Page page = (Page)list;
             this.pageNum = page.getPageNum();
             this.pageSize = page.getPageSize();
             this.total = page.getTotal();

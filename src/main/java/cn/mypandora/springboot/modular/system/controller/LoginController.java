@@ -50,7 +50,8 @@ public class LoginController {
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    public LoginController(UserService userService, RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
+    public LoginController(UserService userService, RoleService roleService, ResourceService resourceService,
+        StringRedisTemplate redisTemplate) {
         this.userService = userService;
         this.roleService = roleService;
         this.resourceService = resourceService;
@@ -58,29 +59,24 @@ public class LoginController {
     }
 
     /**
-     * 用户登录，返回token。
-     * 关于当前登录用户是否有操作部门、角色、资源的权限，有如下两种方案。
-     * 方案一：
+     * 用户登录，返回token。 关于当前登录用户是否有操作部门、角色、资源的权限，有如下两种方案。 方案一：
      * 用户登录时，获取当前登录用户的userId,departmentIds,roleIds,roleCodes,resourceIds,resourceCodes，并作为token数据返回给前端。
-     * 用户操作部门、角色和资源时，从token中取出上述资源，进行用户是否有权限的判断。
-     * 优点：每次从token中获取，不用再查询数据库，减少了sql操作。
+     * 用户操作部门、角色和资源时，从token中取出上述资源，进行用户是否有权限的判断。 优点：每次从token中获取，不用再查询数据库，减少了sql操作。
      * 缺点：如果动态修改了当前用户的部门、角色和资源，只要他不退出重新登录就依然有操作权限。
      * <p>
-     * 方案二：
-     * 用户登录时，获取当前登录用户的userId，并作为token数据返回给前端。
+     * 方案二： 用户登录时，获取当前登录用户的userId，并作为token数据返回给前端。
      * 用户操作部门、角色和资源时，从token中取出userId，通过userId从数据库中查询出相应的部门、角色和资源。然后再进行操作权限的判断。
-     * 优点：每次都是基于不变的用户userId动态从数据库中查询最新权限，修改可即时生效。
-     * 缺点：每次操作都查询数据库，sql压力大。
+     * 优点：每次都是基于不变的用户userId动态从数据库中查询最新权限，修改可即时生效。 缺点：每次操作都查询数据库，sql压力大。
      *
-     * @param request request
+     * @param request
+     *            request
      * @return token
      */
     @ApiOperation(value = "用户登录", notes = "输入名称与密码，返回token与role信息。")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "String", access = "hidden"),
-            @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
-            @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")
-    })
+        @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "String", access = "hidden"),
+        @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
+        @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")})
     @PostMapping("/login")
     public Token login(HttpServletRequest request) {
         // 获取用户信息
@@ -98,7 +94,8 @@ public class LoginController {
         String roleIds = StringUtils.join(roleIdList, ',');
 
         // 获取资源信息
-        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
+        List<Resource> resourceList =
+            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
         List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
 
         String resourceCodes = StringUtils.join(resourceCodeList, ',');
@@ -107,17 +104,10 @@ public class LoginController {
         long refreshPeriodTime = 36000L;
 
         // 生成jwt并将签发的JWT存储到Redis： {JWT-ID-{username} , jwt}
-        String jwt = JsonWebTokenUtil.createJwt(
-                UUID.randomUUID().toString(),
-                "token-server",
-                username,
-                refreshPeriodTime >> 1,
-                userId,
-                roleIds,
-                roleCodes,
-                resourceCodes
-        );
-        redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), jwt, refreshPeriodTime, TimeUnit.SECONDS);
+        String jwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username,
+            refreshPeriodTime >> 1, userId, roleIds, roleCodes, resourceCodes);
+        redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), jwt, refreshPeriodTime,
+            TimeUnit.SECONDS);
 
         // 返回给前台数据
         Token token = new Token();
@@ -131,7 +121,8 @@ public class LoginController {
     /**
      * 用户退出，清空token.
      *
-     * @param authorization token
+     * @param authorization
+     *            token
      * @return 成功或异常
      */
     @ApiOperation(value = "用户登出", notes = "带token。")

@@ -31,9 +31,12 @@ public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChain
     /**
      * 重写filterChain匹配
      *
-     * @param request       请求
-     * @param response      响应
-     * @param originalChain 原生过滤器链
+     * @param request
+     *            请求
+     * @param response
+     *            响应
+     * @param originalChain
+     *            原生过滤器链
      * @return 新过滤器链
      */
     @Override
@@ -52,7 +55,8 @@ public class RestPathMatchingFilterChainResolver extends PathMatchingFilterChain
             pathPatternUrl = safeFormatUrl(pathPatternUrl);
             if (pathMatches(pathPatternUrl, requestURI)) {
                 if (log.isTraceEnabled()) {
-                    log.trace("Matched path pattern [" + pathPattern + "] for requestURI [" + requestURI + "].  " + "Utilizing corresponding filter chain...");
+                    log.trace("Matched path pattern [" + pathPattern + "] for requestURI [" + requestURI + "].  "
+                        + "Utilizing corresponding filter chain...");
                 }
                 return filterChainManager.proxy(originalChain, pathPattern);
             }

@@ -48,7 +48,8 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    public JwtFilter(UserService userService, RoleService roleService, ResourceService resourceService, StringRedisTemplate redisTemplate) {
+    public JwtFilter(UserService userService, RoleService roleService, ResourceService resourceService,
+        StringRedisTemplate redisTemplate) {
         this.userService = userService;
         this.roleService = roleService;
         this.resourceService = resourceService;
@@ -56,7 +57,8 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     }
 
     @Override
-    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object mappedValue) {
+    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse,
+        Object mappedValue) {
         Subject subject = getSubject(servletRequest, servletResponse);
 
         boolean isJwtPost = (null != subject && !subject.isAuthenticated()) && isJwtSubmission(servletRequest);
@@ -94,47 +96,47 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         String roleIds = StringUtils.join(roleIdList, ',');
 
                         // 获取资源信息
-                        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
-                        List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
+                        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username, null,
+                            StatusEnum.ENABLED.getValue());
+                        List<String> resourceCodeList =
+                            resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
 
                         String resourceCodes = String.join(",", resourceCodeList);
 
-                        //seconds为单位,10 hours
+                        // seconds为单位,10 hours
                         long refreshPeriodTime = 36000L;
 
-                        String newJwt = JsonWebTokenUtil.createJwt(
-                                UUID.randomUUID().toString(),
-                                "token-server",
-                                username,
-                                refreshPeriodTime >> 1,
-                                userId,
-                                roleIds,
-                                roleCodes,
-                                resourceCodes
-                        );
-                        redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt, refreshPeriodTime, TimeUnit.SECONDS);
-                        RequestResponseUtil.responseWrite(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), servletResponse);
+                        String newJwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server",
+                            username, refreshPeriodTime >> 1, userId, roleIds, roleCodes, resourceCodes);
+                        redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), newJwt,
+                            refreshPeriodTime, TimeUnit.SECONDS);
+                        RequestResponseUtil.responseWrite(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(),
+                            servletResponse);
                         return false;
                     } else {
                         // jwt时间失效过期,jwt refresh time失效 返回jwt过期客户端重新登录
-                        RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
+                        RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(),
+                            HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
                         return false;
                     }
 
                 }
                 // 其他的判断为JWT错误无效
-                RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
+                RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(),
+                    HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
                 return false;
             } catch (Exception e) {
                 // 其他错误
                 log.error(IpUtil.getIpFromRequest(WebUtils.toHttp(servletRequest)) + "--JWT认证失败" + e.getMessage(), e);
                 // 告知客户端JWT错误1005,需重新登录申请jwt
-                RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
+                RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(),
+                    HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
                 return false;
             }
         } else {
             // 请求未携带jwt 判断为无效请求
-            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
+            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
             return false;
         }
     }
@@ -143,11 +145,12 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
         Subject subject = getSubject(servletRequest, servletResponse);
 
-        // 未认证的情况上面已经处理  这里处理未授权
+        // 未认证的情况上面已经处理 这里处理未授权
         if (subject != null && subject.isAuthenticated()) {
-            //  已经认证但未授权的情况
+            // 已经认证但未授权的情况
             // 告知客户端JWT没有权限访问此资源
-            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
+            RequestResponseUtil.responseWrite(HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(), servletResponse);
         }
         // 过滤链终止
         return false;
@@ -168,14 +171,15 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     /**
      * description 验证当前用户是否属于mappedValue任意一个角色
      *
-     * @param subject     1
-     * @param mappedValue 2
+     * @param subject
+     *            1
+     * @param mappedValue
+     *            2
      * @return boolean
      */
     private boolean checkRoles(Subject subject, Object mappedValue) {
-        String[] rolesArray = (String[]) mappedValue;
-        return rolesArray == null
-                || rolesArray.length == 0
-                || Stream.of(rolesArray).anyMatch(role -> subject.hasRole(role.trim()));
+        String[] rolesArray = (String[])mappedValue;
+        return rolesArray == null || rolesArray.length == 0
+            || Stream.of(rolesArray).anyMatch(role -> subject.hasRole(role.trim()));
     }
 }

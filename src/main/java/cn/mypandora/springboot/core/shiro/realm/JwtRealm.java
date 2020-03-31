@@ -36,12 +36,12 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String payload = (String) principals.getPrimaryPrincipal();
+        String payload = (String)principals.getPrimaryPrincipal();
 
         if (payload.startsWith(JWT) && payload.charAt(NUM_4) == LEFT && payload.charAt(payload.length() - 1) == RIGHT) {
             Map<String, Object> payloadMap = JsonWebTokenUtil.readValue(payload.substring(4));
-            Set<String> roles = JsonWebTokenUtil.split((String) payloadMap.get("roleCodes"));
-            Set<String> resources = JsonWebTokenUtil.split((String) payloadMap.get("resourceCodes"));
+            Set<String> roles = JsonWebTokenUtil.split((String)payloadMap.get("roleCodes"));
+            Set<String> resources = JsonWebTokenUtil.split((String)payloadMap.get("resourceCodes"));
 
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             if (!roles.isEmpty()) {
@@ -61,18 +61,18 @@ public class JwtRealm extends AuthorizingRealm {
             return null;
         }
 
-        JwtToken jwtToken = (JwtToken) token;
-        String jwt = (String) jwtToken.getCredentials();
+        JwtToken jwtToken = (JwtToken)token;
+        String jwt = (String)jwtToken.getCredentials();
         String payload;
         try {
             // 预先解析Payload
             // 没有做任何的签名校验
             payload = JsonWebTokenUtil.parseJwtPayload(jwt);
         } catch (MalformedJwtException e) {
-            //令牌格式错误
+            // 令牌格式错误
             throw new AuthenticationException("errJwt");
         } catch (Exception e) {
-            //令牌无效
+            // 令牌无效
             throw new AuthenticationException("errsJwt");
         }
         return new SimpleAuthenticationInfo("jwt:" + payload, jwt, this.getName());

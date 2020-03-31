@@ -8,39 +8,27 @@ public class ResourceServiceTest extends SpringbootApplicationTest {
     @Autowired
     private ResourceService resourceService;
 
-    public void testListRolePermRules() {
-    }
+    public void testListRolePermRules() {}
 
-    public void testListAll() {
-    }
+    public void testListAll() {}
 
-    public void testListChildren() {
-    }
+    public void testListChildren() {}
 
-    public void testTestAddResource() {
-    }
+    public void testTestAddResource() {}
 
-    public void testGetResourceById() {
-    }
+    public void testGetResourceById() {}
 
-    public void testTestUpdateResource() {
-    }
+    public void testTestUpdateResource() {}
 
-    public void testEnableResource() {
-    }
+    public void testEnableResource() {}
 
-    public void testDeleteResource() {
-    }
+    public void testDeleteResource() {}
 
-    public void testTestMoveResource() {
-    }
+    public void testTestMoveResource() {}
 
-    public void testListResourceByRoleId() {
-    }
+    public void testListResourceByRoleId() {}
 
-    public void testListResourceMenuByUserId() {
-    }
+    public void testListResourceMenuByUserId() {}
 
-    public void testListResourceByUserIdOrName() {
-    }
+    public void testListResourceByUserIdOrName() {}
 }

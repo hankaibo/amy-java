@@ -1,5 +1,6 @@
 package cn.mypandora.springboot.core.util;
 
+import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
@@ -30,20 +32,26 @@ public class JsonWebTokenUtil {
     /**
      * 创建jwt.
      *
-     * @param id            令牌id
-     * @param issuer        header中该JWT的签发者
-     * @param subject       header中该JWT所面向的用户
-     *                      audience    header中接收该JWT的一方
-     * @param period        有效时间（毫秒），分解为以下两个
-     *                      iat         header中(issued at) 在什么时候签发的
-     *                      exp         header中(expires)  什么时候过期，这里是一个Unix时间戳
-     * @param userId        payload中的用户id
-     * @param roleIds       payload中的角色信息
-     * @param roleCodes     payload中的角色信息
-     * @param resourceCodes payload中的资源信息
+     * @param id
+     *            令牌id
+     * @param issuer
+     *            header中该JWT的签发者
+     * @param subject
+     *            header中该JWT所面向的用户 audience header中接收该JWT的一方
+     * @param period
+     *            有效时间（毫秒），分解为以下两个 iat header中(issued at) 在什么时候签发的 exp header中(expires) 什么时候过期，这里是一个Unix时间戳
+     * @param userId
+     *            payload中的用户id
+     * @param roleIds
+     *            payload中的角色信息
+     * @param roleCodes
+     *            payload中的角色信息
+     * @param resourceCodes
+     *            payload中的资源信息
      * @return jwt
      */
-    public static String createJwt(String id, String issuer, String subject, Long period, Long userId, String roleIds, String roleCodes, String resourceCodes) {
+    public static String createJwt(String id, String issuer, String subject, Long period, Long userId, String roleIds,
+        String roleCodes, String resourceCodes) {
         long currentTimeMillis = System.currentTimeMillis();
 
         JwtBuilder jwtBuilder = Jwts.builder();
@@ -86,16 +94,14 @@ public class JsonWebTokenUtil {
     /**
      * 解析jwt.
      *
-     * @param jwt 签发的jwt
+     * @param jwt
+     *            签发的jwt
      * @return JwtAccount
      */
     public static JwtAccount parseJwt(String jwt) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(generalKey())
-                .parseClaimsJws(jwt)
-                .getBody();
+        Claims claims = Jwts.parser().setSigningKey(generalKey()).parseClaimsJws(jwt).getBody();
         JwtAccount jwtAccount = new JwtAccount();
-        //令牌ID
+        // 令牌ID
         jwtAccount.setTokenId(claims.getId());
         // 签发者
         jwtAccount.setIssuer(claims.getIssuer());
@@ -120,10 +126,7 @@ public class JsonWebTokenUtil {
      */
     public static String parseJwtPayload(String jwt) {
         Assert.hasText(jwt, "JWT String argument cannot be null or empty.");
-        Claims claims = Jwts.parser()
-                .setSigningKey(generalKey())
-                .parseClaimsJws(jwt)
-                .getBody();
+        Claims claims = Jwts.parser().setSigningKey(generalKey()).parseClaimsJws(jwt).getBody();
         Map<String, Object> map = new LinkedHashMap<>(7);
         map.put("jti", claims.getId());
         map.put("iss", claims.getIssuer());
@@ -140,7 +143,8 @@ public class JsonWebTokenUtil {
     /**
      * description 从json数据中读取格式化map
      *
-     * @param val 1
+     * @param val
+     *            1
      * @return java.util.Map<java.lang.String, java.lang.Object>
      */
     @SuppressWarnings("unchecked")
@@ -168,12 +172,13 @@ public class JsonWebTokenUtil {
     /**
      * 从 Bearer Token 中提取出token。
      *
-     * @param token Bearer token
+     * @param token
+     *            Bearer token
      * @return token
      */
     public static String unBearer(String token) {
         if (StringUtils.isBlank(token)) {
-            throw new RuntimeException("token为空");
+            throw new BusinessException(HttpServletRequest.class, "token为空");
         }
         String[] arrToken = token.split(" ");
         if (arrToken.length != BEARER_TOKEN_LENGTH) {
@@ -191,7 +196,8 @@ public class JsonWebTokenUtil {
         // 一个字符串，相当于私钥，只有服务端知道
         // 根据指定字符串生成Key，相同字符串生成的Key也相同的，这个字符串至少要有256bit长，推荐长一些，生成的密钥也会变长。
         // 推荐这种做法，每次都会生成同样的一串Key来使用
-        String secretString = "uC4p(VGW_dNYJ<!RLjg)KF=22N76Pii7j5L9[kY}LFUM5-jSt&xC'}4NBW=9_336k8^z.d\\k-!29Y&8--#<j4dqT4g}<C";
+        String secretString =
+            "uC4p(VGW_dNYJ<!RLjg)KF=22N76Pii7j5L9[kY}LFUM5-jSt&xC'}4NBW=9_336k8^z.d\\k-!29Y&8--#<j4dqT4g}<C";
 
         // 本地的密码解码
         byte[] encodedKey = Base64.getEncoder().encode(secretString.getBytes());
@@ -199,6 +205,5 @@ public class JsonWebTokenUtil {
         // 根据给定的字节数组使用HS512加密算法构造一个密钥
         return new SecretKeySpec(encodedKey, 0, encodedKey.length, SignatureAlgorithm.HS512.getJcaName());
     }
-
 
 }

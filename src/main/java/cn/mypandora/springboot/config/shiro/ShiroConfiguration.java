@@ -15,9 +15,8 @@ import org.springframework.context.annotation.Configuration;
 /**
  * ShiroConfiguration
  * <p>
- * 配置shiro，一些具体修改在 cn.mypandora.springboot.core.shiro目录。
- * 注：@Configuration就是指的Java Config(Java 配置)，是一个Ioc容器类，相当于传统项目中见到的一个spring的xml配置文件。
- * 当Spring发现某个类使用了@Configuration标注了，就去将该类下使用@Bean注解的方法创建bean并放入到容器中。
+ * 配置shiro，一些具体修改在 cn.mypandora.springboot.core.shiro目录。 注：@Configuration就是指的Java Config(Java
+ * 配置)，是一个Ioc容器类，相当于传统项目中见到的一个spring的xml配置文件。 当Spring发现某个类使用了@Configuration标注了，就去将该类下使用@Bean注解的方法创建bean并放入到容器中。
  *
  * @author hankaibo
  * @date 2019/1/12
@@ -26,7 +25,8 @@ import org.springframework.context.annotation.Configuration;
 public class ShiroConfiguration {
 
     @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, FilterChainManager filterChainManager) {
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager,
+        FilterChainManager filterChainManager) {
         RestShiroFilterFactoryBean shiroFilterFactoryBean = new RestShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setFilters(filterChainManager.initFilters());
@@ -41,9 +41,11 @@ public class ShiroConfiguration {
         securityManager.setRealms(realmManager.initRealms());
 
         // 关闭shiro自带的session，详情见文档
-        // <href="http://shiro.apache.org/session-management.html#SessionManagement-StatelessApplications%28Sessionless%29" >
-        DefaultSubjectDAO defaultSubjectDAO = (DefaultSubjectDAO) securityManager.getSubjectDAO();
-        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = (DefaultSessionStorageEvaluator) defaultSubjectDAO.getSessionStorageEvaluator();
+        // <href="http://shiro.apache.org/session-management.html#SessionManagement-StatelessApplications%28Sessionless%29"
+        // >
+        DefaultSubjectDAO defaultSubjectDAO = (DefaultSubjectDAO)securityManager.getSubjectDAO();
+        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator =
+            (DefaultSessionStorageEvaluator)defaultSubjectDAO.getSessionStorageEvaluator();
         defaultSessionStorageEvaluator.setSessionStorageEnabled(Boolean.FALSE);
         // 无状态subjectFactory设置
         StatelessWebSubjectFactory subjectFactory = new StatelessWebSubjectFactory();

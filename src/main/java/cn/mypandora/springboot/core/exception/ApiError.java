@@ -1,19 +1,22 @@
 package cn.mypandora.springboot.core.exception;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import lombok.Data;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import javax.validation.ConstraintViolation;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+
+import lombok.Data;
 
 /**
  * ApiError
@@ -22,7 +25,8 @@ import java.util.Set;
  * @date 2020/3/29
  */
 @Data
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.CUSTOM, property = "error", visible = true)
+@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.CUSTOM, property = "error",
+    visible = true)
 @JsonTypeIdResolver(LowerCaseClassNameResolver.class)
 public class ApiError {
 
@@ -31,7 +35,7 @@ public class ApiError {
     private LocalDateTime timestamp;
     private String message;
     private String debugMessage;
-    private List<ApiSubError> subErrors;
+    private List<AbstractApiSubError> subErrors;
 
     private ApiError() {
         timestamp = LocalDateTime.now();
@@ -56,7 +60,7 @@ public class ApiError {
         this.debugMessage = ex.getLocalizedMessage();
     }
 
-    private void addSubError(ApiSubError subError) {
+    private void addSubError(AbstractApiSubError subError) {
         if (subErrors == null) {
             subErrors = new ArrayList<>();
         }
@@ -72,7 +76,8 @@ public class ApiError {
     }
 
     private void addValidationError(FieldError fieldError) {
-        this.addValidationError(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
+        this.addValidationError(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(),
+            fieldError.getDefaultMessage());
     }
 
     public void addValidationErrors(List<FieldError> fieldErrors) {
@@ -88,7 +93,8 @@ public class ApiError {
     }
 
     private void addValidationError(ConstraintViolation<?> cv) {
-        this.addValidationError(cv.getRootBeanClass().getSimpleName(), ((PathImpl) cv.getPropertyPath()).getLeafNode().asString(), cv.getInvalidValue(), cv.getMessage());
+        this.addValidationError(cv.getRootBeanClass().getSimpleName(),
+            ((PathImpl)cv.getPropertyPath()).getLeafNode().asString(), cv.getInvalidValue(), cv.getMessage());
     }
 
     public void addValidationErrors(Set<ConstraintViolation<?>> constrainViolations) {

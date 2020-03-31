@@ -30,8 +30,7 @@ public class RolePermRule implements Serializable {
     private String needRoles;
 
     /**
-     * 将url needRoles转化成shiro可识别的过滤器链：
-     * url=jwt[角色1、角色2、角色3]
+     * 将url needRoles转化成shiro可识别的过滤器链： url=jwt[角色1、角色2、角色3]
      *
      * @return url=jwt[角色1、角色2、角色3] || null
      */
@@ -46,7 +45,7 @@ public class RolePermRule implements Serializable {
         if (!StringUtils.isEmpty(this.getNeedRoles()) && setRole.contains(ANON_ROLE)) {
             stringBuilder.append("anon");
         }
-        //  其他自定义资源uri需通过jwt认证和角色认证
+        // 其他自定义资源uri需通过jwt认证和角色认证
         if (!StringUtils.isEmpty(this.getNeedRoles()) && !setRole.contains(ANON_ROLE)) {
             stringBuilder.append("jwt");
             stringBuilder.append("[");

@@ -12,11 +12,9 @@ import lombok.Getter;
 public enum StatusEnum {
 
     /**
-     * ENABLED : 1
-     * DISABLED: 0
+     * ENABLED : 1 DISABLED: 0
      */
-    ENABLED(1),
-    DISABLED(0);
+    ENABLED(1), DISABLED(0);
 
     private int value;
 

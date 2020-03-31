@@ -8,8 +8,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 /**
  * SpringbootApplication
  * <p>
- * 注：
- * 1. @MapperScan，此注解为tk的而非mybatis。
+ * 注： 1. @MapperScan，此注解为tk的而非mybatis。
  *
  * @author hankaibo
  * @date 2019/6/17

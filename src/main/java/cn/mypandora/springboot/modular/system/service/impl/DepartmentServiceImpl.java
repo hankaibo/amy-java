@@ -1,5 +1,14 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.StatusEnum;
@@ -8,14 +17,6 @@ import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * DepartmentServiceImpl
@@ -57,7 +58,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<Department> listChildrenDepartment(Long id, Integer status, Long userId) {
         // 获取当前用户的部门范围
-        List<Department> allDepartmentList = listDepartment(status, userId);
+        List<Department> allDepartmentList = listDepartment(null, userId);
         // 查询子部门并过滤出合适数据
         List<Department> departmentList = departmentMapper.listChildren(id, status);
         return departmentList.stream().filter(allDepartmentList::contains).collect(Collectors.toList());
@@ -67,7 +68,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void addDepartment(Department department, Long userId) {
         // 获取父部门范围并判断(只能添加到同级及下级部门)
-        List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
+        List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
             throw new BusinessException(Department.class, "父级部门选择错误。");
         }
@@ -91,7 +92,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Department getDepartmentById(Long id, Long userId) {
         // 获取部门范围防止用户查看自身权限外的部门信息
-        List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
+        List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(id))) {
             throw new BusinessException(Department.class, "无法查看该部门。");
         }
@@ -108,14 +109,16 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 部门修改如果涉及父级部门变动则非常复杂，在这里先使用isUpdate锁住被移动部门，保证不修改它的左右值，方便后续操作。
      *
-     * @param department 部门信息
-     * @param userId     用户id
+     * @param department
+     *            部门信息
+     * @param userId
+     *            用户id
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateDepartment(Department department, Long userId) {
         // 修改部门时，必须保证父部门存在，并只能更改自己权限范围内的部门
-        List<Department> departmentList = listDepartment(StatusEnum.ENABLED.getValue(), userId);
+        List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
             throw new BusinessException(Department.class, "父级部门错误。");
         }
@@ -126,6 +129,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 修改部门时，不可以修改自己权限之外的部门。
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getId()))) {
             throw new BusinessException(Department.class, "部门错误。");
+        }
+        // 有用户部门，不可以修改为禁用。
+        int count = departmentUserMapper.countUserByDepartmentId(department.getId());
+        if (count > 0) {
+            throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
         }
 
         Department info = getDepartmentById(department.getId(), userId);
@@ -256,7 +264,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 获取此部门及其子孙部门的id。
      *
-     * @param id 部门主键id
+     * @param id
+     *            部门主键id
      * @return 部门主键id集合
      */
     private List<Long> listDescendantId(Long id) {
@@ -267,10 +276,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     /**
-     * 获取各部门最顶级的祖先部门。
-     * 如果一个用户在父级部门、本级部门、子级部门都存在，则只过滤出父级部门，以减少后边重复查询。
+     * 获取各部门最顶级的祖先部门。 如果一个用户在父级部门、本级部门、子级部门都存在，则只过滤出父级部门，以减少后边重复查询。
      *
-     * @param departmentList 部门列表
+     * @param departmentList
+     *            部门列表
      * @return 用户所在各部门的最顶级部门。
      */
     private List<Department> listTopAncestryDepartment(List<Department> departmentList) {
@@ -279,10 +288,8 @@ public class DepartmentServiceImpl implements DepartmentService {
             return departmentList;
         }
         for (Department department : departmentList) {
-            if (departmentList
-                    .stream()
-                    .filter(item -> item.getLevel() < department.getLevel())
-                    .noneMatch(item -> item.getLft() < department.getLft() && item.getRgt() > department.getRgt())) {
+            if (departmentList.stream().filter(item -> item.getLevel() < department.getLevel())
+                .noneMatch(item -> item.getLft() < department.getLft() && item.getRgt() > department.getRgt())) {
                 result.add(department);
             }
         }
@@ -292,7 +299,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 防止更新部门时，指定自己的下级部门作为自己的父级部门。
      *
-     * @param department 部门
+     * @param department
+     *            部门
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Department department) {
@@ -303,18 +311,28 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department parent = new Department();
         parent.setId(department.getParentId());
         Department parentDepartment = departmentMapper.selectByPrimaryKey(parent);
-        return !(parentDepartment.getLft() >= childDepartment.getLft() && parentDepartment.getRgt() <= childDepartment.getRgt());
+        return !(parentDepartment.getLft() >= childDepartment.getLft()
+            && parentDepartment.getRgt() <= childDepartment.getRgt());
     }
-
 
     /**
      * 获取两个部门最近的共同祖先部门。
      *
-     * @param department1 第一个部门
-     * @param department2 第二个部门
+     * @param department1
+     *            第一个部门
+     * @param department2
+     *            第二个部门
      * @return 最近的祖先部门
      */
     private Department getCommonAncestry(Department department1, Department department2) {
+        // 首先判断两者是否是包含关系
+        if (department1.getLft() < department2.getLft() && department1.getRgt() > department2.getRgt()) {
+            return department1;
+        }
+        if (department2.getLft() < department1.getLft() && department2.getRgt() > department1.getRgt()) {
+            return department2;
+        }
+        // 两者没有包含关系的情况下
         Long newId = department1.getId();
         List<Department> newParentAncestries = departmentMapper.listAncestries(newId, StatusEnum.ENABLED.getValue());
         if (newParentAncestries.size() == 0) {
@@ -328,7 +346,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         Comparator<Department> comparator = Comparator.comparing(Department::getLft);
-        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator).orElseThrow(RuntimeException::new);
+        return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator)
+            .orElseThrow(RuntimeException::new);
     }
 
 }

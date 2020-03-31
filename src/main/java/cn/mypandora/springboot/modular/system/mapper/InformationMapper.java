@@ -16,7 +16,8 @@ public interface InformationMapper extends MyBaseMapper<Information> {
     /**
      * 批量更新发布状态。
      *
-     * @param idList id集合
+     * @param idList
+     *            id集合
      */
     void updateBatchPublish(long[] idList);
 }

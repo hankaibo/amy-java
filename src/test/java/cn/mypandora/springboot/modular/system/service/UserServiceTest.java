@@ -11,17 +11,13 @@ public class UserServiceTest extends SpringbootApplicationTest {
     @Autowired
     private UserService userService;
 
-    public void testPageUser() {
-    }
+    public void testPageUser() {}
 
-    public void testGetUserByIdOrName() {
-    }
+    public void testGetUserByIdOrName() {}
 
-    public void testAddUser() {
-    }
+    public void testAddUser() {}
 
-    public void testGetUserById() {
-    }
+    public void testGetUserById() {}
 
     @Test
     public void testUpdateUser() {
@@ -35,15 +31,12 @@ public class UserServiceTest extends SpringbootApplicationTest {
         Assert.assertNotNull(user.getId());
     }
 
-    public void testEnableUser() {
-    }
+    public void testEnableUser() {}
 
-    public void testDeleteUser() {
-    }
+    public void testDeleteUser() {}
 
     @Test
-    public void testDeleteBatchUser() {
-    }
+    public void testDeleteBatchUser() {}
 
     @Test
     public void testGrantUserRole() {

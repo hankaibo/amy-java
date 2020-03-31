@@ -33,7 +33,8 @@ public class UserServiceImpl implements UserService {
     private DepartmentUserMapper departmentUserMapper;
 
     @Autowired
-    public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper, DepartmentUserMapper departmentUserMapper) {
+    public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper,
+        DepartmentUserMapper departmentUserMapper) {
         this.userMapper = userMapper;
         this.userRoleMapper = userRoleMapper;
         this.departmentUserMapper = departmentUserMapper;
@@ -143,7 +144,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
      *
-     * @param user 加密的用户
+     * @param user
+     *            加密的用户
      */
     private void passwordHelper(User user) {
         if (StringUtils.isEmpty(user.getPassword())) {
