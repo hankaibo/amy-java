@@ -11,25 +11,31 @@
 ## 项目目录
 ```
 myspringboot  
-├── logs -- 日志目录 
 ├── sql -- sql脚本目录 
+|   ├── init_data -- 初始化数据文件
+|   └── init_table -- 初始化建表文件   
 ├── src/main/java/cn.mypandora.springboot 
 |   ├── config -- 通用配置  
-|   |    ├── shiro -- 权限框架配置文件 
-|   |    └── swagger -- 接口文档配置文件   
+|   |    ├── exception -- restful 接口异常信息配置目录 
+|   |    ├── filter -- 自定义过滤器目录
+|   |    ├── shiro -- 权限框架配置目录 
+|   |    ├── swagger -- 在线接口配置目录 
+|   |    └── websocket -- websocket配置目录（未完）   
 |   ├── core -- 通用核心代码  
-|   |    ├── base -- 通用Mapper及前端返回数据格式封装 
+|   |    ├── base -- 通用Mapper和分页类 
 |   |    ├── enums -- 枚举类 
-|   |    ├── exception -- 异常类 
+|   |    ├── exception -- 异常信息封装类 
+|   |    ├── listener -- websocket监听类（未完） 
 |   |    ├── shiro -- shiro扩展配置 
 |   |    ├── support -- XSS 过滤 
 |   |    └── utils -- 工具类  
 |   ├── modular -- 业务模块  
 |   |    ├── system -- 通用后台管理代码目录 
 |   |    └── your -- 放置你自己的业务代码
-|   └── SpringbootApplication.java -- 项目启动类  
 └── src/main/resources  
-    ├── mapper -- Mybatis的Mapper.xml目录  
+    ├── mybatis -- Mybatis的Mapper.xml目录 
+    |   ├── mapper -- MyBatis sql语句配置目录
+    |   └── mybatis-config -- MyBatis配置文件  
     ├── application.yml -- 项目默认配置文件  
     ├── application-dev.yml -- 开发环境配置文件  
     ├── application-docker.yml -- docker环境配置文件  
@@ -41,17 +47,17 @@ myspringboot
 
 [x] | 技术名 | 版本  
  :---: | :--- | :---  
-[x] | SpringBoot | 2.1.7 
-[x] | Redis(spring-boot-starter-data-redis) | 2.1.7
-[x] | Mybatis(mybatis-spring-boot-starter) | 2.0.1  
+[x] | SpringBoot | 2.1.9 
+[x] | Redis(spring-boot-starter-data-redis) | 2.1.9
+[x] | Mybatis(mybatis-spring-boot-starter) | 2.1.1  
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
-[x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.12 
-[x] | Shiro | 1.4.0 
+[x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.13 
+[x] | Shiro | 1.4.2 
 [x] | jjwt | 0.10.7
 [x] | jBCrypt | 0.4.1
 [x] | jasypt-spring-boot-starter | 2.1.2
 [x] | Swagger2(springfox.swagger2) | 2.9.2  
-[x] | lombok | 1.18.8    
+[x] | lombok | 1.18.10    
 
 ## 使用说明
 
@@ -75,7 +81,9 @@ myspringboot
 
 3. 导入数据库
 
-    执行 create.sql 文件，创建 MariaDB 数据库；安装 redis 创建 redis 数据库。
+    安装 MySQL(MariaDB) 数据库，执行 init_table.sql 文件建表，执行 init_data 初始化数据；
+    
+    安装 redis 创建 redis 数据库。
 
 4. 配置数据库
 
@@ -97,18 +105,17 @@ myspringboot
      role：方便前端处理的角色信息。
   
      resources：用户对应的所有资源数据集合，对每个人的页面进行按钮等组件的动态显示与隐藏。
-  2. 登录成功之后，自动发起GET请求（携带token）到 /api/v1/users/info，获取当前登录用户的信息 user和menuList。
+  2. 登录成功之后，自动发起GET请求（携带token）到 /api/v1/users/info，获取当前登录用户的信息。
      
      user: 当前登录用户的个人信息。
      
-     menuList: 当前登录用户的菜单数据（动态菜单数据），与登录成功返回的数据中resources是相对应的。（菜单打开的页面包含资源，资源属于某个菜单对应的页面。）
   3. 之后单击页面相关按钮发送的请求，都会自动将 token 加入到 header 中，以保证有权限认证，可以成功请求到后台数据。
   
   ![Image text](./image/jwt.png)
 # 参考
-本文大量参考了 [https://github.com/tomsun28/bootshiro](https://github.com/tomsun28/bootshiro)，特此感谢。
-1. [https://jinnianshilongnian.iteye.com/blog/2049092](https://jinnianshilongnian.iteye.com/blog/2049092)
-2. [https://github.com/tomsun28/bootshiro](https://github.com/tomsun28/bootshiro)
+本文参考了以下项目，特此感谢。
+1. [https://github.com/tomsun28/bootshiro](https://github.com/tomsun28/bootshiro)
+2. [https://jinnianshilongnian.iteye.com/blog/2049092](https://jinnianshilongnian.iteye.com/blog/2049092)
 3. [https://github.com/zhaojun1998/Shiro-Action](https://github.com/zhaojun1998/Shiro-Action)
 4. [https://github.com/Smith-Cruise/Spring-Boot-Shiro](https://github.com/Smith-Cruise/Spring-Boot-Shiro)
 5. [https://github.com/zzycreate/spring-boot-seed](https://github.com/zzycreate/spring-boot-seed)
