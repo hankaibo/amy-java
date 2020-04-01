@@ -1,8 +1,5 @@
 package cn.mypandora.springboot.config.shiro;
 
-import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
-import cn.mypandora.springboot.core.shiro.realm.AonModularRealmAuthenticator;
-import cn.mypandora.springboot.core.shiro.realm.RealmManager;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
@@ -11,6 +8,10 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
+import cn.mypandora.springboot.core.shiro.realm.AonModularRealmAuthenticator;
+import cn.mypandora.springboot.core.shiro.realm.RealmManager;
 
 /**
  * ShiroConfiguration

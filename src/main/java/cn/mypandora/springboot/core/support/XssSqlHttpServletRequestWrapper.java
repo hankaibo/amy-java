@@ -1,12 +1,13 @@
 package cn.mypandora.springboot.core.support;
 
-import cn.mypandora.springboot.core.util.XssUtil;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.util.HashMap;
-import java.util.Map;
+
+import cn.mypandora.springboot.core.util.XssUtil;
 
 /**
  * request请求安全过滤包装类

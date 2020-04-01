@@ -1,14 +1,8 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.config.websocket.WebSocketConfig;
-import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.config.exception.CustomException;
-import cn.mypandora.springboot.modular.system.model.po.Information;
-import cn.mypandora.springboot.modular.system.service.InformationService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import lombok.extern.slf4j.Slf4j;
+import java.security.Principal;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +14,15 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.Map;
+import cn.mypandora.springboot.config.exception.CustomException;
+import cn.mypandora.springboot.config.websocket.WebSocketConfig;
+import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.modular.system.model.po.Information;
+import cn.mypandora.springboot.modular.system.service.InformationService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * InformationController

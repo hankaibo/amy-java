@@ -46,8 +46,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         Set<Department> departmentSet = new HashSet<>(departmentList);
         // 所有后代部门(用户多部门情况)
         for (Department department : departmentList) {
-            // 将自己上级置为空，方便工具类构建树。
-            department.setParentId(null);
             Long id = department.getId();
             List<Department> departmentDescendantList = departmentMapper.listDescendants(id, status);
             departmentSet.addAll(departmentDescendantList);

@@ -1,9 +1,10 @@
 package cn.mypandora.springboot.core.shiro.token;
 
+import org.apache.shiro.authc.AuthenticationToken;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.shiro.authc.AuthenticationToken;
 
 /**
  * PasswordToken 自定义passwordToken。 如果不喜欢用户/密码的认证方式，可以自定义其它的。比如手机号/随机短信；身份证号/验证码等等。

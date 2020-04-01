@@ -1,12 +1,12 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 /**
  * BaseTree

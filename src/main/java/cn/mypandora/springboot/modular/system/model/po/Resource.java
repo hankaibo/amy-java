@@ -1,14 +1,14 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import tk.mybatis.mapper.annotation.NameStyle;
-import tk.mybatis.mapper.code.Style;
-
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+import tk.mybatis.mapper.code.Style;
 
 /**
  * Resource

@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.config.websocket;
 
-import com.sun.security.auth.UserPrincipal;
+import java.security.Principal;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -9,7 +10,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 
-import java.security.Principal;
+import com.sun.security.auth.UserPrincipal;
 
 /**
  * WebSocketHandleInterceptor

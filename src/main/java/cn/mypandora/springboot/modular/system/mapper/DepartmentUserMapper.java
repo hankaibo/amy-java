@@ -1,8 +1,9 @@
 package cn.mypandora.springboot.modular.system.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import cn.mypandora.springboot.core.base.MyBaseMapper;
 import cn.mypandora.springboot.modular.system.model.po.DepartmentUser;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * DepartmentUserMapper

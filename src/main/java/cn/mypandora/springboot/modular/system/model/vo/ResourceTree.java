@@ -1,10 +1,10 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * ResourceTree

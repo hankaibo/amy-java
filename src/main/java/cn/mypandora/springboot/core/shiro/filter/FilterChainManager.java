@@ -1,13 +1,12 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
-import cn.mypandora.springboot.config.filter.CustomFilter;
-import cn.mypandora.springboot.config.shiro.RestPathMatchingFilterChainResolver;
-import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
-import cn.mypandora.springboot.core.support.SpringContextHolder;
-import cn.mypandora.springboot.modular.system.service.ResourceService;
-import cn.mypandora.springboot.modular.system.service.RoleService;
-import cn.mypandora.springboot.modular.system.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.Filter;
+
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
@@ -16,11 +15,14 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.Filter;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import cn.mypandora.springboot.config.filter.CustomFilter;
+import cn.mypandora.springboot.config.shiro.RestPathMatchingFilterChainResolver;
+import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
+import cn.mypandora.springboot.core.support.SpringContextHolder;
+import cn.mypandora.springboot.modular.system.service.ResourceService;
+import cn.mypandora.springboot.modular.system.service.RoleService;
+import cn.mypandora.springboot.modular.system.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * ShiroFilterChainManager

@@ -1,23 +1,25 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.pagehelper.PageHelper;
+
+import cn.mypandora.springboot.config.exception.BusinessException;
+import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
 import cn.mypandora.springboot.modular.system.model.po.DepartmentUser;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import com.github.pagehelper.PageHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * UserServiceImpl
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
     public User getUserByIdOrName(Long id, String username) {
         User info = userMapper.getUser(id, username);
         if (info == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "用户不存在。");
+            throw new EntityNotFoundException(User.class, "用户不存在。");
         }
         return info;
     }
@@ -104,6 +106,22 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setId(id);
         user.setPassword(password);
+        user.setUpdateTime(now);
+        passwordHelper(user);
+        userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    @Override
+    public void updatePassword(Long id, String oldPassword, String newPassword) {
+        User info = userMapper.getUser(id, null);
+        if (!info.getPassword().equals(BCrypt.hashpw(oldPassword, info.getSalt()))) {
+            throw new BusinessException(User.class, "密码错误。");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        User user = new User();
+        user.setId(id);
+        user.setPassword(newPassword);
         user.setUpdateTime(now);
         passwordHelper(user);
         userMapper.updateByPrimaryKeySelective(user);

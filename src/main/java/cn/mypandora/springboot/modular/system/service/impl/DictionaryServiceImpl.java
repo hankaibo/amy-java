@@ -1,19 +1,19 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import cn.mypandora.springboot.config.exception.CustomException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.DictionaryMapper;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
-import com.github.pagehelper.PageHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * DictionaryServiceImpl

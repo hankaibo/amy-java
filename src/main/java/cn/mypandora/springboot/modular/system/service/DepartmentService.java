@@ -1,8 +1,8 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.modular.system.model.po.Department;
-
 import java.util.List;
+
+import cn.mypandora.springboot.modular.system.model.po.Department;
 
 /**
  * DepartmentService

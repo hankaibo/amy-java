@@ -1,17 +1,20 @@
 package cn.mypandora.springboot.core.shiro.filter;
 
-import cn.mypandora.springboot.core.shiro.token.PasswordToken;
-import cn.mypandora.springboot.core.util.RequestResponseUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.DisabledAccountException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.springframework.http.HttpStatus;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import java.util.Map;
+import cn.mypandora.springboot.core.shiro.token.PasswordToken;
+import cn.mypandora.springboot.core.util.RequestResponseUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * PasswordFilter
@@ -68,6 +71,9 @@ public class PasswordFilter extends AccessControlFilter {
             subject.login(authenticationToken);
             // 登录认证成功,进入请求派发json web token url资源内
             return true;
+        } catch (DisabledAccountException e) {
+            RequestResponseUtil.responseWrite(HttpStatus.BAD_REQUEST.value(), "用户账号被禁用。", response);
+            return false;
         } catch (AuthenticationException e) {
             log.warn(authenticationToken.getPrincipal() + "::" + e.getMessage());
             // 返回response告诉客户端认证失败

@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.config.exception;
 
-import cn.mypandora.springboot.core.exception.ApiError;
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,7 +20,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolationException;
+import cn.mypandora.springboot.core.exception.ApiError;
 
 /**
  * RestExceptionHandler

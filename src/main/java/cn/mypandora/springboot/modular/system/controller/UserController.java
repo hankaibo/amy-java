@@ -1,7 +1,14 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import cn.mypandora.springboot.core.base.PageInfo;
-import cn.mypandora.springboot.config.exception.CustomException;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
@@ -11,15 +18,6 @@ import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
-import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * UserController
@@ -203,12 +201,8 @@ public class UserController {
     public void updatePassword(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
         @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
         String oldPassword = map.get("oldPassword");
-        User user = userService.getUserByIdOrName(id, null);
-        if (!user.getPassword().equals(BCrypt.hashpw(oldPassword, user.getSalt()))) {
-            throw new CustomException(HttpStatus.CONFLICT.value(), "密码错误。");
-        }
         String newPassword = map.get("newPassword");
-        userService.resetPassword(id, newPassword);
+        userService.updatePassword(id, oldPassword, newPassword);
     }
 
     /**
@@ -248,16 +242,17 @@ public class UserController {
     @GetMapping("/{id}/roles")
     public Map<String, List> listUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
         @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status, Long userId) {
+
         // 获取当前登录用户的所有角色
         List<Role> roleList = roleService.listRole(status, userId);
         List<RoleTree> roleTrees = TreeUtil.role2Tree(roleList);
 
-        // 获取指定角色的所有资源
+        // 获取指定用户的角色
         List<Role> roleSelectedList = roleService.listRoleByUserIdOrName(id, null);
 
         Map<String, List> map = new HashMap<>(2);
-        map.put("roleList", roleTrees);
-        map.put("roleSelectedList", roleSelectedList);
+        map.put("roleTree", roleTrees);
+        map.put("roleSelected", roleSelectedList);
 
         return map;
     }

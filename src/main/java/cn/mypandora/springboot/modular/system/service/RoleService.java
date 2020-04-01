@@ -1,8 +1,8 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.modular.system.model.po.Role;
-
 import java.util.List;
+
+import cn.mypandora.springboot.modular.system.model.po.Role;
 
 /**
  * RoleService
@@ -104,7 +104,7 @@ public interface RoleService {
     void moveRole(Long sourceId, Long targetId, Long userId);
 
     /**
-     * 赋予角色某资源。 TODO
+     * 赋予角色某资源。
      *
      * @param roleId
      *            角色Id

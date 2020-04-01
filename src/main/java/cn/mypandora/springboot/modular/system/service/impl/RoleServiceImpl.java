@@ -1,22 +1,24 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.StatusEnum;
+import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.RoleService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * RoleServiceImpl
@@ -30,13 +32,15 @@ public class RoleServiceImpl implements RoleService {
     private RoleMapper roleMapper;
     private RoleResourceMapper roleResourceMapper;
     private UserRoleMapper userRoleMapper;
+    private FilterChainManager filterChainManager;
 
     @Autowired
-    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper,
-        UserRoleMapper userRoleMapper) {
+    public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper, UserRoleMapper userRoleMapper,
+        FilterChainManager filterChainManager) {
         this.roleMapper = roleMapper;
         this.roleResourceMapper = roleResourceMapper;
         this.userRoleMapper = userRoleMapper;
+        this.filterChainManager = filterChainManager;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> listChildrenRole(Long id, Integer status, Long userId) {
-        List<Role> allRoleList = listRole(status, userId);
+        List<Role> allRoleList = listRole(null, userId);
 
         List<Role> roleList = roleMapper.listChildren(id, status);
         return roleList.stream().filter(allRoleList::contains).collect(Collectors.toList());
@@ -67,7 +71,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addRole(Role role, Long userId) {
-        List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
+        List<Role> roleList = listRole(null, userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getParentId()))) {
             throw new BusinessException(Role.class, "父级角色选择错误。");
         }
@@ -90,7 +94,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRoleByIdOrName(Long id, String name, Long userId) {
-        List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
+        List<Role> roleList = listRole(null, userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(id))) {
             throw new BusinessException(Role.class, "无法查看该角色。");
         }
@@ -108,7 +112,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateRole(Role role, Long userId) {
-        List<Role> roleList = listRole(StatusEnum.ENABLED.getValue(), userId);
+        List<Role> roleList = listRole(null, userId);
         if (roleList.stream().noneMatch(item -> item.getId().equals(role.getParentId()))) {
             throw new BusinessException(Role.class, "父级角色错误。");
         }
@@ -252,6 +256,7 @@ public class RoleServiceImpl implements RoleService {
         if (plusId.length > 0) {
             roleResourceMapper.grantRoleResource(roleId, plusId);
         }
+        filterChainManager.reloadFilterChain();
     }
 
     @Override
@@ -322,6 +327,14 @@ public class RoleServiceImpl implements RoleService {
      * @return 最近的祖先角色
      */
     private Role getCommonAncestry(Role role1, Role role2) {
+        // 首先判断两者是否是包含关系
+        if (role1.getLft() < role2.getLft() && role1.getRgt() > role2.getRgt()) {
+            return role1;
+        }
+        if (role2.getLft() < role1.getLft() && role2.getRgt() > role1.getRgt()) {
+            return role2;
+        }
+        // 两者没有包含关系的情况下
         Long newId = role1.getId();
         List<Role> newParentAncestries = roleMapper.listAncestries(newId, StatusEnum.ENABLED.getValue());
         if (newParentAncestries.size() == 0) {
