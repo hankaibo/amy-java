@@ -1,6 +1,12 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
@@ -11,12 +17,6 @@ import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * RoleController
@@ -31,14 +31,11 @@ public class RoleController {
 
     private RoleService roleService;
     private ResourceService resourceService;
-    private FilterChainManager filterChainManager;
 
     @Autowired
-    public RoleController(RoleService roleService, ResourceService resourceService,
-        FilterChainManager filterChainManager) {
+    public RoleController(RoleService roleService, ResourceService resourceService) {
         this.roleService = roleService;
         this.resourceService = resourceService;
-        this.filterChainManager = filterChainManager;
     }
 
     /**
@@ -186,11 +183,14 @@ public class RoleController {
     @GetMapping("/{id}/resources")
     public Map<String, List> listRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
         @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status, Long userId) {
-        // 获取当前登录用户的所有资源
-        List<Resource> allResourceList = resourceService.listResourceByUserIdOrName(userId, null, null, status);
-        List<ResourceTree> resourceTrees = TreeUtil.resource2Tree(allResourceList);
+        Role role = roleService.getRoleByIdOrName(id, null, userId);
 
-        // 获取指定角色的所有资源
+        // 获取当前角色可分配的所有资源，即父角色资源
+        Long[] parentRoleId = new Long[] {role.getParentId()};
+        List<Resource> parentResourceList = resourceService.listResourceByRoleIds(parentRoleId, null, status, userId);
+        List<ResourceTree> resourceTrees = TreeUtil.resource2Tree(parentResourceList);
+
+        // 获取当前角色已分配资源
         Long[] roleId = new Long[] {id};
         List<Resource> resourceList = resourceService.listResourceByRoleIds(roleId, null, status, userId);
 
@@ -218,7 +218,6 @@ public class RoleController {
         long[] plusId = plusResource.stream().distinct().mapToLong(it -> it).toArray();
         long[] minusId = minusResource.stream().distinct().mapToLong(it -> it).toArray();
         roleService.grantRoleResource(id, plusId, minusId, userId);
-        filterChainManager.reloadFilterChain();
     }
 
 }

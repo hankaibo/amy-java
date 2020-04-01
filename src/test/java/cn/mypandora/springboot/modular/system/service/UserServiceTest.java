@@ -1,10 +1,11 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.SpringbootApplicationTest;
-import cn.mypandora.springboot.modular.system.model.po.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import cn.mypandora.springboot.SpringbootApplicationTest;
+import cn.mypandora.springboot.modular.system.model.po.User;
 
 public class UserServiceTest extends SpringbootApplicationTest {
 

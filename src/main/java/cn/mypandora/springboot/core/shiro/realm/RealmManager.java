@@ -1,17 +1,18 @@
 package cn.mypandora.springboot.core.shiro.realm;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.shiro.realm.Realm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import cn.mypandora.springboot.core.shiro.matcher.JwtMatcher;
 import cn.mypandora.springboot.core.shiro.matcher.PasswordMatcher;
 import cn.mypandora.springboot.core.shiro.token.JwtToken;
 import cn.mypandora.springboot.core.shiro.token.PasswordToken;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import org.apache.shiro.realm.Realm;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Realm管理器。 需要注入自己的接口，判断用户认证结果、授权结果。

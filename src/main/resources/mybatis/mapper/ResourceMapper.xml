@@ -232,6 +232,7 @@
         INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
         INNER JOIN sys_role role ON rr.role_id = role.id
         WHERE 1 = 1
+        AND t.status = 1
         AND t.`type` = 2
         GROUP BY t.uri, t.id
         ORDER BY url DESC

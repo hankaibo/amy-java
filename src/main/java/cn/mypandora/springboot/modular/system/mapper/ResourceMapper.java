@@ -1,11 +1,12 @@
 package cn.mypandora.springboot.modular.system.mapper;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import cn.mypandora.springboot.core.base.MyBaseMapper;
 import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * ResourceMapper

@@ -1,5 +1,10 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
@@ -7,12 +12,6 @@ import cn.mypandora.springboot.modular.system.service.DepartmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * DepartmentController
@@ -77,14 +76,12 @@ public class DepartmentController {
      *            部门数据
      * @param userId
      *            用户id
-     * @return 空或异常
      */
     @ApiOperation(value = "新建部门", notes = "根据数据新建部门。")
     @PostMapping
-    public ResponseEntity<Void>
-        addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department, Long userId) {
+    public void addDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department,
+        Long userId) {
         departmentService.addDepartment(department, userId);
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -116,14 +113,12 @@ public class DepartmentController {
      *            部门数据
      * @param userId
      *            用户id
-     * @return 空或异常
      */
     @ApiOperation(value = "更新部门", notes = "根据部门数据更新。")
     @PutMapping("/{id}")
-    public ResponseEntity<Void>
-        updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department, Long userId) {
+    public void updateDepartment(@RequestBody @ApiParam(value = "部门数据", required = true) Department department,
+        Long userId) {
         departmentService.updateDepartment(department, userId);
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -135,15 +130,12 @@ public class DepartmentController {
      *            状态(1:启用，0:禁用)
      * @param userId
      *            用户id
-     * @return 空或异常
      */
     @ApiOperation(value = "启用禁用部门", notes = "启用禁用部门。")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> enableDepartment(
-        @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
+    public void enableDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
         @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status, Long userId) {
         departmentService.enableDepartment(id, status, userId);
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -153,14 +145,12 @@ public class DepartmentController {
      *            部门主键id
      * @param userId
      *            用户id
-     * @return 空或异常
      */
     @ApiOperation(value = "删除部门", notes = "根据部门Id删除一个部门。")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>
-        deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id, Long userId) {
+    public void deleteDepartment(@PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
+        Long userId) {
         departmentService.deleteDepartment(id, userId);
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -172,18 +162,15 @@ public class DepartmentController {
      *            目标id
      * @param userId
      *            用户id
-     * @return 空或异常
      */
     @ApiOperation(value = "移动部门", notes = "将当前部门上移或下移。")
     @PutMapping
-    public ResponseEntity<Void> moveDepartment(
-        @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+    public void moveDepartment(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
         @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
         if (null == targetId || null == sourceId) {
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+            return;
         }
         departmentService.moveDepartment(sourceId, targetId, userId);
-        return ResponseEntity.ok().build();
     }
 
 }

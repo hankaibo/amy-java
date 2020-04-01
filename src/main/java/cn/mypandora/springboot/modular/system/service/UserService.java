@@ -72,6 +72,18 @@ public interface UserService {
     void resetPassword(Long id, String password);
 
     /**
+     * 更新用户密码。
+     * 
+     * @param id
+     *            用户id
+     * @param oldPassword
+     *            旧密码
+     * @param newPassword
+     *            新密码
+     */
+    void updatePassword(Long id, String oldPassword, String newPassword);
+
+    /**
      * 删除用户。
      *
      * @param id

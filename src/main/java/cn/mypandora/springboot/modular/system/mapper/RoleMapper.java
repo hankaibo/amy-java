@@ -1,10 +1,11 @@
 package cn.mypandora.springboot.modular.system.mapper;
 
-import cn.mypandora.springboot.core.base.MyBaseMapper;
-import cn.mypandora.springboot.modular.system.model.po.Role;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import cn.mypandora.springboot.core.base.MyBaseMapper;
+import cn.mypandora.springboot.modular.system.model.po.Role;
 
 /**
  * RoleMapper 角色树类比部门树。

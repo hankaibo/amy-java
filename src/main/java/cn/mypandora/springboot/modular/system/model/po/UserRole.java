@@ -1,11 +1,11 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
+import javax.persistence.Table;
+import javax.validation.constraints.PositiveOrZero;
+
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
-
-import javax.persistence.Table;
-import javax.validation.constraints.PositiveOrZero;
 
 /**
  * UserRole

@@ -1,5 +1,16 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
@@ -12,17 +23,7 @@ import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * ResourceServiceImpl
@@ -171,8 +172,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void enableResource(Long id, Integer type, Integer status, Long userId) {
-        List<Resource> resourceList = listResource(type, null, userId);
+    public void enableResource(Long id, Integer status, Long userId) {
+        List<Resource> resourceList = listResource(null, null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
         if (!allIdList.retainAll(idList)) {

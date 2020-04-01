@@ -1,13 +1,14 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Table;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
-
-import javax.persistence.Column;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * Information

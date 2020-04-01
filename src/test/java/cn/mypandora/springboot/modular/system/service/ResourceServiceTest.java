@@ -1,7 +1,8 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.SpringbootApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import cn.mypandora.springboot.SpringbootApplicationTest;
 
 public class ResourceServiceTest extends SpringbootApplicationTest {
 

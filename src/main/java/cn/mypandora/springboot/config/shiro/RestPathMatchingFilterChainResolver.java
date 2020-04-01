@@ -1,13 +1,14 @@
 package cn.mypandora.springboot.config.shiro;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.web.filter.mgt.FilterChainManager;
-import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
-
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+
+import org.apache.shiro.web.filter.mgt.FilterChainManager;
+import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * RestPathMatchingFilterChainResolver

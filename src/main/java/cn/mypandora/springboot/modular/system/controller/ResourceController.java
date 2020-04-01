@@ -1,5 +1,12 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
@@ -9,12 +16,6 @@ import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * ResourceController
@@ -131,8 +132,6 @@ public class ResourceController {
      *
      * @param id
      *            资源主键id
-     * @param type
-     *            资源类型(1:菜单，2:接口)
      * @param status
      *            状态(1:启用，0:禁用)
      * @param userId
@@ -141,9 +140,8 @@ public class ResourceController {
     @ApiOperation(value = "启用禁用资源", notes = "根据状态启用禁用资源。")
     @PatchMapping("/{id}/status")
     public void enableResource(@PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
-        @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
         @RequestParam("status") @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, Long userId) {
-        resourceService.enableResource(id, type, status, userId);
+        resourceService.enableResource(id, status, userId);
     }
 
     /**

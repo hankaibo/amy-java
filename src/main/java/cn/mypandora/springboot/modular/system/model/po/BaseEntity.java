@@ -1,16 +1,17 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import javax.persistence.Id;
+import javax.validation.constraints.PositiveOrZero;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.IdentityDialect;
 import tk.mybatis.mapper.code.Style;
-
-import javax.persistence.Id;
-import javax.validation.constraints.PositiveOrZero;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * BaseEntity

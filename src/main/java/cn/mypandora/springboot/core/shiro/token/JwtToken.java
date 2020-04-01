@@ -1,9 +1,10 @@
 package cn.mypandora.springboot.core.shiro.token;
 
+import org.apache.shiro.authc.AuthenticationToken;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.shiro.authc.AuthenticationToken;
 
 /**
  * JwtToken

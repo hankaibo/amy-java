@@ -1,20 +1,26 @@
 package cn.mypandora.springboot.core.util;
 
-import cn.mypandora.springboot.core.support.XssSqlHttpServletRequestWrapper;
-import com.alibaba.fastjson.JSON;
-import org.apache.shiro.web.util.WebUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
+import cn.mypandora.springboot.core.exception.ApiError;
+import cn.mypandora.springboot.core.support.XssSqlHttpServletRequestWrapper;
 
 /**
  * http request response 过滤XSS SQL 数据工具类
@@ -160,7 +166,9 @@ public class RequestResponseUtil {
             response.setContentType("application/json;charset=utf-8");
             httpServletResponse.setStatus(code);
             PrintWriter printWriter = httpServletResponse.getWriter();
-            printWriter.write(message);
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+            apiError.setMessage(message);
+            JSON.writeJSONString(printWriter, apiError, SerializerFeature.WriteClassName);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }

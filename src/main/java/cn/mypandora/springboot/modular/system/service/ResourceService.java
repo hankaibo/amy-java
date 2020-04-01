@@ -1,9 +1,9 @@
 package cn.mypandora.springboot.modular.system.service;
 
+import java.util.List;
+
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
-
-import java.util.List;
 
 /**
  * ResourceService
@@ -84,14 +84,12 @@ public interface ResourceService {
      *
      * @param id
      *            当前操作资源id
-     * @param type
-     *            资源类型
      * @param status
      *            资源状态
      * @param userId
      *            用户id
      */
-    void enableResource(Long id, Integer type, Integer status, Long userId);
+    void enableResource(Long id, Integer status, Long userId);
 
     /**
      * 删除资源。

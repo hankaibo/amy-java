@@ -1,14 +1,15 @@
 package cn.mypandora.springboot.config.swagger;
 
-import io.swagger.models.parameters.Parameter;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2MapperImpl;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import io.swagger.models.parameters.Parameter;
+import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2MapperImpl;
 
 /**
  * CustomModelToSwaggerMapper 添加access配置，隐藏登录接口header中统一添加的token。

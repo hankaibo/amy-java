@@ -1,14 +1,16 @@
 package cn.mypandora.springboot.core.shiro.realm;
 
-import cn.mypandora.springboot.core.shiro.token.PasswordToken;
-import cn.mypandora.springboot.modular.system.model.po.User;
-import cn.mypandora.springboot.modular.system.service.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import cn.mypandora.springboot.core.enums.StatusEnum;
+import cn.mypandora.springboot.core.shiro.token.PasswordToken;
+import cn.mypandora.springboot.modular.system.model.po.User;
+import cn.mypandora.springboot.modular.system.service.UserService;
 
 /**
  * PasswordRealm 登录认证的Realm。
@@ -71,13 +73,18 @@ public class PasswordRealm extends AuthorizingRealm {
 
         String username = (String)token.getPrincipal();
         User info = userService.getUserByIdOrName(null, username);
-        if (info != null) {
-            // 与新建用户时所采用的加密方法一致。
-            ((PasswordToken)token).setPassword(BCrypt.hashpw(((PasswordToken)token).getPassword(), info.getSalt()));
-            return new SimpleAuthenticationInfo(username, info.getPassword(), getName());
-        } else {
-            return new SimpleAuthenticationInfo(username, "", getName());
+
+        if (info == null) {
+            throw new UnknownAccountException("用户不存在");
         }
+
+        if (info.getStatus().equals(StatusEnum.DISABLED.getValue())) {
+            throw new DisabledAccountException("你的账户已被禁用,请联系管理员开通.");
+        }
+
+        // 与新建用户时所采用的加密方法一致。
+        ((PasswordToken)token).setPassword(BCrypt.hashpw(((PasswordToken)token).getPassword(), info.getSalt()));
+        return new SimpleAuthenticationInfo(username, info.getPassword(), getName());
     }
 
 }

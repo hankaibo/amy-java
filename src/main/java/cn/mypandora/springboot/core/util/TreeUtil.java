@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
@@ -31,7 +32,7 @@ public class TreeUtil {
      */
     public static List<ResourceTree> resource2Tree(List<Resource> resourceList) {
         List<ResourceTree> roots = new ArrayList<>();
-        // 1.
+        // 1. 转换数据类型并将不存在的父id置空
         List<ResourceTree> fragmentTree = new ArrayList<>();
         for (Resource resource : resourceList) {
             ResourceTree resourceTree = new ResourceTree();
@@ -39,6 +40,7 @@ public class TreeUtil {
             resourceTree.setKey(resource.getId().toString());
             resourceTree.setValue(resource.getId().toString());
             resourceTree.setTitle(resource.getName());
+            resourceTree.setDisabled(resource.getStatus() == 0);
             resourceTree.setParentId(resource.getParentId());
             // 列表字段
             resourceTree.setStatus(resource.getStatus());
@@ -48,6 +50,12 @@ public class TreeUtil {
             resourceTree.setDescription(resource.getDescription());
             fragmentTree.add(resourceTree);
         }
+        fragmentTree.stream().filter(item -> {
+            if (fragmentTree.stream().noneMatch(it -> it.getId().equals(item.getParentId()))) {
+                item.setParentId(null);
+            }
+            return true;
+        }).collect(Collectors.toList());
         // 2.
         ResourceTree node;
         Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
@@ -92,6 +100,12 @@ public class TreeUtil {
             departmentTree.setDescription(department.getDescription());
             fragmentTree.add(departmentTree);
         }
+        fragmentTree.stream().filter(item -> {
+            if (fragmentTree.stream().noneMatch(it -> it.getId().equals(item.getParentId()))) {
+                item.setParentId(null);
+            }
+            return true;
+        }).collect(Collectors.toList());
         // 2.
         DepartmentTree node;
         Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
@@ -129,6 +143,7 @@ public class TreeUtil {
             roleTree.setKey(role.getId().toString());
             roleTree.setValue(role.getId().toString());
             roleTree.setTitle(role.getName());
+            roleTree.setDisabled(role.getStatus() == 0);
             roleTree.setParentId(role.getParentId());
             // 列表字段
             roleTree.setCode(role.getCode());
@@ -136,6 +151,12 @@ public class TreeUtil {
             roleTree.setDescription(role.getDescription());
             fragmentTree.add(roleTree);
         }
+        fragmentTree.stream().filter(item -> {
+            if (fragmentTree.stream().noneMatch(it -> it.getId().equals(item.getParentId()))) {
+                item.setParentId(null);
+            }
+            return true;
+        }).collect(Collectors.toList());
         // 2.
         RoleTree node;
         Map<Long, Integer> map = new HashMap<>(fragmentTree.size());

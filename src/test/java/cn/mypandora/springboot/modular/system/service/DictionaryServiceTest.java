@@ -1,11 +1,12 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import cn.mypandora.springboot.SpringbootApplicationTest;
-import cn.mypandora.springboot.modular.system.model.po.Dictionary;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.assertEquals;
+import cn.mypandora.springboot.SpringbootApplicationTest;
+import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 
 public class DictionaryServiceTest extends SpringbootApplicationTest {
 

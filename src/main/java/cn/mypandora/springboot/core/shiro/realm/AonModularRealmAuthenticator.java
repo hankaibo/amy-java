@@ -1,14 +1,14 @@
 package cn.mypandora.springboot.core.shiro.realm;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.realm.Realm;
-
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * AonModularRealmAuthenticator 主要是针对不同的请求使用不同的realm验证。 登录使用PasswordRealm，其它接口使用JwtRealm。

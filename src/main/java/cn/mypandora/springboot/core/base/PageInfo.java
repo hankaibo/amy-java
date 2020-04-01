@@ -1,14 +1,15 @@
 package cn.mypandora.springboot.core.base;
 
+import java.util.Collection;
+import java.util.List;
+
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageSerializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * PageInfo
