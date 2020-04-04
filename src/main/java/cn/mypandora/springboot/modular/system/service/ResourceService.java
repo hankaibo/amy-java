@@ -114,6 +114,16 @@ public interface ResourceService {
     void moveResource(Long sourceId, Long targetId, Long userId);
 
     /**
+     * 批量导入资源
+     * 
+     * @param resourceList
+     *            资源列表
+     * @param userId
+     *            用户id
+     */
+    void importBatchResource(List<Resource> resourceList, Long userId);
+
+    /**
      * 查询角色所包含的所有资源。
      *
      * @param roleIds

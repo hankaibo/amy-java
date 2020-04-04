@@ -77,9 +77,8 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addResource(Resource resource, Long userId) {
-        List<Resource> resourceList =
-            listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
-        if (resourceList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
+        List<Resource> menuList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
+        if (menuList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
             throw new BusinessException(Resource.class, "父级资源选择错误。");
         }
 
@@ -243,6 +242,36 @@ public class ResourceServiceImpl implements ResourceService {
         }
         resourceMapper.selfAndDescendant(sourceIdList, targetAmount, 0);
         resourceMapper.selfAndDescendant(targetIdList, sourceAmount, 0);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void importBatchResource(List<Resource> resourceList, Long userId) {
+        List<Resource> menuList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
+        if (menuList.stream().noneMatch(item -> item.getId().equals(resourceList.get(0).getParentId()))) {
+            throw new BusinessException(Resource.class, "父级资源选择错误。");
+        }
+
+        Long parentId = resourceList.get(0).getParentId();
+        Resource parentResource = getResourceById(parentId, userId);
+        LocalDateTime now = LocalDateTime.now();
+        for (int i = 0; i < resourceList.size(); i++) {
+            resourceList.get(i).setCreateTime(now);
+            resourceList.get(i).setLft(parentResource.getRgt() + (2 * i));
+            resourceList.get(i).setRgt(parentResource.getRgt() + 1 + (2 * i));
+            resourceList.get(i).setLevel(parentResource.getLevel() + 1);
+            resourceList.get(i).setIsUpdate(1);
+        }
+
+        int amount = resourceList.size() * 2;
+        resourceMapper.lftAdd(parentId, amount, null);
+        resourceMapper.rgtAdd(parentId, amount, null);
+        resourceMapper.insertList(resourceList);
+        resourceMapper.parentRgtAdd(parentId, amount);
+
+        Role role = getRootRole();
+        long[] plusId = resourceList.stream().mapToLong(BaseEntity::getId).toArray();
+        roleResourceMapper.grantRoleResource(role.getId(), plusId);
     }
 
     @Override

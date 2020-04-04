@@ -265,7 +265,7 @@ public class UserController {
      * @param map
      *            增加和删除的角色对象
      */
-    @ApiOperation(value = "赋予用户一些角色。", notes = "根据用户id赋予其一些角色。")
+    @ApiOperation(value = "赋予用户角色。", notes = "根据用户id赋予其一些角色。")
     @PostMapping("/{id}/roles")
     public void grantUserRole(@PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
         @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) Map<String, List<Long>> map) {

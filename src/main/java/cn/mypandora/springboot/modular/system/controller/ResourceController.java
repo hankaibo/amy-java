@@ -3,8 +3,6 @@ package cn.mypandora.springboot.modular.system.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import cn.mypandora.springboot.core.util.TreeUtil;
@@ -167,17 +165,22 @@ public class ResourceController {
      *            目标id
      * @param userId
      *            用户id
-     * @return ok
      */
     @ApiOperation(value = "移动资源", notes = "将当前资源上移或下移。")
     @PutMapping
-    public ResponseEntity<Void> move(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+    public void move(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
         @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
         if (null == targetId || null == sourceId) {
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+            return;
         }
         resourceService.moveResource(sourceId, targetId, userId);
-        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "批量导入资源", notes = "批量导入文件中资源。")
+    @PostMapping("/batch")
+    public void importBatch(@RequestBody @ApiParam(value = "资源列表", required = true) List<Resource> resourceList,
+        Long userId) {
+        resourceService.importBatchResource(resourceList, userId);
     }
 
 }
