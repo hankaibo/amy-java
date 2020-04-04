@@ -13,7 +13,7 @@ import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.InformationMapper;
 import cn.mypandora.springboot.modular.system.model.po.Information;
 import cn.mypandora.springboot.modular.system.service.InformationService;
-import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * InformationServiceImpl
@@ -34,13 +34,13 @@ public class InformationServiceImpl implements InformationService {
     @Override
     public PageInfo<Information> pageInformation(int pageNum, int pageSize, Information information) {
         PageHelper.startPage(pageNum, pageSize);
-        Condition condition = new Condition(Information.class);
-        Condition.Criteria criteria = condition.createCriteria();
+        Example example = new Example(Information.class);
+        Example.Criteria criteria = example.createCriteria();
         final String type = "type";
         if (information.getType() != null) {
             criteria.andEqualTo(type, information.getType());
         }
-        List<Information> informationList = informationMapper.selectByCondition(condition);
+        List<Information> informationList = informationMapper.selectByExample(example);
         return new PageInfo<>(informationList);
     }
 
