@@ -112,7 +112,7 @@ myspringboot
   3. 之后单击页面相关按钮发送的请求，都会自动将 token 加入到 header 中，以保证有权限认证，可以成功请求到后台数据。
   
   ![Image text](./image/jwt.png)
-# 参考
+## 参考
 本文参考了以下项目，特此感谢。
 1. [https://github.com/tomsun28/bootshiro](https://github.com/tomsun28/bootshiro)
 2. [https://jinnianshilongnian.iteye.com/blog/2049092](https://jinnianshilongnian.iteye.com/blog/2049092)
@@ -120,3 +120,11 @@ myspringboot
 4. [https://github.com/Smith-Cruise/Spring-Boot-Shiro](https://github.com/Smith-Cruise/Spring-Boot-Shiro)
 5. [https://github.com/zzycreate/spring-boot-seed](https://github.com/zzycreate/spring-boot-seed)
 6. [https://github.com/stylefeng/Guns](https://github.com/stylefeng/Guns)
+
+
+## 赞助商
+
+非常感谢 Jetbrains 提供的免费授权。
+
+<a href="https://www.jetbrains.com/" target="_blank"><img src="https://www.jetbrains.com/company/brand/img/logo1.svg" width="100"></a>
+
