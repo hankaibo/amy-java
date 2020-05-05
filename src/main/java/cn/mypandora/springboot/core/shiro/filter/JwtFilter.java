@@ -83,7 +83,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                     User user = userService.getUserByIdOrName(null, username);
                     Long userId = user.getId();
 
-                    String jwt = JsonWebTokenUtil.unBearer(WebUtils.toHttp(servletRequest).getHeader("Authorization"));
+                    String jwt = JsonWebTokenUtil.unBearer(WebUtils.toHttp(servletRequest).getHeader("authorization"));
                     String refreshJwt = redisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
 
                     if (null != refreshJwt && refreshJwt.equals(jwt)) {
@@ -159,7 +159,7 @@ public class JwtFilter extends AbstractPathMatchingFilter {
     }
 
     private boolean isJwtSubmission(ServletRequest request) {
-        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "Authorization"));
+        String jwt = JsonWebTokenUtil.unBearer(RequestResponseUtil.getHeader(request, "authorization"));
         return (request instanceof HttpServletRequest) && StringUtils.isNotEmpty(jwt);
     }
 
