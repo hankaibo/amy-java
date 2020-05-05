@@ -16,8 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cn.mypandora.springboot.core.exception.ApiError;
 import cn.mypandora.springboot.core.support.XssSqlHttpServletRequestWrapper;
@@ -69,7 +68,8 @@ public class RequestResponseUtil {
             return (Map<String, String>)request.getAttribute(STR_BODY);
         } else {
             try {
-                Map<String, String> maps = JSON.parseObject(request.getInputStream(), Map.class);
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> maps = mapper.readValue(request.getInputStream(), Map.class);
                 dataMap.putAll(maps);
                 request.setAttribute(STR_BODY, dataMap);
             } catch (IOException e) {
@@ -162,13 +162,16 @@ public class RequestResponseUtil {
     public static void responseWrite(int code, String message, ServletResponse response) {
         HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
         try {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=utf-8");
+            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.setContentType("application/json;charset=utf-8");
             httpServletResponse.setStatus(code);
             PrintWriter printWriter = httpServletResponse.getWriter();
+
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
             apiError.setMessage(message);
-            JSON.writeJSONString(printWriter, apiError, SerializerFeature.WriteClassName);
+
+            ObjectMapper mapper = new ObjectMapper();
+            printWriter.write(mapper.writeValueAsString(apiError));
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
