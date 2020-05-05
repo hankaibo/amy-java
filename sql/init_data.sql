@@ -113,7 +113,7 @@ INSERT INTO `sys_resource` (`id`, `parent_id`, `name`, `lft`, `rgt`, `level`, `c
 	(59, 54, '更新字典', 114, 115, 4, 'system:dictionary:update', 1, 1, '/api/v1/dictionaries/*', 2, 'PUT', NULL, NULL, '2019-10-07 01:30:52', '2020-04-01 15:42:57'),
 	(60, 54, '删除字典', 116, 117, 4, 'system:dictionary:delete', 1, 1, '/api/v1/dictionaries/*', 2, 'DELETE', NULL, NULL, '2019-10-07 01:30:52', '2020-04-01 15:42:57'),
 	(61, 54, '启用禁用字典', 118, 119, 4, 'system:dictionary:status', 1, 1, '/api/v1/dictionaries/*/status', 2, 'PUT', NULL, NULL, '2019-10-07 01:30:52', '2020-04-01 15:42:57'),
-	(62, 4, '信息管理', 121, 142, 3, 'system:notice', 1, 1, NULL, 1, NULL, NULL, NULL, '2020-03-28 12:52:20', '2020-04-01 15:42:57'),
+	(62, 4, '信息管理', 121, 142, 3, 'system:information', 1, 1, NULL, 1, NULL, NULL, NULL, '2020-03-28 12:52:20', '2020-04-01 15:42:57'),
 	(63, 62, '获取信息列表', 122, 123, 4, 'system:information:list', 1, 1, '/api/v1/information', 2, 'GET', NULL, NULL, '2020-03-29 11:09:36', '2020-04-01 15:42:57'),
 	(64, 62, '新建信息', 124, 125, 4, 'system:information:add', 1, 1, '/api/v1/information', 2, 'POST', NULL, NULL, '2020-03-29 11:10:31', '2020-04-01 15:42:57'),
 	(65, 62, '批量发布信息', 126, 127, 4, 'system:information:batchPublish', 1, 1, '/api/v1/information', 2, 'PUT', NULL, NULL, '2020-03-29 11:12:49', '2020-04-01 15:42:57'),
