@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cn.mypandora.springboot.config.exception.BusinessException;
+import cn.mypandora.springboot.config.exception.custom.BusinessException;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.lang.Assert;
@@ -127,7 +127,7 @@ public class JsonWebTokenUtil {
      * @param jwt
      * @return payload
      */
-    public static String parseJwtPayload(String jwt) {
+    public static String parseJwtPayload(String jwt) throws JsonProcessingException {
         Assert.hasText(jwt, "JWT String argument cannot be null or empty.");
         Claims claims = Jwts.parser().setSigningKey(generalKey()).parseClaimsJws(jwt).getBody();
         Map<String, Object> map = new LinkedHashMap<>(7);
@@ -140,7 +140,10 @@ public class JsonWebTokenUtil {
         map.put("roleCodes", claims.get("roleCodes"));
         map.put("resourceCodes", claims.get("resourceCodes"));
 
-        return JSON.toJSONString(map);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(map);
+
+        return json;
     }
 
     /**
