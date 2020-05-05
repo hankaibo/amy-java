@@ -52,7 +52,7 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket docketSystem() {
-        Parameter parameter = new ParameterBuilder().name("Authorization").description("header带上token")
+        Parameter parameter = new ParameterBuilder().name("authorization").description("header带上token")
             // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
             .modelRef(new ModelRef("string")).parameterType("header")
             .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
@@ -77,7 +77,7 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket docketBusiness() {
-        Parameter parameter = new ParameterBuilder().name("Authorization").description("header带上token")
+        Parameter parameter = new ParameterBuilder().name("authorization").description("header带上token")
             // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
             .modelRef(new ModelRef("string")).parameterType("header")
             .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();

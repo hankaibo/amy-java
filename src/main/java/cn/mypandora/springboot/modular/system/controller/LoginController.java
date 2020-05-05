@@ -76,7 +76,7 @@ public class LoginController {
      */
     @ApiOperation(value = "用户登录", notes = "输入名称与密码，返回token与role信息。")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "String", access = "hidden"),
+        @ApiImplicitParam(name = "authorization", paramType = "header", dataType = "String", access = "hidden"),
         @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
         @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")})
     @PostMapping("/login")
@@ -129,7 +129,7 @@ public class LoginController {
      */
     @ApiOperation(value = "用户登出", notes = "带token。")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization") String authorization) {
+    public ResponseEntity<String> logout(@RequestHeader(value = "authorization") String authorization) {
         SecurityUtils.getSubject().logout();
         String jwt = JsonWebTokenUtil.unBearer(authorization);
         JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
