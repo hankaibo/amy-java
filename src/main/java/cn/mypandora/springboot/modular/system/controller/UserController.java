@@ -38,8 +38,8 @@ import io.swagger.annotations.ApiParam;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    private UserService userService;
-    private RoleService roleService;
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
     public UserController(UserService userService, RoleService roleService) {

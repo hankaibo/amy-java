@@ -35,8 +35,8 @@ import io.swagger.annotations.ApiParam;
 @RequestMapping("/api/v1/roles")
 public class RoleController {
 
-    private RoleService roleService;
-    private ResourceService resourceService;
+    private final RoleService roleService;
+    private final ResourceService resourceService;
 
     @Autowired
     public RoleController(RoleService roleService, ResourceService resourceService) {
