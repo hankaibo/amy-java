@@ -38,7 +38,7 @@
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listByUserId" resultMap="departmentMap">
@@ -56,7 +56,7 @@
         FROM sys_department_user du
         WHERE du.user_id=#{userId}
         )
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listAncestries" resultMap="departmentMap">
@@ -79,7 +79,7 @@
                     FROM sys_department s
                     WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listDescendants" resultMap="departmentMap">
@@ -102,7 +102,7 @@
                 FROM sys_department s
                 WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listChildren" resultMap="departmentMap">

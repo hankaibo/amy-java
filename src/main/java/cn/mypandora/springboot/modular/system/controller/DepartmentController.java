@@ -43,7 +43,7 @@ public class DepartmentController {
      * @param status
      *            状态(1:启用，0:禁用)
      * @param userId
-     *            用户id
+     *            当前登录用户id
      * @return 部门树
      */
     @ApiOperation(value = "获取部门树")
@@ -62,7 +62,7 @@ public class DepartmentController {
      * @param status
      *            状态(1:启用，0:禁用)
      * @param userId
-     *            用户id
+     *            当前登录用户id
      * @return 某个部门的直接子部门
      */
     @ApiOperation(value = "获取子部门列表")
@@ -81,7 +81,7 @@ public class DepartmentController {
      * @param department
      *            部门数据
      * @param userId
-     *            用户id
+     *            当前登录用户id
      */
     @ApiOperation(value = "新建部门")
     @PostMapping
@@ -96,7 +96,7 @@ public class DepartmentController {
      * @param id
      *            部门主键id
      * @param userId
-     *            用户id
+     *            当前登录用户id
      * @return 部门信息
      */
     @ApiOperation(value = "获取部门详情")
@@ -118,7 +118,7 @@ public class DepartmentController {
      * @param department
      *            部门数据
      * @param userId
-     *            用户id
+     *            当前登录用户id
      */
     @ApiOperation(value = "更新部门")
     @PutMapping("/{id}")
@@ -135,7 +135,7 @@ public class DepartmentController {
      * @param status
      *            状态(1:启用，0:禁用)
      * @param userId
-     *            用户id
+     *            当前登录用户id
      */
     @ApiOperation(value = "启用禁用部门")
     @PatchMapping("/{id}/status")
@@ -150,7 +150,7 @@ public class DepartmentController {
      * @param id
      *            部门主键id
      * @param userId
-     *            用户id
+     *            当前登录用户id
      */
     @ApiOperation(value = "删除部门")
     @DeleteMapping("/{id}")
@@ -167,7 +167,7 @@ public class DepartmentController {
      * @param targetId
      *            目标id
      * @param userId
-     *            用户id
+     *            当前登录用户id
      */
     @ApiOperation(value = "移动部门")
     @PutMapping
