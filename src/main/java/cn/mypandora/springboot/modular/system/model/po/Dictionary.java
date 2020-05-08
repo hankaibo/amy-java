@@ -2,11 +2,14 @@ package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
+
+import org.hibernate.validator.constraints.Range;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -16,8 +19,10 @@ import tk.mybatis.mapper.code.Style;
  * @author hankaibo
  * @date 2019/6/14
  */
-@ApiModel(value = "字典对象", description = "字典信息")
+@ApiModel("字典对象")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sys_dictionary")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Dictionary extends BaseEntity {
@@ -55,7 +60,7 @@ public class Dictionary extends BaseEntity {
      * 状态 1:开启，0:禁用
      */
     @ApiModelProperty(value = "字典状态")
-    @PositiveOrZero
+    @Range(min = 0, max = 1)
     private Integer status;
 
     /**

@@ -8,7 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
-import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import org.hibernate.validator.constraints.Range;
+
 import cn.mypandora.springboot.core.validate.Add;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -70,7 +71,7 @@ public class User extends BaseEntity {
      * 状态
      */
     @ApiModelProperty(value = "用户状态,1表示开启")
-    @NullOrNumber(message = "状态值只能为null,1,0")
+    @Range(min = 0, max = 1)
     private Integer status;
 
     /**
