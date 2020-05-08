@@ -2,10 +2,13 @@ package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
 
+import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -15,7 +18,10 @@ import tk.mybatis.mapper.code.Style;
  * @author hankaibo
  * @date 2019/1/12
  */
+@ApiModel("角色实体")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sys_role")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Role extends BaseTree {
@@ -33,7 +39,7 @@ public class Role extends BaseTree {
      * 状态
      */
     @ApiModelProperty(value = "角色状态")
-    @PositiveOrZero
+    @NullOrNumber(message = "状态值只能为null,1,0")
     private Integer status;
 
     /**

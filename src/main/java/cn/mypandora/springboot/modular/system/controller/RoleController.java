@@ -4,9 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
@@ -24,6 +29,7 @@ import io.swagger.annotations.ApiParam;
  * @author hankaibo
  * @date 2019/6/14
  */
+@Validated
 @Api(tags = "角色管理")
 @RestController
 @RequestMapping("/api/v1/roles")
@@ -49,9 +55,8 @@ public class RoleController {
      */
     @ApiOperation(value = "获取角色树", notes = "根据状态获取角色树。")
     @GetMapping
-    public List<RoleTree> listRoleTree(
-        @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        Long userId) {
+    public List<RoleTree> listRoleTree(@NullOrNumber @RequestParam(value = "status",
+        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, Long userId) {
         List<Role> roleList = roleService.listRole(status, userId);
         return TreeUtil.role2Tree(roleList);
     }
@@ -69,8 +74,9 @@ public class RoleController {
      */
     @ApiOperation(value = "获取子角色列表", notes = "根据角色id查询其下的所有直接子角色。")
     @GetMapping("/{id}/children")
-    public List<Role> listRoleChildren(@PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-        @RequestParam(value = "status", required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+    public List<Role> listRoleChildren(@Positive @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
+        @NullOrNumber @RequestParam(value = "status",
+            required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
         Long userId) {
         return roleService.listChildrenRole(id, status, userId);
     }
@@ -85,7 +91,7 @@ public class RoleController {
      */
     @ApiOperation(value = "新建角色", notes = "根据数据新建一个角色。")
     @PostMapping
-    public void addRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role, Long userId) {
+    public void addRole(@Valid @RequestBody @ApiParam(value = "角色数据", required = true) Role role, Long userId) {
         roleService.addRole(role, userId);
     }
 
@@ -100,7 +106,8 @@ public class RoleController {
      */
     @ApiOperation(value = "获取角色详情", notes = "根据角色id查询角色详情。")
     @GetMapping("/{id}")
-    public Role getRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id, Long userId) {
+    public Role getRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+        Long userId) {
         Role role = roleService.getRoleByIdOrName(id, null, userId);
         role.setRgt(null);
         role.setLft(null);
@@ -120,7 +127,7 @@ public class RoleController {
      */
     @ApiOperation(value = "更新角色", notes = "根据角色数据更新角色。")
     @PutMapping("/{id}")
-    public void updateRole(@RequestBody @ApiParam(value = "角色数据", required = true) Role role, Long userId) {
+    public void updateRole(@Valid @RequestBody @ApiParam(value = "角色数据", required = true) Role role, Long userId) {
         roleService.updateRole(role, userId);
     }
 
@@ -136,8 +143,8 @@ public class RoleController {
      */
     @ApiOperation(value = "启用禁用角色", notes = "根据角色状态启用禁用角色。")
     @PatchMapping("/{id}/status")
-    public void enableRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status, Long userId) {
+    public void enableRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+        @NullOrNumber @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status, Long userId) {
         roleService.enableRole(id, status, userId);
     }
 
@@ -151,7 +158,8 @@ public class RoleController {
      */
     @ApiOperation(value = "删除角色", notes = "根据角色Id删除角色。")
     @DeleteMapping("/{id}")
-    public void deleteRole(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id, Long userId) {
+    public void deleteRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
+        Long userId) {
         roleService.deleteRole(id, userId);
     }
 
@@ -167,8 +175,8 @@ public class RoleController {
      */
     @ApiOperation(value = "移动角色", notes = "将当前角色上移或下移。")
     @PutMapping
-    public void moveRole(@RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
-        @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
+    public void moveRole(@Positive @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
+        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
         roleService.moveRole(sourceId, targetId, userId);
     }
 
