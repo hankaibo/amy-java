@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 import javax.persistence.Id;
 import javax.validation.constraints.PositiveOrZero;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import cn.mypandora.springboot.core.util.CustomLocalDateTimeDeserializer;
+import cn.mypandora.springboot.core.util.CustomLocalDateTimeSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
@@ -29,8 +34,8 @@ public abstract class BaseEntity implements Serializable {
      * 主键
      */
     @ApiModelProperty(value = "主键id")
+    @PositiveOrZero(message = "主键不能为空")
     @KeySql(dialect = IdentityDialect.MYSQL)
-    @PositiveOrZero
     @Id
     protected Long id;
 
@@ -38,12 +43,16 @@ public abstract class BaseEntity implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     private LocalDateTime createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     private LocalDateTime updateTime;
 
 }
