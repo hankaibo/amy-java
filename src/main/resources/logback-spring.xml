@@ -28,7 +28,7 @@
         </encoder>
     </appender>
 
-    <!-- 测试环境 -->
+    <!-- 开发环境 -->
     <springProfile name="dev">
         <logger name="cn.mypandora.springboot.modular.system.mapper" level="DEBUG" additivity="false">
             <appender-ref ref="file"/>
@@ -36,6 +36,11 @@
         <root level="INFO">
             <appender-ref ref="console"/>
         </root>
+    </springProfile>
+    <!-- 开发环境 -->
+    <springProfile name="test">
+        <include resource="org/springframework/boot/logging/logback/base.xml"/>
+        <logger name="org.springframework" level="OFF"/>
     </springProfile>
     <!-- 生产环境 -->
     <springProfile name="prod,docker">
