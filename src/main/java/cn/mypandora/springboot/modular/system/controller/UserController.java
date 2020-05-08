@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -160,7 +161,7 @@ public class UserController {
     @ApiOperation(value = "用户状态启用禁用")
     @PatchMapping("/{id}/status")
     public void enableUser(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @NullOrNumber @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
+        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
         userService.enableUser(id, status);
     }
 
