@@ -21,12 +21,12 @@ spring:
     port: ENC(nraPi+7zb3yNOcyCHNUoSA==)
     password: ENC(vvYw/azP/VIWPNd0Pr8vGzFmpjDORgZk/eSDTuDGni5NVv2UrZI52g==)
     lettuce:
-      pool:
-        min-idle: 5
-        max-idle: 5
-        max-active: 8
-        max-wait: 1ms
       shutdown-timeout: 100ms
+      pool:
+        max-active: 8
+        max-wait: 3ms
+        max-idle: 8
+        min-idle: 0
   # servlet
   servlet:
     multipart:
