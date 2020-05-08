@@ -1,13 +1,15 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Positive;
 
+import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import cn.mypandora.springboot.core.validate.Add;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -51,21 +53,20 @@ public class User extends BaseEntity {
      * 密码
      */
     @ApiModelProperty(hidden = true)
-    @NotBlank
+    @NotBlank(groups = {Add.class}, message = "密码不能为空")
     private String password;
 
     /**
      * 盐
      */
     @ApiModelProperty(hidden = true)
-    @NotBlank
     private String salt;
 
     /**
      * 状态
      */
     @ApiModelProperty(value = "用户状态,1表示开启")
-    @PositiveOrZero
+    @NullOrNumber
     private Integer status;
 
     /**
@@ -102,13 +103,14 @@ public class User extends BaseEntity {
     /**
      * 最后登录时间
      */
-    @ApiModelProperty(value = "用户最近登录时间", example = "1970-01-01:08:00:00")
-    private Date lastLoginTime;
+    @ApiModelProperty(value = "用户最近登录时间")
+    private LocalDateTime lastLoginTime;
 
     /**
      * 用户所在部门主键ID 方便转换显示，不存数据库
      */
     @ApiModelProperty(value = "用户部门id")
+    @Positive
     @Transient
     private Long departmentId;
 

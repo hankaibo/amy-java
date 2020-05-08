@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService {
     public PageInfo<User> pageUser(int pageNum, int pageSize, User user) {
         PageHelper.startPage(pageNum, pageSize);
         List<User> userList = userMapper.pageUser(user);
+
+        userList.forEach(item -> {
+            item.setPassword(null);
+            item.setSalt(null);
+        });
         return new PageInfo<>(userList);
     }
 

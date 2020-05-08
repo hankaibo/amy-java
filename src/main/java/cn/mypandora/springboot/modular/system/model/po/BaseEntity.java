@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import cn.mypandora.springboot.core.util.CustomLocalDateTimeDeserializer;
 import cn.mypandora.springboot.core.util.CustomLocalDateTimeSerializer;
+import cn.mypandora.springboot.core.validate.Update;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
@@ -34,7 +35,7 @@ public abstract class BaseEntity implements Serializable {
      * 主键
      */
     @ApiModelProperty(value = "主键id")
-    @PositiveOrZero(message = "主键不能为空")
+    @PositiveOrZero(groups = {Update.class}, message = "主键不能为空")
     @KeySql(dialect = IdentityDialect.MYSQL)
     @Id
     protected Long id;
