@@ -3,6 +3,7 @@ package cn.mypandora.springboot.modular.system.model.po;
 import javax.persistence.Table;
 
 import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ import tk.mybatis.mapper.code.Style;
  * @author hankaibo
  * @date 2019/9/25
  */
+@ApiModel("部门实体")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
