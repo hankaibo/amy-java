@@ -12,7 +12,9 @@ import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.validate.Add;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -22,8 +24,10 @@ import tk.mybatis.mapper.code.Style;
  * @author hankaibo
  * @date 2019/1/12
  */
-@ApiModel(value = "用户对象", description = "用户信息")
+@ApiModel("用户实体")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sys_user")
 @NameStyle(Style.camelhumpAndLowercase)
 public class User extends BaseEntity {
@@ -66,7 +70,7 @@ public class User extends BaseEntity {
      * 状态
      */
     @ApiModelProperty(value = "用户状态,1表示开启")
-    @NullOrNumber
+    @NullOrNumber(message = "状态值只能为null,1,0")
     private Integer status;
 
     /**
