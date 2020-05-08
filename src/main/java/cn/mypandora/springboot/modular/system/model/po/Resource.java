@@ -5,8 +5,13 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.hibernate.validator.constraints.Range;
+
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -16,7 +21,10 @@ import tk.mybatis.mapper.code.Style;
  * @author hankaibo
  * @date 2019/1/12
  */
+@ApiModel("资源实体")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sys_resource")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Resource extends BaseTree {
@@ -32,7 +40,7 @@ public class Resource extends BaseTree {
     /**
      * 状态
      */
-    @PositiveOrZero
+    @Range(min = 0, max = 1)
     private Integer status;
 
     /**

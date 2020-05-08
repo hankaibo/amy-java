@@ -3,7 +3,8 @@ package cn.mypandora.springboot.modular.system.model.po;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import org.hibernate.validator.constraints.Range;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ public class Role extends BaseTree {
      * 状态
      */
     @ApiModelProperty(value = "角色状态")
-    @NullOrNumber(message = "状态值只能为null,1,0")
+    @Range(min = 0, max = 1)
     private Integer status;
 
     /**
