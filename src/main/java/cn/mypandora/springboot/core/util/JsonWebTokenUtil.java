@@ -14,7 +14,7 @@ import org.springframework.util.CollectionUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cn.mypandora.springboot.config.exception.custom.BusinessException;
+import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.lang.Assert;
