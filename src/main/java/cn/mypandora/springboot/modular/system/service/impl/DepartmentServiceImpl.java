@@ -92,7 +92,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 获取部门范围防止用户查看自身权限外的部门信息
         List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(id))) {
-            throw new BusinessException(Department.class, "无法查看该部门。");
+            throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
         // 查询
         Department department = new Department();

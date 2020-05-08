@@ -12,7 +12,7 @@ import cn.mypandora.springboot.modular.system.model.po.Department;
  *
  * @author hankaibo
  * @date 2019/9/25
- * @see <a href="https://mybatis.org/mybatis-3/zh/sqlmap-xml.html#Parameters">参数</a>
+ * @see <a href="https://mybatis.org/mybatis-3/zh/sqlmap-xml.html#Parameters">Parameters</a>
  */
 public interface DepartmentMapper extends MyBaseMapper<Department> {
 

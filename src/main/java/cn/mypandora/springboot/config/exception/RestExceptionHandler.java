@@ -27,8 +27,8 @@ import cn.mypandora.springboot.core.exception.ApiError;
  *
  * @author hankaibo
  * @date 2020/3/29
- * @see <a href=
- *      "https://www.toptal.com/java/spring-boot-rest-api-error-handling">https://www.toptal.com/java/spring-boot-rest-api-error-handling</a>
+ * @see <a href= "https://www.toptal.com/java/spring-boot-rest-api-error-handling">Guide to Spring Boot REST API Error
+ *      Handling</a>
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -135,7 +135,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
-        apiError.setMessage("Validation error");
+        apiError.setMessage("参数验证失败");
         apiError.addValidationErrors(ex.getBindingResult().getFieldErrors());
         apiError.addValidationError(ex.getBindingResult().getGlobalErrors());
         return buildResponseEntity(apiError);
@@ -165,7 +165,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles javax.validation.ConstraintViolationException. Throw when @Validated fails.
+     * Handles javax.validation.ConstraintViolationException. Throw when @Validated/@Valid fails.
      *
      * @param ex
      *            the ConstraintViolationException
