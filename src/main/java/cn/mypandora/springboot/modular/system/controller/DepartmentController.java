@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -140,7 +141,8 @@ public class DepartmentController {
     @ApiOperation(value = "启用禁用部门")
     @PatchMapping("/{id}/status")
     public void enableDepartment(@Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
-        @NullOrNumber @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status, Long userId) {
+        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
+        Long userId) {
         departmentService.enableDepartment(id, status, userId);
     }
 
