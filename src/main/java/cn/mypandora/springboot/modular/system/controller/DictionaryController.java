@@ -2,7 +2,13 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.mypandora.springboot.core.base.PageInfo;
@@ -21,12 +27,13 @@ import io.swagger.annotations.ApiParam;
  * @author hankaibo
  * @date 2019/6/14
  */
+@Validated
 @Api(tags = "字典管理")
 @RestController
 @RequestMapping("/api/v1/dictionaries")
 public class DictionaryController {
 
-    private DictionaryService dictionaryService;
+    private final DictionaryService dictionaryService;
 
     @Autowired
     public DictionaryController(DictionaryService dictionaryService) {
@@ -45,8 +52,10 @@ public class DictionaryController {
     @ApiOperation(value = "获取字典列表", notes = "分页查询字典列表。")
     @GetMapping
     public PageInfo<Dictionary> pageDictionary(
-        @RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码", required = true) int pageNum,
-        @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数", required = true) int pageSize,
+        @Positive @RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码",
+            required = true) int pageNum,
+        @Positive @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "条数",
+            required = true) int pageSize,
         Dictionary dictionary) {
         return dictionaryService.pageDictionary(pageNum, pageSize, dictionary);
     }
@@ -60,7 +69,7 @@ public class DictionaryController {
     @ApiOperation(value = "新建字典", notes = "根据数据新建一个字典。")
     @PostMapping
     public void addDictionary(
-        @RequestBody @ApiParam(name = "dictionary", value = "字典数据", required = true) Dictionary dictionary) {
+        @Valid @RequestBody @ApiParam(name = "dictionary", value = "字典数据", required = true) Dictionary dictionary) {
         // 如果没有parentId为空，那么就创建为一个根节点，parentId是null。
         if (dictionary.getParentId() == null || dictionary.getParentId() < 1) {
             dictionary.setParentId(null);
@@ -77,7 +86,8 @@ public class DictionaryController {
      */
     @ApiOperation(value = "获取字典详情", notes = "根据字典id查询字典详情。")
     @GetMapping("/{id}")
-    public Dictionary getDictionaryById(@PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
+    public Dictionary
+        getDictionaryById(@Positive @PathVariable("id") @ApiParam(value = "字典主键", required = true) Long id) {
         return dictionaryService.getDictionary(id);
     }
 
@@ -89,7 +99,7 @@ public class DictionaryController {
      */
     @ApiOperation(value = "更新字典", notes = "根据字典数据更新一个字典。")
     @PutMapping("/{id}")
-    public void updateDictionary(@RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
+    public void updateDictionary(@Valid @RequestBody @ApiParam(value = "字典数据", required = true) Dictionary dictionary) {
         dictionaryService.updateDictionary(dictionary);
     }
 
@@ -103,8 +113,8 @@ public class DictionaryController {
      */
     @ApiOperation(value = "启用禁用字典", notes = "根据字典id启用或禁用其状态。")
     @PatchMapping("/{id}/status")
-    public void enableDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
-        @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
+    public void enableDictionary(@Positive @PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
+        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
         dictionaryService.enableDictionary(id, status);
     }
 
@@ -116,7 +126,8 @@ public class DictionaryController {
      */
     @ApiOperation(value = "删除字典", notes = "根据字典Id删除一个字典。")
     @DeleteMapping("/{id}")
-    public void deleteDictionary(@PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long dictId) {
+    public void
+        deleteDictionary(@Positive @PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long dictId) {
         dictionaryService.deleteDictionary(dictId);
     }
 
@@ -128,8 +139,8 @@ public class DictionaryController {
      */
     @ApiOperation(value = "批量删除字典", notes = "根据字典Id批量删除字典。")
     @DeleteMapping
-    public void
-        deleteBatchDictionary(@RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, long[]> map) {
+    public void deleteBatchDictionary(
+        @NotEmpty @RequestBody @ApiParam(value = "字典主键数组ids", required = true) Map<String, long[]> map) {
         dictionaryService.deleteBatchDictionary(map.get("ids"));
     }
 
