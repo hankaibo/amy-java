@@ -49,7 +49,7 @@ public class DictionaryController {
      *            每页条数
      * @return 分页数据
      */
-    @ApiOperation(value = "获取字典列表", notes = "分页查询字典列表。")
+    @ApiOperation(value = "获取字典列表")
     @GetMapping
     public PageInfo<Dictionary> pageDictionary(
         @Positive @RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码",
