@@ -16,16 +16,38 @@
     </resultMap>
 
     <sql id="baseColumns">
-        ${alias}.id,
-        ${alias}.parent_id,
-        ${alias}.name,
-        ${alias}.lft,
-        ${alias}.rgt,
-        ${alias}.level,
-        ${alias}.status,
-        ${alias}.description,
-        ${alias}.create_time,
-        ${alias}.update_time
+        ${alias}
+        .id,
+        ${alias}
+        .
+        parent_id,
+        ${alias}
+        .
+        name,
+        ${alias}
+        .
+        lft,
+        ${alias}
+        .
+        rgt,
+        ${alias}
+        .
+        level,
+        ${alias}
+        .
+        status,
+        ${alias}
+        .
+        is_update,
+        ${alias}
+        .
+        description,
+        ${alias}
+        .
+        create_time,
+        ${alias}
+        .
+        update_time
     </sql>
 
     <select id="listAll" resultMap="departmentMap">
@@ -46,16 +68,12 @@
         <include refid="baseColumns">
             <property name="alias" value="t"/>
         </include>
-        FROM sys_department t
+        FROM sys_department t join sys_department_user sdu on t.id=sdu.department_id
         WHERE 1=1
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        AND t.id IN (
-        SELECT du.department_id
-        FROM sys_department_user du
-        WHERE du.user_id=#{userId}
-        )
+        AND sdu.user_id=#{userId}
         ORDER BY t.lft
     </select>
 
@@ -112,19 +130,20 @@
         </include>
         FROM sys_department t
         WHERE 1=1
-        AND t.parent_id=#{id}
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        AND t.parent_id=#{id}
+        ORDER BY t.lft
     </select>
 
     <update id="parentRgtAdd">
         UPDATE sys_department t
-        SET t.rgt = (t.rgt + #{amount}), t.update_time=now()
-        WHERE 1=1
-        AND t.is_update =1
-        AND id = #{id}
+        SET t.rgt        = (t.rgt + #{amount}),
+            t.update_time=now()
+        WHERE 1 = 1
+          AND t.is_update = 1
+          AND id = #{id}
     </update>
 
     <update id="lftAdd">
@@ -132,14 +151,14 @@
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update = 1
-        <![CDATA[
-            AND t.lft > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.lft < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.lft > f.rgt
+        ]]>
     </update>
 
     <update id="rgtAdd">
@@ -147,14 +166,14 @@
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update = 1
-        <![CDATA[
-            AND t.rgt > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.rgt < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.rgt > f.rgt
+        ]]>
     </update>
 
     <update id="selfAndDescendant">
