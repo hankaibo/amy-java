@@ -22,8 +22,8 @@ import tk.mybatis.mapper.code.Style;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@NameStyle(Style.camelhumpAndLowercase)
 @Table(name = "sys_department")
+@NameStyle(Style.camelhumpAndLowercase)
 public class Department extends BaseTree {
 
     private static final long serialVersionUID = 1722519175716048416L;
