@@ -95,9 +95,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
         // 查询
-        Department department = new Department();
-        department.setId(id);
-        Department info = departmentMapper.selectByPrimaryKey(department);
+        Department info = departmentMapper.selectByPrimaryKey(id);
         if (info == null) {
             throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
@@ -129,9 +127,11 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new BusinessException(Department.class, "部门错误。");
         }
         // 有用户部门，不可以修改为禁用。
-        int count = departmentUserMapper.countUserByDepartmentId(department.getId());
-        if (count > 0) {
-            throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
+        if (department.getStatus().equals(0)) {
+            int count = departmentUserMapper.countUserByDepartmentId(department.getId());
+            if (count > 0) {
+                throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
+            }
         }
 
         Department info = getDepartmentById(department.getId(), userId);
@@ -203,11 +203,9 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new BusinessException(Department.class, "部门错误。");
         }
 
-        Department department = new Department();
-        department.setId(id);
         // 先求出要删除的部门的所有信息，利用左值与右值计算出要删除的部门数量。
         // 删除部门数=(部门右值-部门左值+1)/2
-        Department info = departmentMapper.selectByPrimaryKey(department);
+        Department info = departmentMapper.selectByPrimaryKey(id);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
         // 更新此部门之后的相关部门左右值
         departmentMapper.lftAdd(id, -deleteAmount, null);
@@ -232,14 +230,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         // 先取出源部门与目标部门两者的信息
-        Department sourceDepartment = new Department();
-        Department targetDepartment = new Department();
-
-        sourceDepartment.setId(sourceId);
-        targetDepartment.setId(targetId);
-
-        Department sourceInfo = departmentMapper.selectByPrimaryKey(sourceDepartment);
-        Department targetInfo = departmentMapper.selectByPrimaryKey(targetDepartment);
+        Department sourceInfo = departmentMapper.selectByPrimaryKey(sourceId);
+        Department targetInfo = departmentMapper.selectByPrimaryKey(targetId);
 
         int sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
         int targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
@@ -302,13 +294,9 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Department department) {
-        Department child = new Department();
-        child.setId(department.getId());
-        Department childDepartment = departmentMapper.selectByPrimaryKey(child);
+        Department childDepartment = departmentMapper.selectByPrimaryKey(department.getId());
 
-        Department parent = new Department();
-        parent.setId(department.getParentId());
-        Department parentDepartment = departmentMapper.selectByPrimaryKey(parent);
+        Department parentDepartment = departmentMapper.selectByPrimaryKey(department.getParentId());
         return !(parentDepartment.getLft() >= childDepartment.getLft()
             && parentDepartment.getRgt() <= childDepartment.getRgt());
     }
