@@ -30,18 +30,18 @@ public abstract class BaseTree extends BaseEntity {
     protected String name;
 
     /**
-     * 节点右值
-     */
-    @ApiModelProperty(hidden = true)
-    @Positive(message = "节点必须为数值")
-    protected Integer rgt;
-
-    /**
      * 节点左值
      */
     @ApiModelProperty(hidden = true)
     @Positive(message = "节点必须为数值")
     protected Integer lft;
+
+    /**
+     * 节点右值
+     */
+    @ApiModelProperty(hidden = true)
+    @Positive(message = "节点必须为数值")
+    protected Integer rgt;
 
     /**
      * 层级
@@ -63,4 +63,5 @@ public abstract class BaseTree extends BaseEntity {
     @ApiModelProperty(hidden = true)
     @Positive(message = "是否可更新必须为数值")
     protected Integer isUpdate;
+
 }
