@@ -84,7 +84,7 @@ public class LoginController {
         // 获取用户信息
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
-        User user = userService.getUserByIdOrName(null, username);
+        User user = userService.getUserByName(username);
         Long userId = user.getId();
 
         // 获取角色信息
