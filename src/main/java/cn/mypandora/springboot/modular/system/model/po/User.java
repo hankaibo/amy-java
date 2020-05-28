@@ -7,11 +7,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
 
-import cn.mypandora.springboot.core.validate.Add;
+import cn.mypandora.springboot.core.validate.AddGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -40,7 +39,7 @@ public class User extends BaseEntity {
      * 用户名
      */
     @ApiModelProperty(value = "用户名称")
-    @NotBlank
+    @NotBlank(message = "用户名称不能为空")
     private String username;
 
     /**
@@ -59,7 +58,7 @@ public class User extends BaseEntity {
      * 密码
      */
     @ApiModelProperty(hidden = true)
-    @NotBlank(groups = {Add.class}, message = "密码不能为空")
+    @NotBlank(groups = {AddGroup.class}, message = "密码不能为空")
     private String password;
 
     /**
@@ -116,7 +115,6 @@ public class User extends BaseEntity {
      * 用户所在部门主键ID 方便转换显示，不存数据库
      */
     @ApiModelProperty(value = "用户部门id")
-    @Positive
     @Transient
     private List<Long> departmentIdList;
 
