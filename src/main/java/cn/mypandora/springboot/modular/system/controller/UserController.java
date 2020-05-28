@@ -1,30 +1,45 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.util.TreeUtil;
-import cn.mypandora.springboot.core.validate.Add;
+import cn.mypandora.springboot.core.validate.AddGroup;
+import cn.mypandora.springboot.core.validate.BatchGroup;
+import cn.mypandora.springboot.core.validate.SingleGroup;
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
+import cn.mypandora.springboot.modular.system.model.vo.UserDelete;
+import cn.mypandora.springboot.modular.system.model.vo.UserPassword;
+import cn.mypandora.springboot.modular.system.model.vo.UserUpdate;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * UserController
@@ -32,11 +47,15 @@ import io.swagger.annotations.ApiParam;
  * @author hankaibo
  * @date 2019/6/14
  */
+@Slf4j
 @Validated
 @Api(tags = "用户管理")
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+
+    @Value("${file.path}")
+    private String dirPath;
 
     private final UserService userService;
     private final RoleService roleService;
@@ -57,8 +76,7 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户信息")
     @GetMapping("/info")
     public User getCurrentUser(Long userId) {
-        User user = userService.getUserById(userId);
-        return user;
+        return userService.getUserById(userId);
     }
 
     /**
@@ -104,6 +122,31 @@ public class UserController {
         return userService.pageUser(pageNum, pageSize, user, departmentId);
     }
 
+    @ApiOperation(value = "图片上传")
+    @PostMapping("/upload")
+    public String upload(@RequestParam("file") MultipartFile file) throws IOException {
+        // 获取项目路径
+        Resource resource = new ClassPathResource("");
+        String projectPath = resource.getFile().getAbsolutePath() + "\\static\\img";
+        System.out.println(projectPath);
+
+        String originalFileName = file.getOriginalFilename();
+        String fileName = "";
+        String fileSuffix = ".jpg";
+        Path path;
+        try {
+            fileName = UUID.randomUUID().toString();
+            assert originalFileName != null;
+            fileSuffix = originalFileName.substring(originalFileName.lastIndexOf("."));
+            byte[] bytes = file.getBytes();
+            path = Paths.get(dirPath + fileName + fileSuffix);
+            Files.write(path, bytes);
+        } catch (IOException e) {
+            log.error("用户头像上传失败。", e);
+        }
+        return "/" + fileName + fileSuffix;
+    }
+
     /**
      * 新建用户。
      *
@@ -112,7 +155,8 @@ public class UserController {
      */
     @ApiOperation(value = "用户新建")
     @PostMapping
-    public void addUser(@Validated({Add.class}) @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+    public void
+        addUser(@Validated({AddGroup.class}) @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         userService.addUser(user);
     }
 
@@ -136,13 +180,16 @@ public class UserController {
     /**
      * 更新用户。
      *
-     * @param user
+     * @param userDepartment
      *            用户数据
      */
     @ApiOperation(value = "用户更新")
     @PutMapping("/{id}")
-    public void updateUser(@Valid @RequestBody @ApiParam(value = "用户数据", required = true) User user,
-        Long[] plusDepartmentIds, Long[] minusDepartmentIds) {
+    public void updateUser(@Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "用户数据",
+        required = true) UserUpdate userDepartment) {
+        User user = userDepartment.getUser();
+        Long[] plusDepartmentIds = userDepartment.getPlusDepartmentIds();
+        Long[] minusDepartmentIds = userDepartment.getMinusDepartmentIds();
         userService.updateUser(user, plusDepartmentIds, minusDepartmentIds);
     }
 
@@ -166,14 +213,14 @@ public class UserController {
      *
      * @param id
      *            用户主键id
-     * @param map
+     * @param userPassword
      *            新密码
      */
     @ApiOperation(value = "重置用户密码")
     @PatchMapping("/{id}/password")
     public void resetPassword(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @NotEmpty @RequestBody @ApiParam(value = "新密码", required = true) Map<String, String> map) {
-        String password = map.get("password");
+        @NotEmpty @RequestBody @ApiParam(value = "新密码", required = true) UserPassword userPassword) {
+        String password = userPassword.getNewPassword();
         userService.resetPassword(id, password);
     }
 
@@ -182,15 +229,15 @@ public class UserController {
      *
      * @param id
      *            用户主键id
-     * @param map
+     * @param userPassword
      *            {oldPassword: 旧密码, newPassword: 新密码}
      */
     @ApiOperation(value = "修改密码")
     @PatchMapping("/{id}/pwd")
     public void updatePassword(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @NotEmpty @RequestBody @ApiParam(value = "新旧密码", required = true) Map<String, String> map) {
-        String oldPassword = map.get("oldPassword");
-        String newPassword = map.get("newPassword");
+        @NotEmpty @RequestBody @ApiParam(value = "新旧密码", required = true) UserPassword userPassword) {
+        String oldPassword = userPassword.getOldPassword();
+        String newPassword = userPassword.getNewPassword();
         userService.updatePassword(id, oldPassword, newPassword);
     }
 
@@ -199,29 +246,30 @@ public class UserController {
      *
      * @param id
      *            用户主键id
-     * @param map
+     * @param userDelete
      *            部门主键对象
      */
     @ApiOperation(value = "用户删除")
     @DeleteMapping("/{id}")
     public void deleteUser(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @Positive @RequestBody @ApiParam(value = "部门主键id", required = true) Map<String, Long> map) {
-        Long departmentId = map.get("departmentId");
+        @Validated({SingleGroup.class}) @RequestBody @ApiParam(value = "部门主键id",
+            required = true) UserDelete userDelete) {
+        Long departmentId = userDelete.getDepartmentId();
         userService.deleteUser(id, departmentId);
     }
 
     /**
      * 批量删除用户。
      *
-     * @param map
+     * @param userDelete
      *            用户与部门对象
      */
     @ApiOperation(value = "用户删除(批量)")
     @DeleteMapping
-    public void
-        deleteBatchUser(@NotEmpty @RequestBody @ApiParam(value = "用户与部门对象", required = true) Map<String, Object> map) {
-        Long[] ids = (Long[])map.get("ids");
-        Long departmentId = (Long)map.get("departmentId");
+    public void deleteBatchUser(@Validated({BatchGroup.class}) @RequestBody @ApiParam(value = "用户与部门对象",
+        required = true) UserDelete userDelete) {
+        Long[] ids = userDelete.getUserIds();
+        Long departmentId = userDelete.getDepartmentId();
         userService.deleteBatchUser(ids, departmentId);
     }
 
