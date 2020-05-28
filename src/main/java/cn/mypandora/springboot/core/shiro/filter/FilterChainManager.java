@@ -119,8 +119,7 @@ public class FilterChainManager {
             filterChainManager.getFilterChains().clear();
             shiroFilterFactoryBean.getFilterChainDefinitionMap().clear();
             shiroFilterFactoryBean.setFilterChainDefinitionMap(this.initFilterChainDefinitionMap());
-            shiroFilterFactoryBean.getFilterChainDefinitionMap()
-                .forEach((k, v) -> filterChainManager.createChain(k, v));
+            shiroFilterFactoryBean.getFilterChainDefinitionMap().forEach(filterChainManager::createChain);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

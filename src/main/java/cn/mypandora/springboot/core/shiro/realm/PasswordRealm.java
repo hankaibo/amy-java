@@ -20,6 +20,9 @@ import cn.mypandora.springboot.modular.system.service.UserService;
  */
 public class PasswordRealm extends AuthorizingRealm {
 
+    /**
+     * 系统用户服务接口。
+     */
     private UserService userService;
 
     /**
@@ -72,7 +75,7 @@ public class PasswordRealm extends AuthorizingRealm {
         }
 
         String username = (String)token.getPrincipal();
-        User info = userService.getUserByIdOrName(null, username);
+        User info = userService.getUserByName(username);
 
         if (info == null) {
             throw new UnknownAccountException("用户不存在");

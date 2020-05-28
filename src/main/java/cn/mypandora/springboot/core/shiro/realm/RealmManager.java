@@ -24,7 +24,10 @@ import cn.mypandora.springboot.modular.system.service.UserService;
 public class RealmManager {
 
     /**
-     * 1. 注入UserService接口，以供登录难时调用数据库获取用户进行比对。 2. 分别针对登录与接口注入相应的匹配器进行规则匹配。
+     * 1. 注入UserService接口，以供登录时调用数据库获取用户进行比对。 2. 分别针对登录与接口注入相应的匹配器进行规则匹配。
+     */
+    /**
+     * 基于username/password 形式登录时的接口与匹配器
      */
     private UserService userService;
     private PasswordMatcher passwordMatcher;
@@ -39,12 +42,13 @@ public class RealmManager {
 
     public List<Realm> initRealms() {
         List<Realm> realmList = new LinkedList<>();
-        // ----- password
+
+        // 基于用户名/密码的 username/password 登录
         PasswordRealm passwordRealm = new PasswordRealm(userService);
         passwordRealm.setCredentialsMatcher(passwordMatcher);
         passwordRealm.setAuthenticationTokenClass(PasswordToken.class);
         realmList.add(passwordRealm);
-        // ----- jwt
+        // 基于 jwt
         JwtRealm jwtRealm = new JwtRealm();
         jwtRealm.setCredentialsMatcher(jwtMatcher);
         jwtRealm.setAuthenticationTokenClass(JwtToken.class);

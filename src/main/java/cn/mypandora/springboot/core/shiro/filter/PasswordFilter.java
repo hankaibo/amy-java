@@ -57,7 +57,7 @@ public class PasswordFilter extends AccessControlFilter {
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        AuthenticationToken authenticationToken = null;
+        AuthenticationToken authenticationToken;
         try {
             authenticationToken = createPasswordToken(request);
         } catch (Exception e) {
