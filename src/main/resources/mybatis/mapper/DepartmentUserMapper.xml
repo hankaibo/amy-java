@@ -2,43 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper">
 
-    <update id="updateByUserId">
-        UPDATE sys_department_user t
-        SET t.department_id = #{departmentId}, t.update_time=now()
-        WHERE t.user_id = #{userId}
-    </update>
-
-    <delete id="deleteByUserId">
-        DELETE t
-        FROM sys_department_user t
-        WHERE t.user_id = #{userId}
-    </delete>
-
-    <delete id="deleteBatchByUserIds">
-        DELETE t
-        FROM sys_department_user t
-        WHERE t.user_id in
-        <foreach collection="userIdList" item="userId" index="index" open="(" separator="," close=")">
-            #{userId}
-        </foreach>
-    </delete>
-
     <select id="countUserByDepartmentId" resultType="int" parameterType="long">
         SELECT count(*)
         FROM sys_department_user t
         WHERE t.department_id in (
-        SELECT t.id
-        FROM sys_department t
-        WHERE 1=1
+            SELECT t.id
+            FROM sys_department t
+            WHERE 1 = 1
         <![CDATA[
-                AND t.lft>=(
-                        SELECT s.lft
-                        FROM sys_department s
-                        WHERE s.id=#{id})
-                AND t.rgt<=(
-                        SELECT s.rgt
-                        FROM sys_department s
-                        WHERE s.id=#{id})
+              AND t.lft >= (
+                SELECT s.lft
+                FROM sys_department s
+                WHERE s.id = #{id})
+              AND t.rgt <= (
+                SELECT s.rgt
+                FROM sys_department s
+                WHERE s.id = #{id})
             ]]>)
     </select>
 

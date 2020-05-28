@@ -57,9 +57,7 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户信息")
     @GetMapping("/info")
     public User getCurrentUser(Long userId) {
-        User user = userService.getUserByIdOrName(userId, null);
-        user.setPassword(null);
-        user.setSalt(null);
+        User user = userService.getUserById(userId);
         return user;
     }
 
@@ -103,8 +101,7 @@ public class UserController {
         user.setMobile(mobile);
         user.setSex(sex);
         user.setStatus(status);
-        user.setDepartmentId(departmentId);
-        return userService.pageUser(pageNum, pageSize, user);
+        return userService.pageUser(pageNum, pageSize, user, departmentId);
     }
 
     /**
@@ -129,12 +126,10 @@ public class UserController {
     @ApiOperation(value = "用户详情")
     @GetMapping("/{id}")
     public User getUserById(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        User user = userService.getUserByIdOrName(id, null);
+        User user = userService.getUserById(id);
         user.setLastLoginTime(null);
         user.setCreateTime(null);
         user.setUpdateTime(null);
-        user.setPassword(null);
-        user.setSalt(null);
         return user;
     }
 
@@ -146,8 +141,9 @@ public class UserController {
      */
     @ApiOperation(value = "用户更新")
     @PutMapping("/{id}")
-    public void updateUser(@Valid @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
-        userService.updateUser(user);
+    public void updateUser(@Valid @RequestBody @ApiParam(value = "用户数据", required = true) User user,
+        Long[] plusDepartmentIds, Long[] minusDepartmentIds) {
+        userService.updateUser(user, plusDepartmentIds, minusDepartmentIds);
     }
 
     /**
@@ -203,23 +199,30 @@ public class UserController {
      *
      * @param id
      *            用户主键id
+     * @param map
+     *            部门主键对象
      */
     @ApiOperation(value = "用户删除")
     @DeleteMapping("/{id}")
-    public void deleteUser(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
-        userService.deleteUser(id);
+    public void deleteUser(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
+        @Positive @RequestBody @ApiParam(value = "部门主键id", required = true) Map<String, Long> map) {
+        Long departmentId = map.get("departmentId");
+        userService.deleteUser(id, departmentId);
     }
 
     /**
      * 批量删除用户。
      *
-     * @param ids
-     *            用户id数组
+     * @param map
+     *            用户与部门对象
      */
     @ApiOperation(value = "用户删除(批量)")
     @DeleteMapping
-    public void deleteBatchUser(@NotEmpty @RequestBody @ApiParam(value = "用户主键数组ids", required = true) Long[] ids) {
-        userService.deleteBatchUser(ids);
+    public void
+        deleteBatchUser(@NotEmpty @RequestBody @ApiParam(value = "用户与部门对象", required = true) Map<String, Object> map) {
+        Long[] ids = (Long[])map.get("ids");
+        Long departmentId = (Long)map.get("departmentId");
+        userService.deleteBatchUser(ids, departmentId);
     }
 
     /**
