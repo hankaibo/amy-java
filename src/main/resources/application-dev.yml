@@ -3,7 +3,7 @@
 ###############################################################################
 ## 文件上传路径
 file:
-  path: E:/project/myspringboot/src/tmp/upload
+  path: E:/tmp/upload/images/
 ## 数据库
 spring:
   datasource:
