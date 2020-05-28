@@ -27,7 +27,7 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 10KB
+      max-file-size: 2M
 
 ###############################################################################
 ## jasypt 真实环境下，请在命令行等安全地方使用 password

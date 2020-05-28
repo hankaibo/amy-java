@@ -1,6 +1,9 @@
 ###############################################################################
 ## dev
 ###############################################################################
+## 文件上传路径
+file:
+  path: E:/project/myspringboot/src/tmp/upload
 ## 数据库
 spring:
   datasource:
@@ -30,7 +33,10 @@ spring:
   # servlet
   servlet:
     multipart:
-      max-file-size: 10KB
+      max-file-size: 10MB
+  # resources
+  resources:
+    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:${file.path}
   # hot
   devtools:
     restart:
