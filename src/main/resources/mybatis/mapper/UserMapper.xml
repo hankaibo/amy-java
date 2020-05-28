@@ -6,8 +6,6 @@
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
         <result column="real_name" jdbcType="VARCHAR" property="realName"/>
-        <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="salt" jdbcType="VARCHAR" property="salt"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
@@ -17,25 +15,47 @@
         <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
-        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
     </resultMap>
 
     <sql id="baseColumns">
-        ${alias}.id,
-        ${alias}.username,
-        ${alias}.nickname,
-        ${alias}.real_name,
-        ${alias}.password,
-        ${alias}.salt,
-        ${alias}.status,
-        ${alias}.avatar,
-        ${alias}.email,
-        ${alias}.phone,
-        ${alias}.mobile,
-        ${alias}.sex,
-        ${alias}.last_login_time,
-        ${alias}.create_time,
-        ${alias}.update_time
+        ${alias}
+        .id,
+        ${alias}
+        .
+        username,
+        ${alias}
+        .
+        nickname,
+        ${alias}
+        .
+        real_name,
+        ${alias}
+        .
+        status,
+        ${alias}
+        .
+        avatar,
+        ${alias}
+        .
+        email,
+        ${alias}
+        .
+        phone,
+        ${alias}
+        .
+        mobile,
+        ${alias}
+        .
+        sex,
+        ${alias}
+        .
+        last_login_time,
+        ${alias}
+        .
+        create_time,
+        ${alias}
+        .
+        update_time
     </sql>
 
     <select id="pageUser" resultMap="userMap">
@@ -47,34 +67,21 @@
         JOIN sys_user u on du.user_id = u.id
         WHERE 1 = 1
         AND du.department_id = #{departmentId}
-        <if test="username!=null">
+        <if test="user.username!=null">
             AND u.username = #{username}
         </if>
-        <if test="phone!=null">
+        <if test="user.phone!=null">
             AND u.phone = #{phone}
         </if>
-        <if test="mobile!=null">
+        <if test="user.mobile!=null">
             AND u.phone = #{phone}
         </if>
-        <if test="sex!=null">
+        <if test="user.sex!=null">
             AND u.sex = #{sex}
         </if>
-        <if test="status!=null">
+        <if test="user.status!=null">
             AND u.status = #{status}
         </if>
-    </select>
-
-    <select id="getUser" resultMap="userMap">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="u"/>
-        </include>
-        , du.department_id
-        FROM sys_user u
-        JOIN sys_department_user du on u.id = du.user_id
-        WHERE 1 = 1
-        AND u.id = #{id}
-        OR u.username = #{username}
     </select>
 
 </mapper>

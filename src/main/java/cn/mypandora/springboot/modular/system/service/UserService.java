@@ -20,9 +20,11 @@ public interface UserService {
      *            当前页数
      * @param user
      *            用户条件
+     * @param departmentId
+     *            部门fid
      * @return 用户列表
      */
-    PageInfo<User> pageUser(int pageNum, int pageSize, User user);
+    PageInfo<User> pageUser(int pageNum, int pageSize, User user, Long departmentId);
 
     /**
      * 添加用户。
@@ -33,15 +35,22 @@ public interface UserService {
     void addUser(User user);
 
     /**
-     * 根据用户Id或者名称查询用户。
+     * 根据名称查询用户。(主要用于登录查询)
      *
-     * @param id
-     *            用户Id
      * @param username
      *            用户名称
      * @return 用户信息
      */
-    User getUserByIdOrName(Long id, String username);
+    User getUserByName(String username);
+
+    /**
+     * 根据用户Id查询用户。
+     *
+     * @param id
+     *            用户Id
+     * @return 用户信息
+     */
+    User getUserById(Long id);
 
     /**
      * 更新用户。
@@ -49,10 +58,10 @@ public interface UserService {
      * @param user
      *            用户
      */
-    void updateUser(User user);
+    void updateUser(User user, Long[] plusDepartmentIds, Long[] minusDepartmentIds);
 
     /**
-     * 启用禁用用户。 1:开启; 0:禁用。
+     * 启用禁用用户。 1:开启; 0:禁用。(所有部门)
      *
      * @param id
      *            用户id
@@ -84,20 +93,20 @@ public interface UserService {
     void updatePassword(Long id, String oldPassword, String newPassword);
 
     /**
-     * 删除用户。
+     * 删除用户。(多部门情况下)
      *
      * @param id
      *            用户id
      */
-    void deleteUser(Long id);
+    void deleteUser(Long id, Long departmentId);
 
     /**
-     * 批量删除用户。
+     * 批量删除用户。(多部门情况下)
      *
      * @param ids
      *            [1,2,3,4]
      */
-    void deleteBatchUser(Long[] ids);
+    void deleteBatchUser(Long[] ids, Long departmentId);
 
     /**
      * 赋予用户某角色。

@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -117,6 +118,6 @@ public class User extends BaseEntity {
     @ApiModelProperty(value = "用户部门id")
     @Positive
     @Transient
-    private Long departmentId;
+    private List<Long> departmentIdList;
 
 }
