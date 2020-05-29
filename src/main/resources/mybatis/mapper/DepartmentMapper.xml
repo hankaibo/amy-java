@@ -137,15 +137,6 @@
         ORDER BY t.lft
     </select>
 
-    <update id="parentRgtAdd">
-        UPDATE sys_department t
-        SET t.rgt        = (t.rgt + #{amount}),
-            t.update_time=now()
-        WHERE 1 = 1
-          AND t.is_update = 1
-          AND id = #{id}
-    </update>
-
     <update id="lftAdd">
         UPDATE sys_department t,(SELECT * FROM sys_department WHERE id = #{id}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
@@ -172,7 +163,7 @@
             ]]>
         </if>
         <![CDATA[
-            AND t.rgt > f.rgt
+            AND t.rgt >= f.rgt
         ]]>
     </update>
 

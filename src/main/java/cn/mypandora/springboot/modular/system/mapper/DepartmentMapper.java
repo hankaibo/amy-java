@@ -70,36 +70,26 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     List<Department> listChildren(@Param("id") Long id, @Param("status") Integer status);
 
     /**
-     * 父部门右值加N。
+     * 将树形结构中所有大于当前节点左值的左节点值+N
      *
      * @param id
-     *            部门id
+     *            当前部门id
      * @param amount
-     *            大于id左值的部门，加上的数值(正数相当于加，负数相当于减)
-     */
-    void parentRgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
-
-    /**
-     * 部门左值加N。
-     *
-     * @param id
-     *            部门id,
-     * @param amount
-     *            大于id左值的部门，加上的数值(正数相当于加，负数相当于减),
+     *            要加的数值
      * @param range
-     *            范围值
+     *            被修改范围的最大左值
      */
     void lftAdd(@Param("id") Long id, @Param("amount") Integer amount, @Param("range") Integer range);
 
     /**
-     * 部门右值加N。
+     * 将树形结构中所有大于当前节点左值的右节点值+N
      *
      * @param id
      *            部门id
      * @param amount
-     *            大于id右值的部门，加上的数值(正数相当于加，负数相当于减)
+     *            要加的数值
      * @param range
-     *            范围值
+     *            被修改范围的最大右值
      */
     void rgtAdd(@Param("id") Long id, @Param("amount") Integer amount, @Param("range") Integer range);
 
