@@ -81,9 +81,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setIsUpdate(1);
 
         int amount = 2;
-        // 将树形结构中所有大于父节点左值的左节点+2
+        // 将树形结构中所有大于父节点右值的左节点+2
         departmentMapper.lftAdd(parentId, amount, null);
-        // 将树形结构中所有大于父节点左值的右节点+2
+        // 将树形结构中所有大于父节点右值的右节点+2
         departmentMapper.rgtAdd(parentId, amount, null);
         // 插入新节点
         departmentMapper.insert(department);
