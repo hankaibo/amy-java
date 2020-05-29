@@ -81,10 +81,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setIsUpdate(1);
 
         int amount = 2;
+        // 将树形结构中所有大于父节点左值的左节点+2
         departmentMapper.lftAdd(parentId, amount, null);
+        // 将树形结构中所有大于父节点左值的右节点+2
         departmentMapper.rgtAdd(parentId, amount, null);
+        // 插入新节点
         departmentMapper.insert(department);
-        departmentMapper.parentRgtAdd(parentId, amount);
     }
 
     @Override
@@ -113,6 +115,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateDepartment(Department department, Long userId) {
+        // 有用户部门，不可以修改为禁用。
+        if (department.getStatus().equals(0)) {
+            int count = departmentUserMapper.countUserByDepartmentId(department.getId());
+            if (count > 0) {
+                throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
+            }
+        }
         // 修改部门时，必须保证父部门存在，并只能更改自己权限范围内的部门
         List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
@@ -126,13 +135,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getId()))) {
             throw new BusinessException(Department.class, "部门错误。");
         }
-        // 有用户部门，不可以修改为禁用。
-        if (department.getStatus().equals(0)) {
-            int count = departmentUserMapper.countUserByDepartmentId(department.getId());
-            if (count > 0) {
-                throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
-            }
-        }
 
         Department info = getDepartmentById(department.getId(), userId);
         // 如果父级部门相等，则直接修改其它属性
@@ -141,24 +143,23 @@ public class DepartmentServiceImpl implements DepartmentService {
             Department newParentDepartment = getDepartmentById(department.getParentId(), userId);
             Department oldParentDepartment = getDepartmentById(info.getParentId(), userId);
             Department commonAncestry = getCommonAncestry(newParentDepartment, oldParentDepartment);
+            // 避免下面修改了共同祖先部门的右节点值。
+            int range = commonAncestry.getRgt() + 1;
             // 要修改的部门及子孙部门共多少个
             List<Long> updateIdList = listDescendantId(department.getId());
             int departmentNum = updateIdList.size();
             // 首先锁定被修改部门及子孙部门，保证左右值不会被下面操作修改。
             departmentMapper.locking(updateIdList, 0);
-            // 旧父部门之后左右值修改
+            // 先将修改部门摘出来，它之后的部门节点值修改
             Long oldId = info.getId();
             int oldAmount = departmentNum * -2;
-            int oldRange = commonAncestry.getRgt();
-            departmentMapper.lftAdd(oldId, oldAmount, oldRange);
-            departmentMapper.rgtAdd(oldId, oldAmount, oldRange);
-            // 新父部门之后左右值修改
-            Long newId = newParentDepartment.getId();
+            departmentMapper.lftAdd(oldId, oldAmount, range);
+            departmentMapper.rgtAdd(oldId, oldAmount, range);
+            // 将修改部门插入到新父部门之后左右值修改
+            Long newParentId = newParentDepartment.getId();
             int newAmount = departmentNum * 2;
-            int newRange = commonAncestry.getRgt();
-            departmentMapper.lftAdd(newId, newAmount, newRange);
-            departmentMapper.rgtAdd(newId, newAmount, newRange);
-            departmentMapper.parentRgtAdd(newId, newAmount);
+            departmentMapper.lftAdd(newParentId, newAmount, range);
+            departmentMapper.rgtAdd(newParentId, newAmount, range);
             // 被修改部门及子孙部门左右值修改
             departmentMapper.locking(updateIdList, 1);
             int amount = getDepartmentById(department.getParentId(), userId).getRgt() - info.getRgt() - 1;
