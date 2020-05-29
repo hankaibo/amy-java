@@ -70,7 +70,10 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     List<Department> listChildren(@Param("id") Long id, @Param("status") Integer status);
 
     /**
-     * 将树形结构中所有大于当前节点左值的左节点值+N
+     * 将树形结构中所有大于当前节点右值的左节点值+N
+     * <p>
+     * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾
+     * </p>
      *
      * @param id
      *            当前部门id
@@ -82,8 +85,11 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
     void lftAdd(@Param("id") Long id, @Param("amount") Integer amount, @Param("range") Integer range);
 
     /**
-     * 将树形结构中所有大于当前节点左值的右节点值+N
-     *
+     * 将树形结构中所有大于当前节点右值的右节点值+N *
+     * <p>
+     * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾 *
+     * </p>
+     * 
      * @param id
      *            部门id
      * @param amount
