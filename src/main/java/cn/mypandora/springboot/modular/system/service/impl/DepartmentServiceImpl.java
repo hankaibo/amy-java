@@ -204,6 +204,9 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new BusinessException(Department.class, "部门错误。");
         }
 
+        // 求出要删除的部门所有子孙部门
+        List<Long> idList = listDescendantId(id);
+        String ids = StringUtils.join(idList, ',');
         // 先求出要删除的部门的所有信息，利用左值与右值计算出要删除的部门数量。
         // 删除部门数=(部门右值-部门左值+1)/2
         Department info = departmentMapper.selectByPrimaryKey(id);
@@ -211,9 +214,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 更新此部门之后的相关部门左右值
         departmentMapper.lftAdd(id, -deleteAmount, null);
         departmentMapper.rgtAdd(id, -deleteAmount, null);
-        // 求出要删除的部门所有子孙部门
-        List<Long> idList = listDescendantId(id);
-        String ids = StringUtils.join(idList, ',');
         // 批量删除部门及子孙部门
         departmentMapper.deleteByIds(ids);
     }
