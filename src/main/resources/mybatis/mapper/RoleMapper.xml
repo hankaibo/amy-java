@@ -17,17 +17,41 @@
     </resultMap>
 
     <sql id="baseColumns">
-        ${alias}.id,
-        ${alias}.parent_id,
-        ${alias}.name,
-        ${alias}.code,
-        ${alias}.lft,
-        ${alias}.rgt,
-        ${alias}.level,
-        ${alias}.status,
-        ${alias}.description,
-        ${alias}.create_time,
-        ${alias}.update_time
+        ${alias}
+        .id,
+        ${alias}
+        .
+        parent_id,
+        ${alias}
+        .
+        name,
+        ${alias}
+        .
+        code,
+        ${alias}
+        .
+        lft,
+        ${alias}
+        .
+        rgt,
+        ${alias}
+        .
+        level,
+        ${alias}
+        .
+        status,
+        ${alias}
+        .
+        is_update,
+        ${alias}
+        .
+        description,
+        ${alias}
+        .
+        create_time,
+        ${alias}
+        .
+        update_time
     </sql>
 
     <select id="listAll" resultMap="roleMap">
@@ -40,7 +64,7 @@
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listByUserIdOrName" resultMap="roleMap">
@@ -56,7 +80,7 @@
             AND t.status=#{status}
         </if>
         AND (u.username = #{username} OR u.id = #{userId})
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listAncestries" resultMap="roleMap">
@@ -79,7 +103,7 @@
                 FROM sys_role s
                 WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listDescendants" resultMap="roleMap">
@@ -102,7 +126,7 @@
                 FROM sys_role s
                 WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listChildren" resultMap="roleMap">
@@ -112,34 +136,26 @@
         </include>
         FROM sys_role t
         WHERE 1=1
-        AND t.parent_id=#{id}
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        AND t.parent_id=#{id}
+        ORDER BY t.lft
     </select>
-
-    <update id="parentRgtAdd">
-        UPDATE sys_role t
-        SET t.rgt = (t.rgt + #{amount}), t.update_time=now()
-        WHERE 1=1
-        AND t.is_update =1
-        AND id = #{id}
-    </update>
 
     <update id="lftAdd">
         UPDATE sys_role t,(SELECT * FROM sys_role WHERE id = #{id}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update =1
-        <![CDATA[
-            AND t.lft > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.lft < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.lft > f.rgt
+        ]]>
     </update>
 
     <update id="rgtAdd">
@@ -147,14 +163,14 @@
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update = 1
-        <![CDATA[
-            AND t.rgt > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.rgt < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.rgt >= f.rgt
+        ]]>
     </update>
 
     <update id="selfAndDescendant">
