@@ -91,7 +91,7 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * </p>
      * 
      * @param id
-     *            部门id
+     *            当前部门id
      * @param amount
      *            要加的数值
      * @param range
