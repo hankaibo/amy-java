@@ -136,10 +136,10 @@
         </include>
         FROM sys_role t
         WHERE 1=1
+        AND t.parent_id=#{id}
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        AND t.parent_id=#{id}
         ORDER BY t.lft
     </select>
 

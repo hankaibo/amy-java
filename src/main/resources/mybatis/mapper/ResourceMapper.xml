@@ -85,7 +85,7 @@
         <if test="status != null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listByUserIdOrName" resultMap="resourceMap">
@@ -139,7 +139,7 @@
                     FROM sys_resource s
                     WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listDescendants" resultMap="resourceMap">
@@ -165,7 +165,7 @@
                     FROM sys_resource s
                     WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listChildren" resultMap="resourceMap">
@@ -180,31 +180,22 @@
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
-
-    <update id="parentRgtAdd">
-        UPDATE sys_resource t
-        SET t.rgt=(t.rgt + #{amount}),
-            t.update_time=now()
-        WHERE 1 = 1
-          AND t.is_update = 1
-          AND id = #{id}
-    </update>
 
     <update id="lftAdd">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update =1
-        <![CDATA[
-            AND t.lft > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.lft < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.lft > f.rgt
+        ]]>
     </update>
 
     <update id="rgtAdd">
@@ -212,14 +203,14 @@
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update = 1
-        <![CDATA[
-            AND t.rgt > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.rgt < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.rgt >= f.rgt
+        ]]>
     </update>
 
     <update id="selfAndDescendant">
