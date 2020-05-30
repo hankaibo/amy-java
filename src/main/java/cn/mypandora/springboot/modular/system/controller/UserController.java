@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
@@ -24,16 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.util.TreeUtil;
-import cn.mypandora.springboot.core.validate.AddGroup;
-import cn.mypandora.springboot.core.validate.BatchGroup;
-import cn.mypandora.springboot.core.validate.SingleGroup;
-import cn.mypandora.springboot.core.validate.UpdateGroup;
+import cn.mypandora.springboot.core.validate.*;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.User;
-import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
-import cn.mypandora.springboot.modular.system.model.vo.UserDelete;
-import cn.mypandora.springboot.modular.system.model.vo.UserPassword;
-import cn.mypandora.springboot.modular.system.model.vo.UserUpdate;
+import cn.mypandora.springboot.modular.system.model.vo.*;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
@@ -219,7 +213,8 @@ public class UserController {
     @ApiOperation(value = "重置用户密码")
     @PatchMapping("/{id}/password")
     public void resetPassword(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @NotEmpty @RequestBody @ApiParam(value = "新密码", required = true) UserPassword userPassword) {
+        @Validated({ResetPasswordGroup.class}) @RequestBody @ApiParam(value = "新密码",
+            required = true) UserPassword userPassword) {
         String password = userPassword.getNewPassword();
         userService.resetPassword(id, password);
     }
@@ -235,7 +230,8 @@ public class UserController {
     @ApiOperation(value = "修改密码")
     @PatchMapping("/{id}/pwd")
     public void updatePassword(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @NotEmpty @RequestBody @ApiParam(value = "新旧密码", required = true) UserPassword userPassword) {
+        @Validated({UpdatePasswordGroup.class}) @RequestBody @ApiParam(value = "新旧密码",
+            required = true) UserPassword userPassword) {
         String oldPassword = userPassword.getOldPassword();
         String newPassword = userPassword.getNewPassword();
         userService.updatePassword(id, oldPassword, newPassword);
@@ -309,18 +305,16 @@ public class UserController {
      *
      * @param id
      *            用户id
-     * @param map
+     * @param userGrant
      *            增加和删除的角色对象
      */
     @ApiOperation(value = "赋予用户角色。")
     @PostMapping("/{id}/roles")
     public void grantUserRole(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) Map<String, List<Long>> map) {
-        List<Long> plusRole = map.get("plusRole");
-        List<Long> minusRole = map.get("minusRole");
-        long[] plusId = plusRole.stream().distinct().mapToLong(it -> it).toArray();
-        long[] minusId = minusRole.stream().distinct().mapToLong(it -> it).toArray();
-        userService.grantUserRole(id, plusId, minusId);
+        @Valid @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) UserGrant userGrant) {
+        Long[] plusRoleIds = userGrant.getPlusRoleIds();
+        Long[] minusRoleIds = userGrant.getMinusRoleIds();
+        userService.grantUserRole(id, plusRoleIds, minusRoleIds);
     }
 
 }

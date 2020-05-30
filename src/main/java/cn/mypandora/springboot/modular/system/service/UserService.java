@@ -113,11 +113,11 @@ public interface UserService {
      *
      * @param userId
      *            用户Id
-     * @param plusId
-     *            增加用色Id集合
-     * @param minusId
-     *            删除用色Id集合
+     * @param plusRoleIds
+     *            增加用色Id数组
+     * @param minusRoleIds
+     *            删除用色Id数组
      */
-    void grantUserRole(Long userId, long[] plusId, long[] minusId);
+    void grantUserRole(Long userId, Long[] plusRoleIds, Long[] minusRoleIds);
 
 }

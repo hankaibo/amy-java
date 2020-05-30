@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import cn.mypandora.springboot.modular.system.model.po.User;
 import lombok.Data;
@@ -26,11 +27,13 @@ public class UserUpdate {
     /**
      * 用户要新添加的部门
      */
+    @NotNull
     private Long[] plusDepartmentIds;
 
     /**
      * 用户要删除的旧部门
      */
+    @NotNull
     private Long[] minusDepartmentIds;
 
 }
