@@ -245,18 +245,19 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void grantRoleResource(Long roleId, long[] plusId, long[] minusId, Long userId) {
+    public void grantRoleResource(Long roleId, List<Long> plusResourceIdList, List<Long> minusResourceIdList,
+        Long userId) {
         // 删除旧的资源
-        if (minusId.length > 0) {
+        if (minusResourceIdList.size() > 0) {
             Example roleResource = new Example(RoleResource.class);
-            roleResource.createCriteria().andIn("resourceId", Arrays.asList(minusId)).andEqualTo("roleId", roleId);
+            roleResource.createCriteria().andIn("resourceId", minusResourceIdList).andEqualTo("roleId", roleId);
             roleResourceMapper.deleteByExample(roleResource);
         }
         // 添加新的资源
-        if (plusId.length > 0) {
+        if (plusResourceIdList.size() > 0) {
             LocalDateTime now = LocalDateTime.now();
             List<RoleResource> roleResourceList = new ArrayList<>();
-            for (Long resourceId : plusId) {
+            for (Long resourceId : plusResourceIdList) {
                 RoleResource roleResource = new RoleResource();
                 roleResource.setRoleId(roleId);
                 roleResource.setResourceId(resourceId);

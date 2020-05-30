@@ -16,6 +16,7 @@ import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
+import cn.mypandora.springboot.modular.system.model.vo.RoleGrant;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
@@ -214,18 +215,16 @@ public class RoleController {
      *
      * @param id
      *            角色id
-     * @param map
+     * @param roleGrant
      *            增加和删除的角色对象
      */
     @ApiOperation(value = "赋予角色资源。", notes = "根据角色id赋予其一些资源。")
     @PostMapping("/{id}/resources")
     public void grantRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) Map<String, List<Long>> map, Long userId) {
-        List<Long> plusResource = map.get("plusResource");
-        List<Long> minusResource = map.get("minusResource");
-        long[] plusId = plusResource.stream().distinct().mapToLong(it -> it).toArray();
-        long[] minusId = minusResource.stream().distinct().mapToLong(it -> it).toArray();
-        roleService.grantRoleResource(id, plusId, minusId, userId);
+        @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) RoleGrant roleGrant, Long userId) {
+        List<Long> plusResourceIdList = roleGrant.getPlusResourceIdList();
+        List<Long> minusResourceIdList = roleGrant.getMinusResourceIdList();
+        roleService.grantRoleResource(id, plusResourceIdList, minusResourceIdList, userId);
     }
 
 }
