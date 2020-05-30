@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
 import cn.mypandora.springboot.core.validate.BatchGroup;
@@ -23,7 +23,7 @@ public class UserDelete {
     /**
      * 用户id数组
      */
-    @NotNull(groups = {BatchGroup.class}, message = "主键不能为空")
+    @NotEmpty(groups = {BatchGroup.class}, message = "主键不能为空")
     private Long[] userIds;
 
     /**

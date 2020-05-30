@@ -221,18 +221,18 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void grantUserRole(Long userId, long[] plusId, long[] minusId) {
+    public void grantUserRole(Long userId, Long[] plusRoleIds, Long[] minusRoleIds) {
         // 删除旧角色
-        if (minusId.length > 0) {
+        if (minusRoleIds.length > 0) {
             Example userRole = new Example(UserRole.class);
-            userRole.createCriteria().andIn("roleId", Arrays.asList(minusId)).andEqualTo("userId", userId);
+            userRole.createCriteria().andIn("roleId", Arrays.asList(minusRoleIds)).andEqualTo("userId", userId);
             userRoleMapper.deleteByExample(userRole);
         }
         // 添加新的角色
-        if (plusId.length > 0) {
+        if (plusRoleIds.length > 0) {
             LocalDateTime now = LocalDateTime.now();
             List<UserRole> userRoleList = new ArrayList<>();
-            for (Long roleId : plusId) {
+            for (Long roleId : plusRoleIds) {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(userId);
                 userRole.setRoleId(roleId);
