@@ -316,13 +316,9 @@ public class RoleServiceImpl implements RoleService {
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Role role) {
-        Role child = new Role();
-        child.setId(role.getId());
-        Role childRole = roleMapper.selectByPrimaryKey(child);
+        Role childRole = roleMapper.selectByPrimaryKey(role.getId());
 
-        Role parent = new Role();
-        parent.setId(role.getParentId());
-        Role parentRole = roleMapper.selectByPrimaryKey(parent);
+        Role parentRole = roleMapper.selectByPrimaryKey(role.getParentId());
         return !(parentRole.getLft() >= childRole.getLft() && parentRole.getRgt() <= childRole.getRgt());
     }
 
