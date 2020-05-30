@@ -22,6 +22,7 @@ import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
+import cn.mypandora.springboot.modular.system.model.po.RoleResource;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import tk.mybatis.mapper.entity.Example;
 
@@ -30,8 +31,6 @@ import tk.mybatis.mapper.entity.Example;
  *
  * @author hankaibo
  * @date 2019/1/15
- * @see <a href=
- *      "http://www.spoofer.top/2017/07/14/%E5%9F%BA%E4%BA%8ENested-Sets%E7%9A%84%E6%A0%91%E5%BD%A2%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1">左右节点树操作</a>
  */
 @Service
 public class ResourceServiceImpl implements ResourceService {
@@ -95,11 +94,13 @@ public class ResourceServiceImpl implements ResourceService {
         resourceMapper.lftAdd(parentId, amount, null);
         resourceMapper.rgtAdd(parentId, amount, null);
         resourceMapper.insert(resource);
-        resourceMapper.parentRgtAdd(parentId, amount);
         // 所有资源默认添加到根角色
         Role role = getRootRole();
-        long[] plusId = {resource.getId()};
-        roleResourceMapper.grantRoleResource(role.getId(), plusId);
+        RoleResource roleResource = new RoleResource();
+        roleResource.setRoleId(role.getId());
+        roleResource.setResourceId(resource.getId());
+        roleResource.setCreateTime(now);
+        roleResourceMapper.insert(roleResource);
     }
 
     @Override
@@ -109,9 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BusinessException(Resource.class, "无法查看该资源。");
         }
 
-        Resource resource = new Resource();
-        resource.setId(id);
-        Resource info = resourceMapper.selectByPrimaryKey(resource);
+        Resource info = resourceMapper.selectByPrimaryKey(id);
         if (info == null) {
             throw new EntityNotFoundException(Resource.class, "资源不存在。");
         }
@@ -139,7 +138,8 @@ public class ResourceServiceImpl implements ResourceService {
             Resource newParentResource = getResourceById(resource.getParentId(), userId);
             Resource oldParentResource = getResourceById(info.getParentId(), userId);
             Resource commonAncestry = getCommonAncestry(newParentResource, oldParentResource);
-
+            // 避免下面修改了共同祖先部门的右节点值。
+            int range = commonAncestry.getRgt() + 1;
             List<Long> updateIdList = listDescendantId(resource.getId());
             int departmentNum = updateIdList.size();
 
@@ -147,16 +147,13 @@ public class ResourceServiceImpl implements ResourceService {
 
             Long oldId = info.getId();
             int oldAmount = departmentNum * -2;
-            int oldRange = commonAncestry.getRgt();
-            resourceMapper.lftAdd(oldId, oldAmount, oldRange);
-            resourceMapper.rgtAdd(oldId, oldAmount, oldRange);
+            resourceMapper.lftAdd(oldId, oldAmount, range);
+            resourceMapper.rgtAdd(oldId, oldAmount, range);
 
-            Long newId = newParentResource.getId();
+            Long newParentId = newParentResource.getId();
             int newAmount = departmentNum * 2;
-            int newRange = commonAncestry.getRgt();
-            resourceMapper.lftAdd(newId, newAmount, newRange);
-            resourceMapper.rgtAdd(newId, newAmount, newRange);
-            resourceMapper.parentRgtAdd(newId, newAmount);
+            resourceMapper.lftAdd(newParentId, newAmount, range);
+            resourceMapper.rgtAdd(newParentId, newAmount, range);
 
             resourceMapper.locking(updateIdList, 1);
             int amount = getResourceById(resource.getParentId(), userId).getRgt() - info.getRgt() - 1;
@@ -190,17 +187,15 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BusinessException(Resource.class, "资源错误。");
         }
 
-        Resource resource = new Resource();
-        resource.setId(id);
+        // 求出要删除的资源所有子孙资源的id
+        List<Long> idList = listDescendantId(id);
+        String ids = StringUtils.join(idList, ',');
 
-        Resource info = resourceMapper.selectByPrimaryKey(resource);
+        Resource info = resourceMapper.selectByPrimaryKey(id);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
 
         resourceMapper.lftAdd(id, -deleteAmount, null);
         resourceMapper.rgtAdd(id, -deleteAmount, null);
-        // 求出要删除的资源所有子孙资源的id
-        List<Long> idList = listDescendantId(id);
-        String ids = StringUtils.join(idList, ',');
         // 批量删除资源及子孙资源
         resourceMapper.deleteByIds(ids);
         // 批量删除资源及子孙资源对应的角色数据
@@ -219,14 +214,8 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BusinessException(Resource.class, "资源错误。");
         }
 
-        Resource sourceResource = new Resource();
-        Resource targetResource = new Resource();
-
-        sourceResource.setId(sourceId);
-        targetResource.setId(targetId);
-
-        Resource sourceInfo = resourceMapper.selectByPrimaryKey(sourceResource);
-        Resource targetInfo = resourceMapper.selectByPrimaryKey(targetResource);
+        Resource sourceInfo = resourceMapper.selectByPrimaryKey(sourceId);
+        Resource targetInfo = resourceMapper.selectByPrimaryKey(targetId);
 
         int sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
         int targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
@@ -267,11 +256,17 @@ public class ResourceServiceImpl implements ResourceService {
         resourceMapper.lftAdd(parentId, amount, null);
         resourceMapper.rgtAdd(parentId, amount, null);
         resourceMapper.insertList(resourceList);
-        resourceMapper.parentRgtAdd(parentId, amount);
 
         Role role = getRootRole();
-        long[] plusId = resourceList.stream().mapToLong(BaseEntity::getId).toArray();
-        roleResourceMapper.grantRoleResource(role.getId(), plusId);
+        List<RoleResource> roleResourceList = new ArrayList<>();
+        for (Resource resource : resourceList) {
+            RoleResource roleResource = new RoleResource();
+            roleResource.setRoleId(role.getId());
+            roleResource.setResourceId(resource.getId());
+            roleResource.setCreateTime(now);
+            roleResourceList.add(roleResource);
+        }
+        roleResourceMapper.insertList(roleResourceList);
     }
 
     @Override
@@ -309,13 +304,9 @@ public class ResourceServiceImpl implements ResourceService {
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Resource resource) {
-        Resource child = new Resource();
-        child.setId(resource.getId());
-        Resource childResource = resourceMapper.selectByPrimaryKey(child);
+        Resource childResource = resourceMapper.selectByPrimaryKey(resource.getId());
 
-        Resource parent = new Resource();
-        parent.setId(resource.getParentId());
-        Resource parentResource = resourceMapper.selectByPrimaryKey(parent);
+        Resource parentResource = resourceMapper.selectByPrimaryKey(resource.getParentId());
         return !(parentResource.getLft() >= childResource.getLft()
             && parentResource.getRgt() <= childResource.getRgt());
     }
