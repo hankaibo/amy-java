@@ -26,21 +26,50 @@
     </resultMap>
 
     <sql id="baseColumns">
-        ${alias}.id,
-        ${alias}.parent_id,
-        ${alias}.name,
-        ${alias}.lft,
-        ${alias}.rgt,
-        ${alias}.level,
-        ${alias}.code,
-        ${alias}.status,
-        ${alias}.uri,
-        ${alias}.type,
-        ${alias}.method,
-        ${alias}.icon,
-        ${alias}.description,
-        ${alias}.create_time,
-        ${alias}.update_time
+        ${alias}
+        .id,
+        ${alias}
+        .
+        parent_id,
+        ${alias}
+        .
+        name,
+        ${alias}
+        .
+        lft,
+        ${alias}
+        .
+        rgt,
+        ${alias}
+        .
+        level,
+        ${alias}
+        .
+        code,
+        ${alias}
+        .
+        status,
+        ${alias}
+        .
+        uri,
+        ${alias}
+        .
+        type,
+        ${alias}
+        .
+        method,
+        ${alias}
+        .
+        icon,
+        ${alias}
+        .
+        description,
+        ${alias}
+        .
+        create_time,
+        ${alias}
+        .
+        update_time
     </sql>
 
     <select id="listAll" resultMap="resourceMap">
@@ -156,10 +185,11 @@
 
     <update id="parentRgtAdd">
         UPDATE sys_resource t
-        SET t.rgt=(t.rgt + #{amount}), t.update_time=now()
-        WHERE 1=1
-        AND t.is_update =1
-        AND id = #{id}
+        SET t.rgt=(t.rgt + #{amount}),
+            t.update_time=now()
+        WHERE 1 = 1
+          AND t.is_update = 1
+          AND id = #{id}
     </update>
 
     <update id="lftAdd">
@@ -226,14 +256,14 @@
     </update>
 
     <select id="listRolePermRules" resultMap="rolePermRule">
-        SELECT CONCAT(t.uri, "==", UPPER(t.method)) AS url,
-        GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
+        SELECT CONCAT(t.uri, "==", UPPER(t.method))   AS url,
+               GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
         FROM sys_resource t
-        INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
-        INNER JOIN sys_role role ON rr.role_id = role.id
+                 INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+                 INNER JOIN sys_role role ON rr.role_id = role.id
         WHERE 1 = 1
-        AND t.status = 1
-        AND t.`type` = 2
+          AND t.status = 1
+          AND t.`type` = 2
         GROUP BY t.uri, t.id
         ORDER BY url DESC
     </select>

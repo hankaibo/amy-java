@@ -72,36 +72,32 @@ public interface RoleMapper extends MyBaseMapper<Role> {
     List<Role> listChildren(@Param("id") Long id, @Param("status") Integer status);
 
     /**
-     * 父角色右值加N。
-     *
+     * 将树形结构中所有大于当前节点右值的左节点值+N
+     * <p>
+     * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾
+     * </p>
+     * 
      * @param id
-     *            角色id
+     *            当前角色id
      * @param amount
-     *            大于id左值的角色，加上的数值(正数相当于加，负数相当于减)
-     */
-    void parentRgtAdd(@Param("id") Long id, @Param("amount") Integer amount);
-
-    /**
-     * 角色左值加N。
-     *
-     * @param id
-     *            角色id
-     * @param amount
-     *            大于id左值的角色，加上的数值(正数相当于加，负数相当于减)
+     *            要加的数值
      * @param range
-     *            范围值
+     *            被修改范围的最大左值
      */
     void lftAdd(@Param("id") Long id, @Param("amount") Integer amount, @Param("range") Integer range);
 
     /**
-     * 角色右值加N。
-     *
+     * 将树形结构中所有大于当前节点右值的右节点值+N *
+     * <p>
+     * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾 *
+     * </p>
+     * 
      * @param id
-     *            角色id
+     *            当前角色id
      * @param amount
-     *            大于id右值的角色，加上的数值(正数相当于加，负数相当于减)
+     *            要加的数值
      * @param range
-     *            范围值
+     *            被修改范围的最大右值
      */
     void rgtAdd(@Param("id") Long id, @Param("amount") Integer amount, @Param("range") Integer range);
 
