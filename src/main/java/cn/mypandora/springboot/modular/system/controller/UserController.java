@@ -264,9 +264,9 @@ public class UserController {
     @DeleteMapping
     public void deleteBatchUser(@Validated({BatchGroup.class}) @RequestBody @ApiParam(value = "用户与部门对象",
         required = true) UserDelete userDelete) {
-        Long[] ids = userDelete.getUserIds();
+        List<Long> idList = userDelete.getUserIdList();
         Long departmentId = userDelete.getDepartmentId();
-        userService.deleteBatchUser(ids, departmentId);
+        userService.deleteBatchUser(idList, departmentId);
     }
 
     /**

@@ -203,18 +203,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBatchUser(Long[] ids, Long departmentId) {
+    public void deleteBatchUser(List<Long> idList, Long departmentId) {
         // 部门不为空，则删除用户与部门关系
         Example batchDepartmentUser = new Example(DepartmentUser.class);
-        batchDepartmentUser.createCriteria().andIn("userId", Arrays.asList(ids)).andEqualTo("departmentId",
-            departmentId);
+        batchDepartmentUser.createCriteria().andIn("userId", idList).andEqualTo("departmentId", departmentId);
         departmentUserMapper.deleteByExample(batchDepartmentUser);
         // 部门为空，则删除用户及用户的所有角色
         if (departmentId == null) {
-            userMapper.deleteByIds(StringUtils.join(ids, ','));
+            userMapper.deleteByIds(StringUtils.join(idList, ','));
             // 删除用户所有角色（批量）。
             Example batchUserRole = new Example(UserRole.class);
-            batchUserRole.createCriteria().andIn("userId", Arrays.asList(ids));
+            batchUserRole.createCriteria().andIn("userId", idList);
             userRoleMapper.deleteByExample(batchUserRole);
         }
     }
