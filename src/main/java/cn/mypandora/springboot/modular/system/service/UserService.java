@@ -1,5 +1,7 @@
 package cn.mypandora.springboot.modular.system.service;
 
+import java.util.List;
+
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.User;
 
@@ -106,7 +108,7 @@ public interface UserService {
      * @param ids
      *            [1,2,3,4]
      */
-    void deleteBatchUser(Long[] ids, Long departmentId);
+    void deleteBatchUser(List<Long> idList, Long departmentId);
 
     /**
      * 赋予用户某角色。
