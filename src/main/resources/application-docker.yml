@@ -27,10 +27,13 @@ spring:
     # port:
     password: ENC(vvYw/azP/VIWPNd0Pr8vGzFmpjDORgZk/eSDTuDGni5NVv2UrZI52g==)
     timeout: 3000
-
+  # servlet
   servlet:
     multipart:
       max-file-size: 2M
+  # resources
+  resources:
+    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:${file.path}
 
 ###############################################################################
 ## jasypt 真实环境下，请在命令行等安全地方使用 password
