@@ -5,9 +5,9 @@
     <delete id="deleteDictionaryById">
         DELETE t
         FROM sys_dictionary t
-        WHERE 1=1
-        AND t.id = #{id}
-        OR t.parent_id=#{id}
+        WHERE 1 = 1
+            AND t.id = #{id}
+           OR t.parent_id = #{id}
     </delete>
 
     <delete id="deleteDictionaryByListId">
