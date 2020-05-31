@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,12 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     private UserRoleMapper userRoleMapper;
     private DepartmentUserMapper departmentUserMapper;
+
+    @Value("${server.address}")
+    private String serverAddress;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper,
@@ -79,7 +86,8 @@ public class UserServiceImpl implements UserService {
         // 避免密码被返回给页面
         info.setSalt(null);
         info.setPassword(null);
-
+        // 修正头像地址
+        info.setAvatar("http://" + serverAddress + ":" + serverPort + info.getAvatar());
         // 查询用户所在部门
         DepartmentUser departmentUser = new DepartmentUser();
         departmentUser.setUserId(id);
