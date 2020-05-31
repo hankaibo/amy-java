@@ -58,9 +58,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public Dictionary getDictionary(Long id) {
-        Dictionary dictionary = new Dictionary();
-        dictionary.setId(id);
-        Dictionary info = dictionaryMapper.selectByPrimaryKey(dictionary);
+        Dictionary info = dictionaryMapper.selectByPrimaryKey(id);
         if (info == null) {
             throw new EntityNotFoundException(Dictionary.class, "字典不存在。");
         }
