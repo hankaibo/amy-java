@@ -48,11 +48,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    @Value("${file.path}")
-    private String dirPath;
-
     private final UserService userService;
     private final RoleService roleService;
+
+    @Value("${file.path}")
+    private String dirPath;
 
     @Autowired
     public UserController(UserService userService, RoleService roleService) {

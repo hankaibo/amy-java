@@ -4,6 +4,9 @@
 ## 文件上传路径
 file:
   path: E:/tmp/upload/images/
+## 服务配置
+server:
+  address: localhost
 ## 数据库
 spring:
   datasource:
