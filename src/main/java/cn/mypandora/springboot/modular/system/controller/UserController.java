@@ -138,7 +138,7 @@ public class UserController {
         } catch (IOException e) {
             log.error("用户头像上传失败。", e);
         }
-        return "/" + fileName + fileSuffix;
+        return "/images/" + fileName + fileSuffix;
     }
 
     /**
