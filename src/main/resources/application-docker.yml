@@ -2,7 +2,7 @@
 ## docker
 ###############################################################################
 ## 文件上传路径
-file:
+upload:
   path: /home/ubuntu/tmp/upload/images/
 ## 数据库
 spring:
@@ -33,7 +33,10 @@ spring:
       max-file-size: 2M
   # resources
   resources:
-    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:${file.path}
+    static-locations: file:${upload.path}
+  # mvc
+  mvc:
+    static-path-pattern: /**
 
 ###############################################################################
 ## jasypt 真实环境下，请在命令行等安全地方使用 password

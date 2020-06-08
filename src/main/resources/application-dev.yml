@@ -2,8 +2,12 @@
 ## dev
 ###############################################################################
 ## 文件上传路径
-file:
+upload:
+  ## 图片在后台真实保存的路径
   path: E:/tmp/upload/images/
+  ## 图片在前台显示时路径
+  ## webpack-dev-server proxy没有成功配置，只能先在后台处理一下。
+  remote-url: http://localhost:8080/
 ## 数据库
 spring:
   datasource:
@@ -36,7 +40,10 @@ spring:
       max-file-size: 10MB
   # resources
   resources:
-    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:${file.path}
+    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:${upload.path}
+  # mvc
+  mvc:
+    static-path-pattern: /**
   # hot
   devtools:
     restart:
