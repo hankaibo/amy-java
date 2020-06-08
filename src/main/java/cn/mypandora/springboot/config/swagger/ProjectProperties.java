@@ -8,8 +8,12 @@ import lombok.Data;
 /**
  * ProjectProperties
  * <p>
- * 方法有三种，如下： 1. @ConfigurationProperties + @Component 注解到bean定义类上 2. @ConfigurationProperties + @Bean注解在配置类的bean定义方法上
- * 3. @ConfigurationProperties注解到普通类然后通过@EnableConfigurationProperties定义为bean
+ * 方法有三种，如下：
+ * <ul>
+ * <li>1. @ConfigurationProperties + @Component 注解到bean定义类上</li>
+ * <li>2. @ConfigurationProperties + @Bean注解在配置类的bean定义方法上</li>
+ * <li>3. @ConfigurationProperties注解到普通类然后通过@EnableConfigurationProperties定义为bean</li>
+ * </ul>
  *
  * <p>
  * 读取配置文件(application*.xml)中的属性值。 注： 1. @Component 将该类作为Bean注入Ioc容器；
