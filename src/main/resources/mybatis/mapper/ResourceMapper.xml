@@ -114,6 +114,7 @@
         )
         ) temp ON rr.role_id=temp.role_id
         )
+        ORDER BY t.lft
     </select>
 
     <select id="listAncestries" resultMap="resourceMap">
