@@ -81,7 +81,7 @@ public class SwaggerConfiguration {
             // -1是为了当一群都是默认值SWAGGER_PLUGIN_ORDER, TOKEN可以排在最前
             .modelRef(new ModelRef("string")).parameterType("header")
             .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("业务API接口文档").select()
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("business API").select()
             .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.your"))
             .paths(PathSelectors.regex("/api/.*")).build().useDefaultResponseMessages(false)
             .globalResponseMessage(RequestMethod.GET, customResponseMessage())
