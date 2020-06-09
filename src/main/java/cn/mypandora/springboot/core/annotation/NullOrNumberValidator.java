@@ -6,6 +6,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
+ * 自定义校验规则实现类。
+ * 
  * @author hankaibo
  * @date 2020/5/5
  */
