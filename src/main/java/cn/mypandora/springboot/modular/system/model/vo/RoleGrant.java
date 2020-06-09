@@ -1,7 +1,5 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -16,12 +14,12 @@ public class RoleGrant {
     /**
      * 新添加的资源id
      */
-    @NotNull
-    private List<Long> plusResourceIdList;
+    @NotNull(message = "添加资源主键列表不能为null")
+    private Long[] plusResourceIdList;
 
     /**
      * 要删除的资源id
      */
-    @NotNull
-    private List<Long> minusResourceIdList;
+    @NotNull(message = "删除资源主键列表不能为null")
+    private Long[] minusResourceIdList;
 }

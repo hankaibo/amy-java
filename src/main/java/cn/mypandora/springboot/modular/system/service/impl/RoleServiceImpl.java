@@ -16,10 +16,7 @@ import cn.mypandora.springboot.core.shiro.filter.FilterChainManager;
 import cn.mypandora.springboot.modular.system.mapper.RoleMapper;
 import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
-import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
-import cn.mypandora.springboot.modular.system.model.po.Role;
-import cn.mypandora.springboot.modular.system.model.po.RoleResource;
-import cn.mypandora.springboot.modular.system.model.po.UserRole;
+import cn.mypandora.springboot.modular.system.model.po.*;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import tk.mybatis.mapper.entity.Example;
 
@@ -32,10 +29,10 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    private RoleMapper roleMapper;
-    private RoleResourceMapper roleResourceMapper;
-    private UserRoleMapper userRoleMapper;
-    private FilterChainManager filterChainManager;
+    private final RoleMapper roleMapper;
+    private final RoleResourceMapper roleResourceMapper;
+    private final UserRoleMapper userRoleMapper;
+    private final FilterChainManager filterChainManager;
 
     @Autowired
     public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper, UserRoleMapper userRoleMapper,
@@ -50,10 +47,11 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> listRole(Integer status, Long userId) {
         // 获取用户的所有角色并过滤掉子孙角色，以减少后面重复角色的获取。
         List<Role> allRoleList = roleMapper.listByUserIdOrName(userId, null, status);
-
         List<Role> roleList = listTopAncestryRole(allRoleList);
+
         // 自身
         Set<Role> roleSet = new HashSet<>(roleList);
+
         // 所有后代角色
         for (Role role : roleList) {
             Long id = role.getId();
@@ -104,7 +102,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = new Role();
         role.setId(id);
         role.setName(name);
-        Role info = roleMapper.selectByPrimaryKey(role);
+        Role info = roleMapper.selectOne(role);
         if (info == null) {
             throw new EntityNotFoundException(Role.class, "角色不存在。");
         }
@@ -127,12 +125,15 @@ public class RoleServiceImpl implements RoleService {
             throw new BusinessException(Role.class, "角色错误。");
         }
 
-        Role info = getRoleByIdOrName(role.getId(), null, userId);
+        LocalDateTime now = LocalDateTime.now();
+        role.setUpdateTime(now);
 
+        Role info = getRoleByIdOrName(role.getId(), null, userId);
         if (!info.getParentId().equals(role.getParentId())) {
             Role newParentRole = getRoleByIdOrName(role.getParentId(), null, userId);
             Role oldParentRole = getRoleByIdOrName(info.getParentId(), null, userId);
             Role commonAncestry = getCommonAncestry(newParentRole, oldParentRole);
+
             // 避免下面修改了共同祖先部门的右节点值。
             int range = commonAncestry.getRgt() + 1;
 
@@ -156,8 +157,6 @@ public class RoleServiceImpl implements RoleService {
             int level = newParentRole.getLevel() + 1 - info.getLevel();
             roleMapper.selfAndDescendant(updateIdList, amount, level);
 
-            LocalDateTime now = LocalDateTime.now();
-            role.setUpdateTime(now);
             role.setLevel(newParentRole.getLevel() + 1);
         }
         roleMapper.updateByPrimaryKeySelective(role);
@@ -186,19 +185,24 @@ public class RoleServiceImpl implements RoleService {
         // 求出要删除的角色所有子孙角色
         List<Long> idList = listDescendantId(id);
         String ids = StringUtils.join(idList, ',');
+
         // 先求出要删除的角色的所有信息，利用左值与右值计算出要删除的角色数量。
         // 删除角色数=(角色右值-角色左值+1)/2
         Role info = roleMapper.selectByPrimaryKey(id);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
+
         // 更新此角色之后的相关角色左右值
         roleMapper.lftAdd(id, -deleteAmount, null);
         roleMapper.rgtAdd(id, -deleteAmount, null);
+
         // 批量删除角色及子孙角色
         roleMapper.deleteByIds(ids);
+
         // 删除角色关联的资源
         Example roleResource = new Example(RoleResource.class);
         roleResource.createCriteria().andEqualTo("roleId", id);
         roleResourceMapper.deleteByExample(roleResource);
+
         // 删除角色关联的用户
         Example roleUser = new Example(UserRole.class);
         roleUser.createCriteria().andEqualTo("roleId", id);
@@ -208,22 +212,26 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void moveRole(Long sourceId, Long targetId, Long userId) {
-        if (null == targetId || null == sourceId) {
-            throw new EntityNotFoundException(Role.class, "该角色不可以移动。");
+        List<Role> roleList = listRole(null, userId);
+
+        Optional<Role> optionalSource = roleList.stream().filter(it -> it.getId().equals(sourceId)).findFirst();
+        Role sourceInfo = optionalSource.orElse(null);
+
+        Optional<Role> optionalTarget = roleList.stream().filter(it -> it.getId().equals(targetId)).findFirst();
+        Role targetInfo = optionalTarget.orElse(null);
+
+        if (null == sourceInfo || null == targetInfo) {
+            throw new BusinessException(Department.class, "所选角色错误，超出权限范围。");
         }
 
-        List<Role> roleList = listRole(null, userId);
-        List<Long> idList = new ArrayList<>();
-        idList.add(sourceId);
-        idList.add(targetId);
-        List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!allIdList.retainAll(idList)) {
+        List<Long> allIdList =
+            roleList.stream().sorted(Comparator.comparing(Role::getLevel).thenComparing(Role::getLft))
+                .map(BaseEntity::getId).collect(Collectors.toList());
+
+        if (!(sourceInfo.getLevel().equals(targetInfo.getLevel()))
+            || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
             throw new BusinessException(Role.class, "角色错误。");
         }
-
-        // 先取出源角色与目标角色两者的信息
-        Role sourceInfo = roleMapper.selectByPrimaryKey(sourceId);
-        Role targetInfo = roleMapper.selectByPrimaryKey(targetId);
 
         int sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
         int targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
@@ -245,19 +253,20 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void grantRoleResource(Long roleId, List<Long> plusResourceIdList, List<Long> minusResourceIdList,
-        Long userId) {
+    public void grantRoleResource(Long roleId, Long[] plusResourceIds, Long[] minusResourceIds, Long userId) {
         // 删除旧的资源
-        if (minusResourceIdList.size() > 0) {
+        if (minusResourceIds.length > 0) {
             Example roleResource = new Example(RoleResource.class);
-            roleResource.createCriteria().andIn("resourceId", minusResourceIdList).andEqualTo("roleId", roleId);
+            roleResource.createCriteria().andIn("resourceId", Arrays.asList(minusResourceIds)).andEqualTo("roleId",
+                roleId);
             roleResourceMapper.deleteByExample(roleResource);
         }
+
         // 添加新的资源
-        if (plusResourceIdList.size() > 0) {
+        if (plusResourceIds.length > 0) {
             LocalDateTime now = LocalDateTime.now();
             List<RoleResource> roleResourceList = new ArrayList<>();
-            for (Long resourceId : plusResourceIdList) {
+            for (Long resourceId : plusResourceIds) {
                 RoleResource roleResource = new RoleResource();
                 roleResource.setRoleId(roleId);
                 roleResource.setResourceId(resourceId);
