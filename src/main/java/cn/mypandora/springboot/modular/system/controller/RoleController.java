@@ -228,8 +228,8 @@ public class RoleController {
     @PostMapping("/{id}/resources")
     public void grantRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
         @Validated @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) RoleGrant roleGrant, Long userId) {
-        Long[] plusResourceIds = roleGrant.getPlusResourceIdList();
-        Long[] minusResourceIds = roleGrant.getMinusResourceIdList();
+        Long[] plusResourceIds = roleGrant.getPlusResourceIds();
+        Long[] minusResourceIds = roleGrant.getMinusResourceIds();
         roleService.grantRoleResource(id, plusResourceIds, minusResourceIds, userId);
     }
 

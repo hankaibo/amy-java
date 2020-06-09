@@ -15,11 +15,11 @@ public class RoleGrant {
      * 新添加的资源id
      */
     @NotNull(message = "添加资源主键列表不能为null")
-    private Long[] plusResourceIdList;
+    private Long[] plusResourceIds;
 
     /**
      * 要删除的资源id
      */
     @NotNull(message = "删除资源主键列表不能为null")
-    private Long[] minusResourceIdList;
+    private Long[] minusResourceIds;
 }
