@@ -1,7 +1,8 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,11 +11,13 @@ import tk.mybatis.mapper.code.Style;
 
 /**
  * BaseTree
+ * <p>
+ * 左右值树(预排序遍历树)的基类。
+ * </p>
  *
  * @author hankaibo
  * @date 2019/7/17
  * @see <a href="https://www.iteye.com/topic/602979">hierarchical-data</a>
- * @see <a href="https://www.jianshu.com/p/38179b0c816f">hierarchical-data</a>
  */
 @Data
 @NameStyle(Style.camelhumpAndLowercase)
@@ -26,28 +29,26 @@ public abstract class BaseTree extends BaseEntity {
      * 节点名称
      */
     @ApiModelProperty(value = "名称")
-    @NotBlank(message = "名称不能为空")
+    @NotNull(message = "名称不能为空")
+    @Size(min = 1, max = 255)
     protected String name;
 
     /**
      * 节点左值
      */
     @ApiModelProperty(hidden = true)
-    @Positive(message = "节点必须为数值")
     protected Integer lft;
 
     /**
      * 节点右值
      */
     @ApiModelProperty(hidden = true)
-    @Positive(message = "节点必须为数值")
     protected Integer rgt;
 
     /**
      * 层级
      */
     @ApiModelProperty(hidden = true)
-    @Positive(message = "层级必须为数值")
     protected Integer level;
 
     /**
@@ -61,7 +62,6 @@ public abstract class BaseTree extends BaseEntity {
      * 可更新（1可更新，0不可更新）
      */
     @ApiModelProperty(hidden = true)
-    @Positive(message = "是否可更新必须为数值")
     protected Integer isUpdate;
 
 }
