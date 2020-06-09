@@ -1,22 +1,13 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +24,6 @@ import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * UserController
@@ -41,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author hankaibo
  * @date 2019/6/14
  */
-@Slf4j
 @Validated
 @Api(tags = "用户管理")
 @RestController
@@ -50,9 +39,6 @@ public class UserController {
 
     private final UserService userService;
     private final RoleService roleService;
-
-    @Value("${file.path}")
-    private String dirPath;
 
     @Autowired
     public UserController(UserService userService, RoleService roleService) {
@@ -118,27 +104,8 @@ public class UserController {
 
     @ApiOperation(value = "图片上传")
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file) throws IOException {
-        // 获取项目路径
-        Resource resource = new ClassPathResource("");
-        String projectPath = resource.getFile().getAbsolutePath() + "\\static\\img";
-        System.out.println(projectPath);
-
-        String originalFileName = file.getOriginalFilename();
-        String fileName = "";
-        String fileSuffix = ".jpg";
-        Path path;
-        try {
-            fileName = UUID.randomUUID().toString();
-            assert originalFileName != null;
-            fileSuffix = originalFileName.substring(originalFileName.lastIndexOf("."));
-            byte[] bytes = file.getBytes();
-            path = Paths.get(dirPath + fileName + fileSuffix);
-            Files.write(path, bytes);
-        } catch (IOException e) {
-            log.error("用户头像上传失败。", e);
-        }
-        return "/images/" + fileName + fileSuffix;
+    public String upload(@RequestParam("file") MultipartFile file) {
+        return userService.saveFile(file);
     }
 
     /**
@@ -165,9 +132,8 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUserById(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id) {
         User user = userService.getUserById(id);
-        user.setLastLoginTime(null);
-        user.setCreateTime(null);
-        user.setUpdateTime(null);
+        user.setPassword(null);
+        user.setSalt(null);
         return user;
     }
 
@@ -264,9 +230,9 @@ public class UserController {
     @DeleteMapping
     public void deleteBatchUser(@Validated({BatchGroup.class}) @RequestBody @ApiParam(value = "用户与部门对象",
         required = true) UserDelete userDelete) {
-        List<Long> idList = userDelete.getUserIdList();
+        Long[] ids = userDelete.getUserIds();
         Long departmentId = userDelete.getDepartmentId();
-        userService.deleteBatchUser(idList, departmentId);
+        userService.deleteBatchUser(ids, departmentId);
     }
 
     /**
@@ -311,7 +277,7 @@ public class UserController {
     @ApiOperation(value = "赋予用户角色。")
     @PostMapping("/{id}/roles")
     public void grantUserRole(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @Valid @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) UserGrant userGrant) {
+        @Validated @RequestBody @ApiParam(value = "增加角色与删除角色对象", required = true) UserGrant userGrant) {
         Long[] plusRoleIds = userGrant.getPlusRoleIds();
         Long[] minusRoleIds = userGrant.getMinusRoleIds();
         userService.grantUserRole(id, plusRoleIds, minusRoleIds);
