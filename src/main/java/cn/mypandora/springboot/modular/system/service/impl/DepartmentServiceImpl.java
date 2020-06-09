@@ -98,7 +98,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 获取部门范围防止用户查看自身权限外的部门信息
         List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(id))) {
-            throw new EntityNotFoundException(Department.class, "部门不存在。");
+            throw new EntityNotFoundException(Department.class, "无法查看该部门。");
         }
 
         // 查询
@@ -234,6 +234,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 删除部门数=(部门右值-部门左值+1)/2
         Department info = departmentMapper.selectByPrimaryKey(id);
         int deleteAmount = info.getRgt() - info.getLft() + 1;
+
         // 更新此部门之后的相关部门左右值
         departmentMapper.lftAdd(id, -deleteAmount, null);
         departmentMapper.rgtAdd(id, -deleteAmount, null);
@@ -251,6 +252,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Optional<Department> optionalSource =
             departmentList.stream().filter(it -> it.getId().equals(sourceId)).findFirst();
         Department sourceInfo = optionalSource.orElse(null);;
+
         Optional<Department> optionalTarget =
             departmentList.stream().filter(it -> it.getId().equals(targetId)).findFirst();
         Department targetInfo = optionalTarget.orElse(null);

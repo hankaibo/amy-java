@@ -50,8 +50,8 @@ public class DepartmentController {
      */
     @ApiOperation(value = "获取部门树")
     @GetMapping
-    public List<DepartmentTree> listDepartmentTree(@RequestParam(value = "status",
-        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") @NullOrNumber Integer status, Long userId) {
+    public List<DepartmentTree> listDepartmentTree(@NullOrNumber @RequestParam(value = "status",
+        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, Long userId) {
         List<Department> departmentList = departmentService.listDepartment(status, userId);
         return TreeUtil.department2Tree(departmentList);
     }

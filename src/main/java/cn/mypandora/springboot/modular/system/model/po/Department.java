@@ -31,15 +31,15 @@ public class Department extends BaseTree {
     /**
      * 状态
      */
-    @ApiModelProperty(value = "状态")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "状态值不可为空")
-    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "状态可选值为0或者1")
+    @ApiModelProperty(value = "部门状态")
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "部门状态值不可为空")
+    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "部门状态可选值为0或者1")
     private Integer status;
 
     /**
      * 描述
      */
-    @ApiModelProperty(value = "描述")
+    @ApiModelProperty(value = "部门描述")
     @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "部门描述最大255字符")
     private String description;
 
