@@ -2,7 +2,6 @@ package cn.mypandora.springboot.modular.system.controller;
 
 import java.util.List;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.util.TreeUtil;
+import cn.mypandora.springboot.core.validate.AddGroup;
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
@@ -86,7 +87,8 @@ public class DepartmentController {
      */
     @ApiOperation(value = "新建部门")
     @PostMapping
-    public void addDepartment(@Valid @RequestBody @ApiParam(value = "部门数据", required = true) Department department,
+    public void addDepartment(
+        @Validated({AddGroup.class}) @RequestBody @ApiParam(value = "部门数据", required = true) Department department,
         Long userId) {
         departmentService.addDepartment(department, userId);
     }
@@ -104,7 +106,11 @@ public class DepartmentController {
     @GetMapping("/{id}")
     public Department getDepartmentById(
         @Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id, Long userId) {
-        return departmentService.getDepartmentById(id, userId);
+        Department department = departmentService.getDepartmentById(id, userId);
+        department.setRgt(null);
+        department.setLft(null);
+        department.setLevel(null);
+        return department;
     }
 
     /**
@@ -117,7 +123,8 @@ public class DepartmentController {
      */
     @ApiOperation(value = "更新部门")
     @PutMapping("/{id}")
-    public void updateDepartment(@Valid @RequestBody @ApiParam(value = "部门数据", required = true) Department department,
+    public void updateDepartment(
+        @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "部门数据", required = true) Department department,
         Long userId) {
         departmentService.updateDepartment(department, userId);
     }

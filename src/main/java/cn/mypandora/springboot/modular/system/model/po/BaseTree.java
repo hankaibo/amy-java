@@ -1,9 +1,12 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
+import cn.mypandora.springboot.core.validate.AddGroup;
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
@@ -29,8 +32,8 @@ public abstract class BaseTree extends BaseEntity {
      * 节点名称
      */
     @ApiModelProperty(value = "名称")
-    @NotNull(message = "名称不能为空")
-    @Size(min = 1, max = 255)
+    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "名称不能为空")
+    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "名称长度请在1至255字符之间")
     protected String name;
 
     /**
@@ -55,7 +58,8 @@ public abstract class BaseTree extends BaseEntity {
      * 父节点
      */
     @ApiModelProperty(value = "父节点id")
-    @Positive
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "父节点不能为空")
+    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "父节点必须为正整数")
     protected Long parentId;
 
     /**

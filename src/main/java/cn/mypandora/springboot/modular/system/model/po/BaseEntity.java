@@ -4,13 +4,15 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.Id;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import cn.mypandora.springboot.core.util.CustomLocalDateTimeDeserializer;
 import cn.mypandora.springboot.core.util.CustomLocalDateTimeSerializer;
+import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,7 +41,8 @@ public abstract class BaseEntity implements Serializable {
      * 主键
      */
     @ApiModelProperty(value = "主键id")
-    @PositiveOrZero(groups = {UpdateGroup.class}, message = "主键不能为空")
+    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "主键必须为正整数")
+    @NotNull(groups = {UpdateGroup.class}, message = "主键不能为空")
     @KeySql(dialect = IdentityDialect.MYSQL)
     @Id
     protected Long id;
