@@ -4,6 +4,7 @@
 ## 文件上传路径
 upload:
   path: /home/ubuntu/tmp/upload/images/
+  remote-url: http://58.87.121.239:9080/
 ## 数据库
 spring:
   datasource:
@@ -27,13 +28,20 @@ spring:
     # port:
     password: ENC(vvYw/azP/VIWPNd0Pr8vGzFmpjDORgZk/eSDTuDGni5NVv2UrZI52g==)
     timeout: 3000
+    lettuce:
+      shutdown-timeout: 100ms
+      pool:
+        max-active: 8
+        max-wait: 3ms
+        max-idle: 8
+        min-idle: 0
   # servlet
   servlet:
     multipart:
-      max-file-size: 2M
+      max-file-size: 2MB
   # resources
   resources:
-    static-locations: file:${upload.path}
+    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, file:${upload.path}
   # mvc
   mvc:
     static-path-pattern: /**
