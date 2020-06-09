@@ -47,12 +47,12 @@ myspringboot
 
 [x] | 技术名 | 版本  
  :---: | :--- | :---  
-[x] | SpringBoot | 2.1.9 
-[x] | Redis(spring-boot-starter-data-redis) | 2.1.9
+[x] | SpringBoot | 2.2.6 
+[x] | Redis(spring-boot-starter-data-redis) | 2.2.6
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.1.1  
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
 [x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.13 
-[x] | Shiro | 1.4.2 
+[x] | Shiro | 1.5.3 
 [x] | jjwt | 0.10.7
 [x] | jBCrypt | 0.4.1
 [x] | jasypt-spring-boot-starter | 2.1.2

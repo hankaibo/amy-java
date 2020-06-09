@@ -35,9 +35,9 @@
         <mapper-spring-boot-starter.version>2.1.5</mapper-spring-boot-starter.version>
         <pagehelper-spring-boot-starter.version>1.2.13</pagehelper-spring-boot-starter.version>
         <!-- shiro,token -->
-        <shiro-core.version>1.4.2</shiro-core.version>
-        <shiro-web.version>1.4.2</shiro-web.version>
-        <shiro-spring.version>1.4.2</shiro-spring.version>
+        <shiro-core.version>1.5.3</shiro-core.version>
+        <shiro-web.version>1.5.3</shiro-web.version>
+        <shiro-spring.version>1.5.3</shiro-spring.version>
         <jbcrypt.version>0.4.1</jbcrypt.version>
         <jjwt-api.version>0.10.7</jjwt-api.version>
         <jjwt-impl.version>0.10.7</jjwt-impl.version>
