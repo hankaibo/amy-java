@@ -93,9 +93,9 @@ public interface DepartmentService {
      * 平移部门。
      *
      * @param sourceId
-     *            源id
+     *            源部门id
      * @param targetId
-     *            目标id
+     *            目标部门id
      * @param userId
      *            用户id
      */

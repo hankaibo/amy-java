@@ -104,13 +104,7 @@ public class DepartmentController {
     @GetMapping("/{id}")
     public Department getDepartmentById(
         @Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id, Long userId) {
-        Department department = departmentService.getDepartmentById(id, userId);
-        department.setRgt(null);
-        department.setLft(null);
-        department.setLevel(null);
-        department.setCreateTime(null);
-        department.setUpdateTime(null);
-        return department;
+        return departmentService.getDepartmentById(id, userId);
     }
 
     /**

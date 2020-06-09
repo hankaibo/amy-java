@@ -1,14 +1,14 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Range;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -20,8 +20,6 @@ import tk.mybatis.mapper.code.Style;
  */
 @ApiModel("部门实体")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "sys_department")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Department extends BaseTree {
@@ -32,6 +30,7 @@ public class Department extends BaseTree {
      * 状态
      */
     @ApiModelProperty(value = "状态")
+    @NotNull
     @Range(min = 0, max = 1)
     private Integer status;
 
@@ -39,6 +38,7 @@ public class Department extends BaseTree {
      * 描述
      */
     @ApiModelProperty(value = "描述")
+    @Size(max = 255)
     private String description;
 
 }

@@ -27,8 +27,8 @@ import cn.mypandora.springboot.modular.system.service.DepartmentService;
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private DepartmentMapper departmentMapper;
-    private DepartmentUserMapper departmentUserMapper;
+    private final DepartmentMapper departmentMapper;
+    private final DepartmentUserMapper departmentUserMapper;
 
     @Autowired
     public DepartmentServiceImpl(DepartmentMapper departmentMapper, DepartmentUserMapper departmentUserMapper) {
@@ -40,16 +40,18 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<Department> listDepartment(Integer status, Long userId) {
         // 获取用户的所有部门并过滤掉子孙部门，以减少后面重复部门的获取。
         List<Department> allDepartmentList = departmentMapper.listByUserId(userId, status);
-
         List<Department> departmentList = listTopAncestryDepartment(allDepartmentList);
+
         // 自身
         Set<Department> departmentSet = new HashSet<>(departmentList);
+
         // 所有后代部门(用户多部门情况)
         for (Department department : departmentList) {
             Long id = department.getId();
             List<Department> departmentDescendantList = departmentMapper.listDescendants(id, status);
             departmentSet.addAll(departmentDescendantList);
         }
+
         return departmentSet.stream().sorted(Comparator.comparing(Department::getLft)).collect(Collectors.toList());
     }
 
@@ -57,6 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<Department> listChildrenDepartment(Long id, Integer status, Long userId) {
         // 获取当前用户的部门范围
         List<Department> allDepartmentList = listDepartment(null, userId);
+
         // 查询子部门并过滤出合适数据
         List<Department> departmentList = departmentMapper.listChildren(id, status);
         return departmentList.stream().filter(allDepartmentList::contains).collect(Collectors.toList());
@@ -65,12 +68,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addDepartment(Department department, Long userId) {
-        // 获取父部门范围并判断(只能添加到同级及下级部门)
+        // 获取父部门范围并判断
         List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
             throw new BusinessException(Department.class, "父级部门选择错误。");
         }
-        // 添加
+
+        // 添加到父部门末尾
         Long parentId = department.getParentId();
         Department parentDepartment = getDepartmentById(parentId, userId);
         LocalDateTime now = LocalDateTime.now();
@@ -81,11 +85,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setIsUpdate(1);
 
         int amount = 2;
-        // 将树形结构中所有大于父节点右值的左节点+2
+        // 将树形结构中所有大于父部门右值的左部门+2
         departmentMapper.lftAdd(parentId, amount, null);
-        // 将树形结构中所有大于父节点右值的右节点+2
+        // 将树形结构中所有大于父部门右值的右部门+2
         departmentMapper.rgtAdd(parentId, amount, null);
-        // 插入新节点
+        // 插入新部门
         departmentMapper.insert(department);
     }
 
@@ -96,11 +100,18 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (departmentList.stream().noneMatch(item -> item.getId().equals(id))) {
             throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
+
         // 查询
         Department info = departmentMapper.selectByPrimaryKey(id);
         if (info == null) {
             throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
+
+        // 置空
+        info.setRgt(null);
+        info.setLft(null);
+        info.setLevel(null);
+
         return info;
     }
 
@@ -122,64 +133,79 @@ public class DepartmentServiceImpl implements DepartmentService {
                 throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
             }
         }
-        // 修改部门时，必须保证父部门存在，并只能更改自己权限范围内的部门
+
+        // 修改部门时，必须保证父部门存在，并只能更改为自己权限范围内的部门
         List<Department> departmentList = listDepartment(null, userId);
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getParentId()))) {
             throw new BusinessException(Department.class, "父级部门错误。");
         }
+
         // 修改部门时，不可以指定自己的下级为父部门。
         if (!isCanUpdateParent(department)) {
             throw new BusinessException(Department.class, "不可以选择子部门作为自己的父级。");
         }
+
         // 修改部门时，不可以修改自己权限之外的部门。
         if (departmentList.stream().noneMatch(item -> item.getId().equals(department.getId()))) {
             throw new BusinessException(Department.class, "部门错误。");
         }
 
-        Department info = getDepartmentById(department.getId(), userId);
+        // 修改部门
+        LocalDateTime now = LocalDateTime.now();
+        department.setUpdateTime(now);
+
         // 如果父级部门相等，则直接修改其它属性
+        Department info = getDepartmentById(department.getId(), userId);
         if (!info.getParentId().equals(department.getParentId())) {
             // 求出新旧两个父部门的最近共同祖先部门，减小修改范围。
             Department newParentDepartment = getDepartmentById(department.getParentId(), userId);
             Department oldParentDepartment = getDepartmentById(info.getParentId(), userId);
             Department commonAncestry = getCommonAncestry(newParentDepartment, oldParentDepartment);
-            // 避免下面修改了共同祖先部门的右节点值。
+
+            // 避免下面修改了共同祖先部门的右部门值。
             int range = commonAncestry.getRgt() + 1;
+
             // 要修改的部门及子孙部门共多少个
             List<Long> updateIdList = listDescendantId(department.getId());
             int departmentNum = updateIdList.size();
+
             // 首先锁定被修改部门及子孙部门，保证左右值不会被下面操作修改。
             departmentMapper.locking(updateIdList, 0);
-            // 先将修改部门摘出来，它之后的部门节点值修改
+
+            // 先将修改部门摘出来，它之后的部门部门值修改
             Long oldId = info.getId();
             int oldAmount = departmentNum * -2;
             departmentMapper.lftAdd(oldId, oldAmount, range);
             departmentMapper.rgtAdd(oldId, oldAmount, range);
+
             // 将修改部门插入到新父部门之后左右值修改
             Long newParentId = newParentDepartment.getId();
             int newAmount = departmentNum * 2;
             departmentMapper.lftAdd(newParentId, newAmount, range);
             departmentMapper.rgtAdd(newParentId, newAmount, range);
+
             // 被修改部门及子孙部门左右值修改
             departmentMapper.locking(updateIdList, 1);
             int amount = getDepartmentById(department.getParentId(), userId).getRgt() - info.getRgt() - 1;
             int level = newParentDepartment.getLevel() + 1 - info.getLevel();
             departmentMapper.selfAndDescendant(updateIdList, amount, level);
+
             // 修改本身
-            LocalDateTime now = LocalDateTime.now();
-            department.setUpdateTime(now);
             department.setLevel(newParentDepartment.getLevel() + 1);
         }
+
         departmentMapper.updateByPrimaryKeySelective(department);
     }
 
     @Override
     public void enableDepartment(Long id, Integer status, Long userId) {
+        // 本部门及子孙部门是否有用户判断
         int count = departmentUserMapper.countUserByDepartmentId(id);
         if (count > 0) {
             throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以禁用。");
         }
 
+        // 修改本部门及子孙部门状态
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -192,6 +218,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteDepartment(Long id, Long userId) {
+        // 本部门及子孙部门是否有用户判断
         int count = departmentUserMapper.countUserByDepartmentId(id);
         if (count > 0) {
             throw new BusinessException(Department.class, "该部门或子部门有关联用户，不可以删除。");
@@ -207,6 +234,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 求出要删除的部门所有子孙部门
         List<Long> idList = listDescendantId(id);
         String ids = StringUtils.join(idList, ',');
+
         // 先求出要删除的部门的所有信息，利用左值与右值计算出要删除的部门数量。
         // 删除部门数=(部门右值-部门左值+1)/2
         Department info = departmentMapper.selectByPrimaryKey(id);
@@ -214,6 +242,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 更新此部门之后的相关部门左右值
         departmentMapper.lftAdd(id, -deleteAmount, null);
         departmentMapper.rgtAdd(id, -deleteAmount, null);
+
         // 批量删除部门及子孙部门
         departmentMapper.deleteByIds(ids);
     }
@@ -221,6 +250,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void moveDepartment(Long sourceId, Long targetId, Long userId) {
+        // 部门范围判断
         List<Department> departmentList = listDepartment(null, userId);
         List<Long> idList = new ArrayList<>();
         idList.add(sourceId);
