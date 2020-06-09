@@ -107,11 +107,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new EntityNotFoundException(Department.class, "部门不存在。");
         }
 
-        // 置空
-        info.setRgt(null);
-        info.setLft(null);
-        info.setLevel(null);
-
         return info;
     }
 
@@ -252,17 +247,26 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void moveDepartment(Long sourceId, Long targetId, Long userId) {
         // 部门范围判断
         List<Department> departmentList = listDepartment(null, userId);
-        List<Long> idList = new ArrayList<>();
-        idList.add(sourceId);
-        idList.add(targetId);
-        List<Long> allIdList = departmentList.stream().map(BaseEntity::getId).collect(Collectors.toList());
-        if (!allIdList.retainAll(idList)) {
-            throw new BusinessException(Department.class, "部门错误。");
+
+        Optional<Department> optionalSource =
+            departmentList.stream().filter(it -> it.getId().equals(sourceId)).findFirst();
+        Department sourceInfo = optionalSource.orElse(null);;
+        Optional<Department> optionalTarget =
+            departmentList.stream().filter(it -> it.getId().equals(targetId)).findFirst();
+        Department targetInfo = optionalTarget.orElse(null);
+
+        if (null == sourceInfo || null == targetInfo) {
+            throw new BusinessException(Department.class, "所选部门错误，超出权限范围。");
         }
 
-        // 先取出源部门与目标部门两者的信息
-        Department sourceInfo = departmentMapper.selectByPrimaryKey(sourceId);
-        Department targetInfo = departmentMapper.selectByPrimaryKey(targetId);
+        List<Long> allIdList =
+            departmentList.stream().sorted(Comparator.comparing(Department::getLevel).thenComparing(Department::getLft))
+                .map(BaseEntity::getId).collect(Collectors.toList());
+        // 同层级、相邻
+        if (!(sourceInfo.getLevel().equals(targetInfo.getLevel()))
+            || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
+            throw new BusinessException(Department.class, "所选部门错误，不是同级相邻部门。");
+        }
 
         int sourceAmount = sourceInfo.getRgt() - sourceInfo.getLft() + 1;
         int targetAmount = targetInfo.getRgt() - targetInfo.getLft() + 1;
