@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
-import java.util.List;
-
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -19,18 +18,19 @@ public class UserDelete {
     /**
      * 用户id
      */
-    @Positive(groups = {SingleGroup.class}, message = "主键不能为空")
+    @NotNull(groups = {SingleGroup.class}, message = "用户主键不能为空")
+    @Positive(groups = {SingleGroup.class}, message = "用户主键必须为正整数")
     private Long userId;
 
     /**
      * 用户id数组
      */
-    @NotNull(groups = {BatchGroup.class}, message = "主键不能为空")
-    private List<Long> userIdList;
+    @NotEmpty(groups = {BatchGroup.class}, message = "用户主键列表不能为空")
+    private Long[] userIds;
 
     /**
      * 部门id
      */
-    @Positive
+    @Positive(groups = {SingleGroup.class, BatchGroup.class}, message = "部门不能为空")
     private Long departmentId;
 }

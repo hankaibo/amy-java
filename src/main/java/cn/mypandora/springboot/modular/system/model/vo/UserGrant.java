@@ -14,12 +14,12 @@ public class UserGrant {
     /**
      * 新添加的角色id
      */
-    @NotNull
+    @NotNull(message = "添加角色主键列表不能为null")
     private Long[] plusRoleIds;
 
     /**
      * 要删除的角色id
      */
-    @NotNull
+    @NotNull(message = "删除角色主键列表不能为null")
     private Long[] minusRoleIds;
 }

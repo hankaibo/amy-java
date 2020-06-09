@@ -3,6 +3,7 @@ package cn.mypandora.springboot.modular.system.model.vo;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import lombok.Data;
 
@@ -27,13 +28,13 @@ public class UserUpdate {
     /**
      * 用户要新添加的部门
      */
-    @NotNull
+    @NotNull(groups = {UpdateGroup.class}, message = "添加的新部门不可为null")
     private Long[] plusDepartmentIds;
 
     /**
      * 用户要删除的旧部门
      */
-    @NotNull
+    @NotNull(groups = {UpdateGroup.class}, message = "删除的旧部门不可为null")
     private Long[] minusDepartmentIds;
 
 }

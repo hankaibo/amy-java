@@ -1,6 +1,6 @@
 package cn.mypandora.springboot.modular.system.service;
 
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.User;
@@ -27,6 +27,15 @@ public interface UserService {
      * @return 用户列表
      */
     PageInfo<User> pageUser(int pageNum, int pageSize, User user, Long departmentId);
+
+    /**
+     * 保存上传的头像图片。
+     *
+     * @param file
+     *            头像图片
+     * @return 新文件名称
+     */
+    String saveFile(MultipartFile file);
 
     /**
      * 添加用户。
@@ -99,6 +108,8 @@ public interface UserService {
      *
      * @param id
      *            用户id
+     * @param departmentId
+     *            部门id
      */
     void deleteUser(Long id, Long departmentId);
 
@@ -107,8 +118,10 @@ public interface UserService {
      *
      * @param ids
      *            [1,2,3,4]
+     * @param departmentId
+     *            部门id
      */
-    void deleteBatchUser(List<Long> idList, Long departmentId);
+    void deleteBatchUser(Long[] ids, Long departmentId);
 
     /**
      * 赋予用户某角色。

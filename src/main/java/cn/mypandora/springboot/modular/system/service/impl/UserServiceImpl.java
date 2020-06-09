@@ -4,18 +4,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageHelper;
 
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.util.FileUtil;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
@@ -33,6 +37,12 @@ import tk.mybatis.mapper.entity.Example;
  */
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Value("${upload.path}")
+    private String dirPath;
+
+    @Value("${upload.remote-url}")
+    private String remoteUrl;
 
     private UserMapper userMapper;
     private UserRoleMapper userRoleMapper;
@@ -55,17 +65,25 @@ public class UserServiceImpl implements UserService {
             item.setPassword(null);
             item.setSalt(null);
         });
+
         return new PageInfo<>(userList);
+    }
+
+    @Override
+    public String saveFile(MultipartFile file) {
+        return FileUtil.saveFile(file, dirPath, remoteUrl);
     }
 
     @Override
     public User getUserByName(String username) {
         Example user = new Example(User.class);
         user.createCriteria().andEqualTo("username", username);
+
         User info = userMapper.selectOneByExample(user);
         if (info == null) {
             throw new EntityNotFoundException(User.class, "用户不存在。");
         }
+
         return info;
     }
 
@@ -76,9 +94,11 @@ public class UserServiceImpl implements UserService {
         if (info == null) {
             throw new EntityNotFoundException(User.class, "用户不存在。");
         }
+
         // 避免密码被返回给页面
         info.setSalt(null);
         info.setPassword(null);
+
         // 查询用户所在部门
         DepartmentUser departmentUser = new DepartmentUser();
         departmentUser.setUserId(id);
@@ -88,6 +108,10 @@ public class UserServiceImpl implements UserService {
             departmentIdList.add(du.getDepartmentId());
         }
         info.setDepartmentIdList(departmentIdList);
+
+        // 转换用户头像地址
+        back2FrontPath(info);
+
         return info;
     }
 
@@ -96,10 +120,15 @@ public class UserServiceImpl implements UserService {
     public void addUser(User user) {
         LocalDateTime now = LocalDateTime.now();
         user.setCreateTime(now);
+        user.setLastLoginTime(null);
         passwordHelper(user);
+
+        // 转换用户头像地址
+        front2BackPath(user);
 
         // 添加用户
         userMapper.insert(user);
+
         // 添加用户部门关联
         if (user.getDepartmentIdList().size() > 0) {
             List<DepartmentUser> departmentUserList = new ArrayList<>();
@@ -120,6 +149,10 @@ public class UserServiceImpl implements UserService {
         LocalDateTime now = LocalDateTime.now();
         user.setUpdateTime(now);
 
+        // 转换用户头像地址
+        front2BackPath(user);
+
+        // 修改用户
         userMapper.updateByPrimaryKeySelective(user);
 
         // 添加用户的新部门关联
@@ -151,6 +184,7 @@ public class UserServiceImpl implements UserService {
         user.setId(id);
         user.setStatus(status);
         user.setUpdateTime(now);
+
         userMapper.updateByPrimaryKeySelective(user);
     }
 
@@ -162,6 +196,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(password);
         user.setUpdateTime(now);
         passwordHelper(user);
+
         userMapper.updateByPrimaryKeySelective(user);
     }
 
@@ -178,18 +213,20 @@ public class UserServiceImpl implements UserService {
         user.setPassword(newPassword);
         user.setUpdateTime(now);
         passwordHelper(user);
+
         userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteUser(Long id, Long departmentId) {
-        // 单一用户多部门情况下，不能直接删除用户对象，而是删除与该用户相关联的部门
+        // 用户多部门情况下，不能直接删除用户对象，而是删除与该用户相关联的部门
         // 部门不为空，则删除用户与部门关系
         DepartmentUser departmentUser = new DepartmentUser();
         departmentUser.setUserId(id);
         departmentUser.setDepartmentId(departmentId);
         departmentUserMapper.delete(departmentUser);
+
         // 部门为空，则删除用户及用户的所有角色
         if (departmentId == null) {
             userMapper.deleteByPrimaryKey(id);
@@ -202,17 +239,19 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBatchUser(List<Long> idList, Long departmentId) {
+    public void deleteBatchUser(Long[] ids, Long departmentId) {
+        Set<Long> idSet = Set.of(ids);
         // 部门不为空，则删除用户与部门关系
         Example batchDepartmentUser = new Example(DepartmentUser.class);
-        batchDepartmentUser.createCriteria().andIn("userId", idList).andEqualTo("departmentId", departmentId);
+        batchDepartmentUser.createCriteria().andIn("userId", idSet).andEqualTo("departmentId", departmentId);
         departmentUserMapper.deleteByExample(batchDepartmentUser);
+
         // 部门为空，则删除用户及用户的所有角色
         if (departmentId == null) {
-            userMapper.deleteByIds(StringUtils.join(idList, ','));
+            userMapper.deleteByIds(StringUtils.join(idSet, ','));
             // 删除用户所有角色（批量）。
             Example batchUserRole = new Example(UserRole.class);
-            batchUserRole.createCriteria().andIn("userId", idList);
+            batchUserRole.createCriteria().andIn("userId", idSet);
             userRoleMapper.deleteByExample(batchUserRole);
         }
     }
@@ -226,6 +265,7 @@ public class UserServiceImpl implements UserService {
             userRole.createCriteria().andIn("roleId", Arrays.asList(minusRoleIds)).andEqualTo("userId", userId);
             userRoleMapper.deleteByExample(userRole);
         }
+
         // 添加新的角色
         if (plusRoleIds.length > 0) {
             LocalDateTime now = LocalDateTime.now();
@@ -251,11 +291,40 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isEmpty(user.getPassword())) {
             return;
         }
+
         String salt = BCrypt.gensalt();
         user.setSalt(salt);
         String originPassword = user.getPassword();
         if (StringUtils.isNotBlank(originPassword)) {
             user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
+        }
+    }
+
+    /**
+     * 将前台传递来的路径转为后台数据库路径
+     *
+     * @param user
+     *            用户对象
+     */
+    private void front2BackPath(User user) {
+        converterPath(user, dirPath);
+    }
+
+    /**
+     * 将后台传递来的路径转为后前数据库路径
+     *
+     * @param user
+     *            用户对象
+     */
+    private void back2FrontPath(User user) {
+        converterPath(user, remoteUrl);
+    }
+
+    private void converterPath(User user, String prefix) {
+        if (StringUtils.isNotBlank(user.getAvatar())) {
+            String filename = user.getAvatar().substring(user.getAvatar().lastIndexOf('/') + 1);
+            String path = prefix + filename;
+            user.setAvatar(path);
         }
     }
 
