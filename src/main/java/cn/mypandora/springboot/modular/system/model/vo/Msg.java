@@ -63,7 +63,7 @@ public class Msg {
      */
     @ApiModelProperty(value = "站内信标题")
     @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "站内信标题不能为空")
-    @Range(max = 128, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信标题最大128个字符")
+    @Range(min = 1, max = 128, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信标题最大128个字符")
     private String title;
 
     /**
@@ -101,7 +101,6 @@ public class Msg {
      * 发布时间
      */
     @ApiModelProperty(value = "发布时间")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "站内信发布时间不可为空")
     @Future(groups = {AddGroup.class, UpdateGroup.class}, message = "站内信发岸上时间不能是过去时间")
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
@@ -112,5 +111,21 @@ public class Msg {
      */
     @ApiModelProperty(value = "是否已读")
     private Boolean isRead;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime updateTime;
 
 }
