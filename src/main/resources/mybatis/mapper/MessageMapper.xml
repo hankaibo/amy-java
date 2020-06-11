@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.MessageMapper">
+
+    <resultMap id="msgMap" type="cn.mypandora.springboot.modular.system.model.vo.Msg">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="send_id" jdbcType="BIGINT" property="sendId"/>
+        <result column="send_name" jdbcType="VARCHAR" property="sendName"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_publish" jdbcType="INTEGER" property="isPublish"/>
+        <result column="publish_time" jdbcType="TIMESTAMP" property="publishTime"/>
+        <result column="is_read" jdbcType="INTEGER" property="isRead"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <collection property="receiveIds" ofType="long">
+            <constructor>
+                <arg column="receive_id"/>
+            </constructor>
+        </collection>
+        <collection property="receiveNames" ofType="string">
+            <constructor>
+                <arg column="receive_name"/>
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <select id="listMsg" resultMap="msgMap">
+        SELECT t.id,
+        su.id as send_id,
+        su.username as send_name,
+        ru.id as receive_id,
+        ru.username as receive_name,
+        t.title,
+        t.content,
+        t.type,
+        m.status,
+        m.is_publish,
+        m.publish_time,
+        m.is_read,
+        t.create_time,
+        t.update_time
+        FROM sys_message_content t
+        JOIN sys_message m on t.id = m.content_id
+        JOIN sys_user su on m.send_id = su.id
+        JOIN sys_user ru on m.receive_id = ru.id
+        WHERE 1 = 1
+        AND m.send_id = #{sendId}
+        <if test="type!=null">
+            AND t.type = #{type}
+        </if>
+
+    </select>
+
+    <select id="getMessageById" resultMap="msgMap">
+        SELECT t.id,
+               su.id       as send_id,
+               su.username as send_name,
+               ru.id       as receive_id,
+               ru.username as receive_name,
+               t.title,
+               t.content,
+               t.type,
+               m.status,
+               m.is_publish,
+               m.publish_time,
+               m.is_read,
+               t.create_time,
+               t.update_time
+        FROM sys_message_content t
+                 JOIN sys_message m on t.id = m.content_id
+                 JOIN sys_user su on m.send_id = su.id
+                 JOIN sys_user ru on m.receive_id = ru.id
+        WHERE 1 = 1
+          AND t.id = #{id}
+          AND m.send_id = #{userId}
+    </select>
+
+</mapper>
