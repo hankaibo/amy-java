@@ -28,4 +28,5 @@ public interface DictionaryMapper extends MyBaseMapper<Dictionary> {
      *            id数组
      */
     void deleteDictionaryByListId(@Param("ids") long[] ids);
+
 }

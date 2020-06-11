@@ -68,6 +68,10 @@ public interface UserService {
      *
      * @param user
      *            用户
+     * @param plusDepartmentIds
+     *            新添加部门id数组
+     * @param minusDepartmentIds
+     *            删除旧部门id数组
      */
     void updateUser(User user, Long[] plusDepartmentIds, Long[] minusDepartmentIds);
 
