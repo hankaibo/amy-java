@@ -140,16 +140,16 @@ public class UserController {
     /**
      * 更新用户。
      *
-     * @param userDepartment
+     * @param userUpdate
      *            用户数据
      */
     @ApiOperation(value = "用户更新")
     @PutMapping("/{id}")
-    public void updateUser(@Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "用户数据",
-        required = true) UserUpdate userDepartment) {
-        User user = userDepartment.getUser();
-        Long[] plusDepartmentIds = userDepartment.getPlusDepartmentIds();
-        Long[] minusDepartmentIds = userDepartment.getMinusDepartmentIds();
+    public void updateUser(
+        @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "用户数据", required = true) UserUpdate userUpdate) {
+        User user = userUpdate.getUser();
+        Long[] plusDepartmentIds = userUpdate.getPlusDepartmentIds();
+        Long[] minusDepartmentIds = userUpdate.getMinusDepartmentIds();
         userService.updateUser(user, plusDepartmentIds, minusDepartmentIds);
     }
 
