@@ -53,14 +53,14 @@ VALUES (10, NULL, '性别', 'sex', '7', 1, NULL, NULL, '2019-10-18 13:09:54', '2
 
 -- 正在导出表  my_database.sys_information 的数据：~1 rows (大约)
 DELETE
-FROM `sys_information`;
-/*!40000 ALTER TABLE `sys_information`
+FROM sys_message_content;
+/*!40000 ALTER TABLE sys_message_content
     DISABLE KEYS */;
-INSERT INTO `sys_information` (`id`, `avatar`, `title`, `content`, `type`, `status`, `is_read`, `is_publish`,
+INSERT INTO sys_message_content (`id`, `avatar`, `title`, `content`, `type`, `status`, `is_read`, `is_publish`,
                                `publish_time`, `create_time`, `update_time`)
 VALUES (9, NULL, '123', '123', 2, NULL, NULL, NULL, NULL, '2019-10-29 15:17:41', NULL),
        (10, NULL, '33333', '12323', 3, NULL, NULL, NULL, NULL, '2019-10-29 15:17:57', NULL);
-/*!40000 ALTER TABLE `sys_information`
+/*!40000 ALTER TABLE sys_message_content
     ENABLE KEYS */;
 
 -- 正在导出表  my_database.sys_resource 的数据：~72 rows (大约)
@@ -191,27 +191,27 @@ VALUES (1, NULL, '菜单', 1, 144, 1, 'menuTree', 1, 1, NULL, 1, NULL, NULL, NUL
         NULL, '2019-10-07 01:30:52', '2020-04-01 15:42:57'),
        (61, 54, '启用禁用字典', 118, 119, 4, 'system:dictionary:status', 1, 1, '/api/v1/dictionaries/*/status', 2, 'PUT',
         NULL, NULL, '2019-10-07 01:30:52', '2020-04-01 15:42:57'),
-       (62, 4, '信息管理', 121, 142, 3, 'system:information', 1, 1, NULL, 1, NULL, NULL, NULL, '2020-03-28 12:52:20',
+       (62, 4, '信息管理', 121, 142, 3, 'system:message', 1, 1, NULL, 1, NULL, NULL, NULL, '2020-03-28 12:52:20',
         '2020-04-01 15:42:57'),
-       (63, 62, '获取信息列表', 122, 123, 4, 'system:information:list', 1, 1, '/api/v1/information', 2, 'GET', NULL, NULL,
+       (63, 62, '获取信息列表', 122, 123, 4, 'system:message:list', 1, 1, '/api/v1/message', 2, 'GET', NULL, NULL,
         '2020-03-29 11:09:36', '2020-04-01 15:42:57'),
-       (64, 62, '新建信息', 124, 125, 4, 'system:information:add', 1, 1, '/api/v1/information', 2, 'POST', NULL, NULL,
+       (64, 62, '新建信息', 124, 125, 4, 'system:message:add', 1, 1, '/api/v1/message', 2, 'POST', NULL, NULL,
         '2020-03-29 11:10:31', '2020-04-01 15:42:57'),
-       (65, 62, '批量发布信息', 126, 127, 4, 'system:information:batchPublish', 1, 1, '/api/v1/information', 2, 'PUT', NULL,
+       (65, 62, '批量发布信息', 126, 127, 4, 'system:message:batchPublish', 1, 1, '/api/v1/message', 2, 'PUT', NULL,
         NULL, '2020-03-29 11:12:49', '2020-04-01 15:42:57'),
-       (66, 62, '批量删除信息', 128, 129, 4, 'system:information:batchDelete', 1, 1, '/api/v1/information', 2, 'DELETE', NULL,
+       (66, 62, '批量删除信息', 128, 129, 4, 'system:message:batchDelete', 1, 1, '/api/v1/message', 2, 'DELETE', NULL,
         NULL, '2020-03-29 11:13:27', '2020-04-01 15:42:57'),
-       (67, 62, '获取信息详情', 130, 131, 4, 'system:information:detail', 1, 1, '/api/v1/information/*', 2, 'GET', NULL, NULL,
+       (67, 62, '获取信息详情', 130, 131, 4, 'system:message:detail', 1, 1, '/api/v1/message/*', 2, 'GET', NULL, NULL,
         '2020-03-29 11:18:23', '2020-04-01 15:42:57'),
-       (68, 62, '更新信息', 132, 133, 4, 'system:information:update', 1, 1, '/api/v1/information/*', 2, 'PUT', NULL, NULL,
+       (68, 62, '更新信息', 132, 133, 4, 'system:message:update', 1, 1, '/api/v1/message/*', 2, 'PUT', NULL, NULL,
         '2020-03-29 11:19:04', '2020-04-01 15:42:57'),
-       (69, 62, '删除信息', 134, 135, 4, 'system:information:delete', 1, 1, '/api/v1/information/*', 2, 'DELETE', NULL,
+       (69, 62, '删除信息', 134, 135, 4, 'system:message:delete', 1, 1, '/api/v1/message/*', 2, 'DELETE', NULL,
         NULL, '2020-03-29 11:19:41', '2020-04-01 15:42:57'),
-       (70, 62, '发布信息', 136, 137, 4, 'system:information:publish', 1, 1, '/api/v1/information/*/publish', 2, 'PATCH',
+       (70, 62, '发布信息', 136, 137, 4, 'system:message:publish', 1, 1, '/api/v1/message/*/publish', 2, 'PATCH',
         NULL, NULL, '2020-03-29 11:20:39', '2020-04-01 15:42:57'),
-       (71, 62, '启用禁用信息', 138, 139, 4, 'system:information:status', 1, 1, '/api/v1/information/*/status', 2, 'PATCH',
+       (71, 62, '启用禁用信息', 138, 139, 4, 'system:message:status', 1, 1, '/api/v1/message/*/status', 2, 'PATCH',
         NULL, NULL, '2020-03-29 11:21:37', '2020-04-01 15:42:57'),
-       (72, 62, '定时发布信息', 140, 141, 4, 'system:information:timer', 1, 1, '/api/v1/information/timer', 2, 'POST', NULL,
+       (72, 62, '定时发布信息', 140, 141, 4, 'system:message:timer', 1, 1, '/api/v1/message/timer', 2, 'POST', NULL,
         NULL, '2020-03-30 03:29:19', '2020-04-01 15:42:57');
 /*!40000 ALTER TABLE `sys_resource`
     ENABLE KEYS */;
