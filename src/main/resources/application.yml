@@ -32,6 +32,7 @@ mapper:
     - cn.mypandora.springboot.core.base.MyBaseMapper
   not-empty: false
   identity: Mysql
+  wrap-keyword: "`{0}`"
 ###############################################################################
 ## pagehelper
 pagehelper:
