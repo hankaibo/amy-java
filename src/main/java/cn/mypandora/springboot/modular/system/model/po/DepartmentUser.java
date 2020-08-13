@@ -18,12 +18,12 @@ import tk.mybatis.mapper.code.Style;
 public class DepartmentUser extends BaseEntity {
 
     /**
-     * 部门ID
+     * 部门id
      */
     private Long departmentId;
 
     /**
-     * 用户ID
+     * 用户id
      */
     private Long userId;
 
