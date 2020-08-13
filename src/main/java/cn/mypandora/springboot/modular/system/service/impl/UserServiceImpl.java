@@ -1,5 +1,9 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +22,7 @@ import com.github.pagehelper.PageHelper;
 
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
+import cn.mypandora.springboot.config.exception.StorageException;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.util.FileUtil;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
@@ -38,15 +43,13 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final UserMapper userMapper;
+    private final UserRoleMapper userRoleMapper;
+    private final DepartmentUserMapper departmentUserMapper;
     @Value("${upload.path}")
     private String dirPath;
-
     @Value("${upload.remote-url}")
     private String remoteUrl;
-
-    private UserMapper userMapper;
-    private UserRoleMapper userRoleMapper;
-    private DepartmentUserMapper departmentUserMapper;
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper,
@@ -152,11 +155,24 @@ public class UserServiceImpl implements UserService {
         // 转换用户头像地址
         front2BackPath(user);
 
+        // 如果头像更换则删除旧头像
+        User info = null;
+        try {
+            info = userMapper.selectByPrimaryKey(user.getId());
+            if (null != info.getAvatar() && !StringUtils.isNotBlank(info.getAvatar())
+                && !StringUtils.equals(info.getAvatar(), user.getAvatar())) {
+                Path rootLocation = Paths.get(dirPath);
+                Files.deleteIfExists(rootLocation.resolve(info.getAvatar()));
+            }
+        } catch (IOException e) {
+            throw new StorageException("Failed to delete file " + info.getAvatar());
+        }
+
         // 修改用户
         userMapper.updateByPrimaryKeySelective(user);
 
         // 添加用户的新部门关联
-        if (plusDepartmentIds.length > 0) {
+        if (null != plusDepartmentIds && plusDepartmentIds.length > 0) {
             List<DepartmentUser> departmentUserList = new ArrayList<>();
             for (Long departmentId : plusDepartmentIds) {
                 DepartmentUser departmentUser = new DepartmentUser();
@@ -169,7 +185,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 删除用户旧的部门关联
-        if (minusDepartmentIds.length > 0) {
+        if (null != minusDepartmentIds && minusDepartmentIds.length > 0) {
             Example departmentUser = new Example(DepartmentUser.class);
             departmentUser.createCriteria().andIn("departmentId", Arrays.asList(minusDepartmentIds))
                 .andEqualTo("userId", user.getId());

@@ -119,6 +119,27 @@ public class User extends BaseEntity {
     private Byte sex;
 
     /**
+     * 用户个性签名
+     */
+    @ApiModelProperty(value = "用户个性签名")
+    @Size(max = 128, message = "用户个性签名最大128个字符")
+    private String signature;
+
+    /**
+     * 用户简介
+     */
+    @ApiModelProperty(value = "用户简介")
+    @Size(max = 255, message = "用户简介最大255个字符")
+    private String profile;
+
+    /**
+     * 用户街道地址
+     */
+    @ApiModelProperty(value = "用户街道地址")
+    @Size(max = 255, message = "用户街道地址最大255个字符")
+    private String address;
+
+    /**
      * 最后登录时间
      */
     @ApiModelProperty(value = "用户最近登录时间")

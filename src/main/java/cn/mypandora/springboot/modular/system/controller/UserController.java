@@ -60,6 +60,24 @@ public class UserController {
     }
 
     /**
+     * 更新当前登录用户信息。
+     * 
+     * @param userId
+     *            当前登录用户id
+     * @param user
+     *            用户数据
+     */
+    @ApiOperation(value = "更新当前登录用户信息")
+    @PutMapping("/info")
+    public void updateCurrentUser(Long userId,
+        @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
+        // 只能修改自己
+        if (userId.equals(user.getId())) {
+            userService.updateUser(user, null, null);
+        }
+    }
+
+    /**
      * 分页查询用户数据。
      *
      * @param pageNum
@@ -91,7 +109,7 @@ public class UserController {
         @RequestParam(value = "phone", required = false) @ApiParam(value = "电话") String phone,
         @RequestParam(value = "mobile", required = false) @ApiParam(value = "手机") String mobile,
         @RequestParam(value = "sex", required = false) @ApiParam(value = "性别") Byte sex,
-        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+        @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
         @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId) {
         User user = new User();
         user.setUsername(username);
