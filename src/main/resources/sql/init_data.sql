@@ -52,16 +52,6 @@ VALUES (10, NULL, '性别', 'sex', '7', 1, NULL, NULL, '2019-10-18 13:09:54', '2
     ENABLE KEYS */;
 
 -- 正在导出表  my_database.sys_information 的数据：~1 rows (大约)
-DELETE
-FROM sys_message_content;
-/*!40000 ALTER TABLE sys_message_content
-    DISABLE KEYS */;
-INSERT INTO sys_message_content (`id`, `avatar`, `title`, `content`, `type`, `status`, `is_read`, `is_publish`,
-                               `publish_time`, `create_time`, `update_time`)
-VALUES (9, NULL, '123', '123', 2, NULL, NULL, NULL, NULL, '2019-10-29 15:17:41', NULL),
-       (10, NULL, '33333', '12323', 3, NULL, NULL, NULL, NULL, '2019-10-29 15:17:57', NULL);
-/*!40000 ALTER TABLE sys_message_content
-    ENABLE KEYS */;
 
 -- 正在导出表  my_database.sys_resource 的数据：~72 rows (大约)
 DELETE
