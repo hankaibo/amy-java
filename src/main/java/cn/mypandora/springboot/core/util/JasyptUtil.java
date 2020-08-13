@@ -1,60 +1,135 @@
 package cn.mypandora.springboot.core.util;
 
-import org.jasypt.util.text.BasicTextEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
+import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 
 /**
  * JasyptUtil 加密解密工具类，方便对密码等进行加密。
  *
  * @author hankaibo
  * @date 2019/9/15
- * @note System.getenv()为获取当前系统的变量，使用时请先在系统变量中设置。考虑到缓存问题，有可能要重启才能正常使用。
+ * @see <a href="https://blog.csdn.net/Rambo_Yang/article/details/107579388">参考文章</a>
  */
 public class JasyptUtil {
 
+    private static final String PBEWITHMD5ANDDES = "PBEWithMD5AndDES";
+    private static final String PBEWITHHMACSHA512ANDAES_256 = "PBEWITHHMACSHA512ANDAES_256";
     private final static String SALT = System.getenv("JASYPT_ENCRYPTOR_PASSWORD");
 
-    public static void encrypt() {
-        BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
-        // 加密所需的salt(盐)
-        basicTextEncryptor.setPassword(SALT);
-        // 要加密的数据（数据库的用户名或密码）
-        String username = basicTextEncryptor.encrypt("test");
-        String password = basicTextEncryptor.encrypt("123456");
-        String port = basicTextEncryptor.encrypt("6379");
-        String redisPassword = basicTextEncryptor.encrypt("123456");
-        String druidUsername = basicTextEncryptor.encrypt("admin");
-        String druidPassword = basicTextEncryptor.encrypt("admin");
-        // 拷贝到 application.yml 配置文件中即可。默认方式： ENC(生成的密码)
-        System.out.println("username:" + username);
-        System.out.println("password:" + password);
-        System.out.println("port:" + port);
-        System.out.println("redisPassword:" + redisPassword);
-        System.out.println("druidUsername:" + druidUsername);
-        System.out.println("druidPassword:" + druidPassword);
+    /**
+     * Jasyp加密（PBEWithMD5AndDES）
+     * 
+     * @param plainText
+     *            待加密的原文
+     * @param factor
+     *            加密秘钥
+     * @return java.lang.String
+     */
+    public static String encryptWithMD5(String plainText, String factor) {
+        // 1. 创建加解密工具实例
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        // 2. 加解密配置
+        EnvironmentStringPBEConfig config = new EnvironmentStringPBEConfig();
+        config.setAlgorithm(PBEWITHMD5ANDDES);
+        config.setPassword(factor);
+        encryptor.setConfig(config);
+        // 3. 加密
+        return encryptor.encrypt(plainText);
     }
 
-    public static void decrypt() {
-        BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
-        // 加密所需的salt(盐)
-        basicTextEncryptor.setPassword(SALT);
-        // 要解密的数据（数据库的用户名或密码）
-        String username = basicTextEncryptor.decrypt("4ey06krrjh0AC/mm8862Mg==");
-        String password = basicTextEncryptor.decrypt("DK7xwNsYX4KUWopl7JWkfA==");
-        String port = basicTextEncryptor.decrypt("fDw5+LopsF4KnqpkpBW8Eg==");
-        String redisPassword = basicTextEncryptor.decrypt("wf1D/Cl3hXMjQ0RXjKkI2Q==");
-        String druidUsername = basicTextEncryptor.decrypt("IJYQuF6SgWsiLnapRKvcqA==");
-        String druidPassword = basicTextEncryptor.decrypt("j7iWznUj3hK9EYK4TDyVSQ==");
-        // 密钥请不要直接配置在 application.yml 中，可以配置在环境变量、系统变量、命令行参数等安全地方。
-        System.out.println("username:" + username);
-        System.out.println("password:" + password);
-        System.out.println("port:" + port);
-        System.out.println("redisPassword:" + redisPassword);
-        System.out.println("druidUsername:" + druidUsername);
-        System.out.println("druidPassword:" + druidPassword);
+    /**
+     * Jaspy解密（PBEWithMD5AndDES）
+     * 
+     * @param encryptedText
+     *            待解密密文
+     * @param factor
+     *            解密秘钥
+     * @return java.lang.String
+     */
+    public static String decryptWithMD5(String encryptedText, String factor) {
+        // 1. 创建加解密工具实例
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        // 2. 加解密配置
+        EnvironmentStringPBEConfig config = new EnvironmentStringPBEConfig();
+        config.setAlgorithm(PBEWITHMD5ANDDES);
+        config.setPassword(factor);
+        encryptor.setConfig(config);
+        // 3. 解密
+        return encryptor.decrypt(encryptedText);
+    }
+
+    /**
+     * 
+     * Jasyp 加密（PBEWITHHMACSHA512ANDAES_256）
+     * 
+     * @param plainText
+     *            待加密的原文
+     * @param factor
+     *            加密秘钥
+     * @return java.lang.String
+     */
+    public static String encryptWithSHA512(String plainText, String factor) {
+        // 1. 创建加解密工具实例
+        PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
+        // 2. 加解密配置
+        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
+        config.setPassword(factor);
+        config.setAlgorithm(PBEWITHHMACSHA512ANDAES_256);
+        config.setKeyObtentionIterations("1000");
+        config.setPoolSize("1");
+        config.setProviderName("SunJCE");
+        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+        config.setIvGeneratorClassName("org.jasypt.iv.RandomIvGenerator");
+        config.setStringOutputType("base64");
+        encryptor.setConfig(config);
+        // 3. 加密
+        return encryptor.encrypt(plainText);
+    }
+
+    /**
+     * Jaspy解密（PBEWITHHMACSHA512ANDAES_256）
+     * 
+     * @param encryptedText
+     *            待解密密文
+     * @param factor
+     *            解密秘钥
+     * @return java.lang.String
+     */
+    public static String decryptWithSHA512(String encryptedText, String factor) {
+        // 1. 创建加解密工具实例
+        PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
+        // 2. 加解密配置
+        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
+        config.setPassword(factor);
+        config.setAlgorithm(PBEWITHHMACSHA512ANDAES_256);
+        config.setKeyObtentionIterations("1000");
+        config.setPoolSize("1");
+        config.setProviderName("SunJCE");
+        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+        config.setIvGeneratorClassName("org.jasypt.iv.RandomIvGenerator");
+        config.setStringOutputType("base64");
+        encryptor.setConfig(config);
+        // 3. 解密
+        return encryptor.decrypt(encryptedText);
     }
 
     public static void main(String[] args) {
-        encrypt();
-        decrypt();
+        // 获取vm中自定义的参数
+        String factor = System.getProperty("jasypt.encryptor.password", "123456");
+        String plainText = "6779";
+        String encryptWithMD5Str = encryptWithMD5(plainText, factor);
+        String decryptWithMD5Str = decryptWithMD5(encryptWithMD5Str, factor);
+
+        String encryptWithSHA512Str = encryptWithSHA512(plainText, factor);
+        String decryptWithSHA512Str = decryptWithSHA512(encryptWithSHA512Str, factor);
+        System.out.println("采用MD5加密前原文密文：" + encryptWithMD5Str);
+        System.out.println("采用MD5解密后密文原文: " + decryptWithMD5Str);
+        System.out.println();
+        System.out.println("采用SHA512加密前原文密文：" + encryptWithSHA512Str);
+        System.out.println("采用SHA512解密后密文原文: " + decryptWithSHA512Str);
+
     }
+
 }
