@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- https://blog.csdn.net/vbirdbest/article/details/79669545 -->
+<!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
     <contextName>myspringboot</contextName>
     <property name="log.path" value="./logs"/>
@@ -11,7 +11,7 @@
             <level>INFO</level>
         </filter>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -39,7 +39,7 @@
         <logger name="cn.mypandora.springboot.modular.system.mapper" level="DEBUG" additivity="false">
             <appender-ref ref="file"/>
         </logger>
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="console"/>
         </root>
     </springProfile>
