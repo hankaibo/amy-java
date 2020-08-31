@@ -57,18 +57,6 @@ public interface MessageService {
     void updateMessage(Msg msg, Long[] plusReceiveIds, Long[] minusReceiveIds);
 
     /**
-     * 启用禁用站内信。 1:开启; 0:禁用
-     *
-     * @param id
-     *            站内信id
-     * @param status
-     *            启用(1),禁用(0)
-     * @param userId
-     *            用户id
-     */
-    void enableMessage(Long id, Integer status, Long userId);
-
-    /**
      * 发布站内信。
      *
      * @param id

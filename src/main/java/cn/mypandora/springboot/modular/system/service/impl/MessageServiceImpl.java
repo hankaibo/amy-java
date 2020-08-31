@@ -62,14 +62,18 @@ public class MessageServiceImpl implements MessageService {
 
         // 第二步，添加 Message
         List<Message> messageList = new ArrayList<>();
-        for (Long receiveId : msg.getReceiveIds()) {
+        for (Long receiveId : msg.getReceiveIdList()) {
             Message message = new Message();
             message.setSendId(msg.getSendId());
             message.setReceiveId(receiveId);
             message.setContentId(messageContent.getId());
             message.setStatus(msg.getStatus());
             message.setIsPublish(msg.getIsPublish());
-            message.setPublishTime(msg.getPublishTime());
+            if (msg.getIsPublish() == 1) {
+                message.setPublishTime(now);
+            } else {
+                message.setPublishTime(msg.getPublishTime());
+            }
             message.setIsRead(Boolean.FALSE);
             message.setCreateTime(now);
             messageList.add(message);
@@ -131,19 +135,6 @@ public class MessageServiceImpl implements MessageService {
             messageMapper.deleteByExample(example);
         }
 
-    }
-
-    @Override
-    public void enableMessage(Long id, Integer status, Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        Example example = new Example(Message.class);
-        example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
-
-        Message message = new Message();
-        message.setStatus(status);
-        message.setUpdateTime(now);
-
-        messageMapper.updateByExampleSelective(message, example);
     }
 
     @Override

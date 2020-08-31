@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.model.vo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Transient;
 import javax.validation.constraints.*;
@@ -49,28 +50,28 @@ public class Msg {
      */
     @ApiModelProperty(value = "收信人主键ids")
     @NotEmpty(groups = {AddGroup.class, UpdateGroup.class}, message = "收信人主键id不能为空")
-    private Long[] receiveIds;
+    private List<Long> receiveIdList;
 
     /**
      * 收信人姓名
      */
     @ApiModelProperty(value = "收信人姓名")
     @Transient
-    private String[] receiveNames;
+    private List<String> receiveNameList;
 
     /**
      * 站内信标题
      */
     @ApiModelProperty(value = "站内信标题")
     @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "站内信标题不能为空")
-    @Range(min = 1, max = 128, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信标题最大128个字符")
+    @Size(min = 1, max = 128, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信标题最大128个字符")
     private String title;
 
     /**
      * 站内信内容
      */
     @ApiModelProperty(value = "站内信内容")
-    @Range(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信内容最大255个字符")
+    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信内容最大255个字符")
     private String content;
 
     /**

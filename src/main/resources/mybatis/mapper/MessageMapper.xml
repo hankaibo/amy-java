@@ -16,15 +16,11 @@
         <result column="is_read" jdbcType="INTEGER" property="isRead"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
-        <collection property="receiveIds" ofType="long">
-            <constructor>
-                <arg column="receive_id"/>
-            </constructor>
+        <collection property="receiveIdList" ofType="long">
+            <result column="receive_id"/>
         </collection>
-        <collection property="receiveNames" ofType="string">
-            <constructor>
-                <arg column="receive_name"/>
-            </constructor>
+        <collection property="receiveNameList" ofType="string">
+            <result column="receive_name"/>
         </collection>
     </resultMap>
 
@@ -48,7 +44,18 @@
         JOIN sys_user su on m.send_id = su.id
         JOIN sys_user ru on m.receive_id = ru.id
         WHERE 1 = 1
-        AND m.send_id = #{sendId}
+        <if test="sendId!=null">
+            AND m.send_id = #{sendId}
+        </if>
+        <if test="receiveIdList!=null">
+            AND m.receive_id in
+            <foreach collection="receiveIdList" item="id" index="index" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="isPublish!=null">
+            AND m.is_publish = #{isPublish}
+        </if>
         <if test="type!=null">
             AND t.type = #{type}
         </if>
