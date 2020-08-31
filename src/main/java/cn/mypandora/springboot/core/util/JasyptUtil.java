@@ -16,7 +16,6 @@ public class JasyptUtil {
 
     private static final String PBEWITHMD5ANDDES = "PBEWithMD5AndDES";
     private static final String PBEWITHHMACSHA512ANDAES_256 = "PBEWITHHMACSHA512ANDAES_256";
-    private final static String SALT = System.getenv("JASYPT_ENCRYPTOR_PASSWORD");
 
     /**
      * Jasyp加密（PBEWithMD5AndDES）

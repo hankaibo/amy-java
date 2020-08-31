@@ -22,18 +22,19 @@ public class MsgUpdate {
      * 站内信实体
      */
     @Valid
+    @NotNull(groups = {UpdateGroup.class}, message = "信息不可为空")
     private Msg msg;
 
     /**
      * 站内信要新添加的收信人
      */
-    @NotNull(groups = {UpdateGroup.class}, message = "添加的新收信人不可为null")
+    @NotNull(groups = {UpdateGroup.class}, message = "添加的新收信人不可为空")
     private Long[] plusReceiveIds;
 
     /**
      * 站内信要删除的旧收信人
      */
-    @NotNull(groups = {UpdateGroup.class}, message = "删除的旧收信人不可为null")
+    @NotNull(groups = {UpdateGroup.class}, message = "删除的旧收信人不可为空")
     private Long[] minusReceiveIds;
 
 }

@@ -1,5 +1,8 @@
 package cn.mypandora.springboot.modular.system.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
@@ -56,11 +59,21 @@ public class MessageController {
             required = true) int pageNum,
         @Positive @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数",
             required = true) int pageSize,
+        @RequestParam(value = "sendId", required = false) @ApiParam(value = "发信人") Long sendId,
+        @RequestParam(value = "receiveId", required = false) @ApiParam(value = "收信人") Long receiveId,
+        @Range(min = 0, max = 1) @RequestParam(value = "isPublish") @ApiParam(value = "是否发布") Integer isPublish,
         @Range(min = 1, max = 3) @RequestParam(value = "type",
             required = false) @ApiParam(value = "站内信类型") Integer type,
         Long userId) {
         Msg msg = new Msg();
-        msg.setSendId(userId);
+        if (sendId != null) {
+            msg.setSendId(userId);
+        } else {
+            List<Long> receiveIdList = new ArrayList<>();
+            receiveIdList.add(userId);
+            msg.setReceiveIdList(receiveIdList);
+        }
+        msg.setIsPublish(isPublish);
         msg.setType(type);
         return messageService.pageMessage(pageNum, pageSize, msg);
     }
@@ -119,25 +132,6 @@ public class MessageController {
         Long[] minusReceiveIds = msgUpdate.getMinusReceiveIds();
 
         messageService.updateMessage(msg, plusReceiveIds, minusReceiveIds);
-    }
-
-    /**
-     * 启用|禁用站内信。
-     *
-     * @param id
-     *            站内信主键id
-     * @param status
-     *            状态(1:启用，0:禁用)
-     * @param userId
-     *            当前登录用户id
-     */
-    @ApiOperation(value = "启用禁用站内信状态")
-    @PatchMapping("/{id}/status")
-    @ResponseBody
-    public void enableMessage(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status,
-        Long userId) {
-        messageService.enableMessage(id, status, userId);
     }
 
     /**
