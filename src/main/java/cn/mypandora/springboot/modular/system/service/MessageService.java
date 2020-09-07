@@ -38,11 +38,13 @@ public interface MessageService {
      *
      * @param id
      *            站内信id
+     * @param from
+     *            站内信来源：收件箱(INBOX)、发件箱(SENT)、草稿箱(DRAFT)
      * @param userId
      *            用户id
      * @return 站内信
      */
-    Msg getMessageById(Long id, Long userId);
+    Msg getMessageById(Long id, String from, Long userId);
 
     /**
      * 更新站内信。
@@ -81,19 +83,23 @@ public interface MessageService {
      *
      * @param id
      *            站内信id
+     * @param from
+     *            站内信来源：收件箱(INBOX)、发件箱(SENT)、草稿箱(DRAFT)
      * @param userId
      *            用户id
      */
-    void deleteMessage(Long id, Long userId);
+    void deleteMessage(Long id, String from, Long userId);
 
     /**
      * 批量删除站内信。
      *
      * @param ids
      *            '1,2,3,4'
+     * @param from
+     *            站内信来源：收件箱(INBOX)、发件箱(SENT)、草稿箱(DRAFT)
      * @param userId
      *            用户id
      */
-    void deleteBatchMessage(Long[] ids, Long userId);
+    void deleteBatchMessage(Long[] ids, String from, Long userId);
 
 }

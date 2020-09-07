@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
-import cn.mypandora.springboot.modular.system.model.po.Message;
+import cn.mypandora.springboot.modular.system.model.po.MessageReceiver;
 import cn.mypandora.springboot.modular.system.model.vo.Msg;
 
 /**
@@ -14,7 +14,7 @@ import cn.mypandora.springboot.modular.system.model.vo.Msg;
  * @author hankaibo
  * @date 2019/10/29
  */
-public interface MessageMapper extends MyBaseMapper<Message> {
+public interface MessageReceiverMapper extends MyBaseMapper<MessageReceiver> {
 
     /**
      * 根据条件查的信息列表。
