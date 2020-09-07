@@ -16,9 +16,11 @@ import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.mapper.MessageContentMapper;
-import cn.mypandora.springboot.modular.system.mapper.MessageMapper;
-import cn.mypandora.springboot.modular.system.model.po.Message;
+import cn.mypandora.springboot.modular.system.mapper.MessageReceiverMapper;
+import cn.mypandora.springboot.modular.system.mapper.MessageSenderMapper;
 import cn.mypandora.springboot.modular.system.model.po.MessageContent;
+import cn.mypandora.springboot.modular.system.model.po.MessageReceiver;
+import cn.mypandora.springboot.modular.system.model.po.MessageSender;
 import cn.mypandora.springboot.modular.system.model.vo.Msg;
 import cn.mypandora.springboot.modular.system.service.MessageService;
 import tk.mybatis.mapper.entity.Example;
@@ -32,20 +34,28 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private MessageMapper messageMapper;
+    private MessageSenderMapper messageSenderMapper;
+    private MessageReceiverMapper messageReceiverMapper;
     private MessageContentMapper messageContentMapper;
 
     @Autowired
-    public MessageServiceImpl(MessageMapper messageMapper, MessageContentMapper messageContentMapper) {
-        this.messageMapper = messageMapper;
+    public MessageServiceImpl(MessageSenderMapper messageSenderMapper, MessageReceiverMapper messageReceiverMapper,
+        MessageContentMapper messageContentMapper) {
+        this.messageSenderMapper = messageSenderMapper;
+        this.messageReceiverMapper = messageReceiverMapper;
         this.messageContentMapper = messageContentMapper;
     }
 
     @Override
     public PageInfo<Msg> pageMessage(int pageNum, int pageSize, Msg msg) {
         PageHelper.startPage(pageNum, pageSize);
-        List<Msg> msgList = messageMapper.listMsg(msg);
-        return new PageInfo<>(msgList);
+        if (msg.getSendId() != null) {
+            List<Msg> msgList = messageSenderMapper.listMsg(msg);
+            return new PageInfo<>(msgList);
+        } else {
+            List<Msg> msgList = messageReceiverMapper.listMsg(msg);
+            return new PageInfo<>(msgList);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -60,30 +70,48 @@ public class MessageServiceImpl implements MessageService {
         messageContent.setCreateTime(now);
         messageContentMapper.insert(messageContent);
 
-        // 第二步，添加 Message
-        List<Message> messageList = new ArrayList<>();
+        // 第二步，添加 MessageSender
+        List<MessageSender> messageSenderList = new ArrayList<>();
         for (Long receiveId : msg.getReceiveIdList()) {
-            Message message = new Message();
-            message.setSendId(msg.getSendId());
-            message.setReceiveId(receiveId);
-            message.setContentId(messageContent.getId());
-            message.setStatus(msg.getStatus());
-            message.setIsPublish(msg.getIsPublish());
+            MessageSender messageSender = new MessageSender();
+            messageSender.setSendId(msg.getSendId());
+            messageSender.setReceiveId(receiveId);
+            messageSender.setContentId(messageContent.getId());
+            messageSender.setStatus(msg.getStatus());
+            messageSender.setIsPublish(msg.getIsPublish());
             if (msg.getIsPublish() == 1) {
-                message.setPublishTime(now);
+                messageSender.setPublishTime(now);
             } else {
-                message.setPublishTime(msg.getPublishTime());
+                messageSender.setPublishTime(msg.getPublishTime());
             }
-            message.setIsRead(Boolean.FALSE);
-            message.setCreateTime(now);
-            messageList.add(message);
+            messageSender.setCreateTime(now);
+            messageSenderList.add(messageSender);
         }
-        messageMapper.insertList(messageList);
+        messageSenderMapper.insertList(messageSenderList);
+
+        // 第三步，添加 MessageReceiver
+        List<MessageReceiver> messageReceiverList = new ArrayList<>();
+        for (Long receiveId : msg.getReceiveIdList()) {
+            MessageReceiver messageReceiver = new MessageReceiver();
+            messageReceiver.setSendId(msg.getSendId());
+            messageReceiver.setReceiveId(receiveId);
+            messageReceiver.setContentId(messageContent.getId());
+            messageReceiver.setStatus(msg.getStatus());
+            messageReceiver.setIsRead(Boolean.FALSE);
+            messageReceiver.setCreateTime(now);
+            messageReceiverList.add(messageReceiver);
+        }
+        messageReceiverMapper.insertList(messageReceiverList);
     }
 
     @Override
-    public Msg getMessageById(Long id, Long userId) {
-        Msg info = messageMapper.getMessageById(id, userId);
+    public Msg getMessageById(Long id, String from, Long userId) {
+        Msg info;
+        if (from.equals("INBOX")) {
+            info = messageReceiverMapper.getMessageById(id, userId);
+        } else {
+            info = messageSenderMapper.getMessageById(id, userId);
+        }
         if (info == null) {
             throw new EntityNotFoundException(Msg.class, "站内信不存在。");
         }
@@ -111,28 +139,27 @@ public class MessageServiceImpl implements MessageService {
 
         // 添加新收信人
         if (plusReceiveIds.length > 0) {
-            List<Message> messageList = new ArrayList<>();
+            List<MessageSender> messageSenderList = new ArrayList<>();
             for (Long receiveId : plusReceiveIds) {
-                Message message = new Message();
-                message.setSendId(msg.getSendId());
-                message.setReceiveId(receiveId);
-                message.setContentId(msg.getId());
-                message.setStatus(msg.getStatus());
-                message.setIsPublish(msg.getIsPublish());
-                message.setPublishTime(msg.getPublishTime());
-                message.setIsRead(Boolean.FALSE);
-                message.setCreateTime(now);
-                messageList.add(message);
+                MessageSender messageSender = new MessageSender();
+                messageSender.setSendId(msg.getSendId());
+                messageSender.setReceiveId(receiveId);
+                messageSender.setContentId(msg.getId());
+                messageSender.setStatus(msg.getStatus());
+                messageSender.setIsPublish(msg.getIsPublish());
+                messageSender.setPublishTime(msg.getPublishTime());
+                messageSender.setCreateTime(now);
+                messageSenderList.add(messageSender);
             }
-            messageMapper.insertList(messageList);
+            messageSenderMapper.insertList(messageSenderList);
         }
 
         // 删除旧收信人
         if (minusReceiveIds.length > 0) {
-            Example example = new Example(Message.class);
+            Example example = new Example(MessageReceiver.class);
             example.createCriteria().andIn("receiveId", Arrays.asList(minusReceiveIds)).andEqualTo("contentId",
                 msg.getId());
-            messageMapper.deleteByExample(example);
+            messageReceiverMapper.deleteByExample(example);
         }
 
     }
@@ -140,47 +167,57 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void publishMessage(Long id, Long userId) {
         LocalDateTime now = LocalDateTime.now();
-        Example example = new Example(Message.class);
+        Example example = new Example(MessageSender.class);
         example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
 
-        Message message = new Message();
-        message.setIsPublish(1);
-        message.setUpdateTime(now);
+        MessageSender messageSender = new MessageSender();
+        messageSender.setIsPublish(1);
+        messageSender.setUpdateTime(now);
 
-        messageMapper.updateByExampleSelective(message, example);
+        messageSenderMapper.updateByExampleSelective(messageSender, example);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void publishBatchMessage(Long[] ids, Long userId) {
         LocalDateTime now = LocalDateTime.now();
-        Example example = new Example(Message.class);
+        Example example = new Example(MessageSender.class);
         example.createCriteria().andEqualTo("sendId", userId).andIn("contentId", Arrays.asList(ids));
 
-        Message message = new Message();
-        message.setIsPublish(1);
-        message.setUpdateTime(now);
+        MessageSender messageSender = new MessageSender();
+        messageSender.setIsPublish(1);
+        messageSender.setUpdateTime(now);
 
-        messageMapper.updateByExampleSelective(message, example);
+        messageSenderMapper.updateByExampleSelective(messageSender, example);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteMessage(Long id, Long userId) {
-        Example example = new Example(Message.class);
-        example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
-
-        messageMapper.deleteByExample(example);
+    public void deleteMessage(Long id, String from, Long userId) {
+        if (from.equals("INBOX")) {
+            Example example = new Example(MessageReceiver.class);
+            example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
+            messageReceiverMapper.deleteByExample(example);
+        } else if (from.equals("SENT") || from.equals("DRAFT")) {
+            Example example = new Example(MessageSender.class);
+            example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
+            messageSenderMapper.deleteByExample(example);
+        }
         messageContentMapper.deleteByPrimaryKey(id);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBatchMessage(Long[] ids, Long userId) {
-        Example example = new Example(Message.class);
-        example.createCriteria().andEqualTo("sendId", userId).andIn("contentId", Arrays.asList(ids));
-
-        messageMapper.deleteByExample(example);
+    public void deleteBatchMessage(Long[] ids, String from, Long userId) {
+        if (from.equals("INBOX")) {
+            Example example = new Example(MessageReceiver.class);
+            example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", Arrays.asList(ids));
+            messageReceiverMapper.deleteByExample(example);
+        } else if (from.equals("SENT") || from.equals("DRAFT")) {
+            Example example = new Example(MessageSender.class);
+            example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", Arrays.asList(ids));
+            messageSenderMapper.deleteByExample(example);
+        }
         messageContentMapper.deleteByIds(StringUtils.join(ids, ","));
     }
 

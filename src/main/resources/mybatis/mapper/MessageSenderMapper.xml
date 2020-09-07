@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.MessageSenderMapper">
+
+    <resultMap id="msgMap" type="cn.mypandora.springboot.modular.system.model.vo.Msg">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="send_id" jdbcType="BIGINT" property="sendId"/>
+        <result column="send_name" jdbcType="VARCHAR" property="sendName"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_publish" jdbcType="INTEGER" property="isPublish"/>
+        <result column="publish_time" jdbcType="TIMESTAMP" property="publishTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <collection property="receiveIdList" ofType="long">
+            <result column="receive_id"/>
+        </collection>
+        <collection property="receiveNameList" ofType="string">
+            <result column="receive_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="listMsg" resultMap="msgMap">
+        SELECT t.id,
+        su.id as send_id,
+        su.username as send_name,
+        ru.id as receive_id,
+        ru.username as receive_name,
+        t.title,
+        t.content,
+        t.type,
+        ms.status,
+        ms.is_publish,
+        ms.publish_time,
+        t.create_time,
+        t.update_time
+        FROM sys_message_content t
+        JOIN sys_message_sender ms on t.id = ms.content_id
+        JOIN sys_user su on ms.send_id = su.id
+        JOIN sys_user ru on ms.receive_id = ru.id
+        WHERE 1 = 1
+        <if test="sendId!=null">
+            AND ms.send_id = #{sendId}
+        </if>
+        <if test="receiveIdList!=null">
+            AND ms.receive_id in
+            <foreach collection="receiveIdList" item="id" index="index" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="isPublish!=null">
+            AND ms.is_publish = #{isPublish}
+        </if>
+        <if test="type!=null">
+            AND t.type = #{type}
+        </if>
+
+    </select>
+
+    <select id="getMessageById" resultMap="msgMap">
+        SELECT t.id,
+               su.id       as send_id,
+               su.username as send_name,
+               ru.id       as receive_id,
+               ru.username as receive_name,
+               t.title,
+               t.content,
+               t.type,
+               ms.status,
+               ms.is_publish,
+               ms.publish_time,
+               t.create_time,
+               t.update_time
+        FROM sys_message_content t
+                 JOIN sys_message_sender ms on t.id = ms.content_id
+                 JOIN sys_user su on ms.send_id = su.id
+                 JOIN sys_user ru on ms.receive_id = ru.id
+        WHERE 1 = 1
+          AND t.id = #{id}
+          AND ms.send_id = #{userId}
+    </select>
+
+</mapper>

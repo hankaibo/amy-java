@@ -1,7 +1,5 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -17,11 +15,11 @@ import tk.mybatis.mapper.code.Style;
  * @author hankaibo
  * @date 2020/4/21
  */
-@ApiModel("站内信")
+@ApiModel("收件箱")
 @Data
-@Table(name = "sys_message")
+@Table(name = "sys_message_receiver")
 @NameStyle(Style.camelhumpAndLowercase)
-public class Message extends BaseEntity {
+public class MessageReceiver extends BaseEntity {
 
     /**
      * 发信人ID
@@ -60,18 +58,6 @@ public class Message extends BaseEntity {
      */
     @ApiModelProperty(value = "站内信状态")
     private Integer status;
-
-    /**
-     * 是否发布
-     */
-    @ApiModelProperty(value = "是否发布")
-    private Integer isPublish;
-
-    /**
-     * 发布时间
-     */
-    @ApiModelProperty(value = "发布时间")
-    private LocalDateTime publishTime;
 
     /**
      * 是否已读

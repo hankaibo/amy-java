@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.mypandora.springboot.modular.system.mapper.MessageMapper">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.MessageReceiverMapper">
 
     <resultMap id="msgMap" type="cn.mypandora.springboot.modular.system.model.vo.Msg">
         <id column="id" jdbcType="BIGINT" property="id"/>
@@ -11,8 +11,6 @@
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
-        <result column="is_publish" jdbcType="INTEGER" property="isPublish"/>
-        <result column="publish_time" jdbcType="TIMESTAMP" property="publishTime"/>
         <result column="is_read" jdbcType="INTEGER" property="isRead"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
@@ -33,28 +31,23 @@
         t.title,
         t.content,
         t.type,
-        m.status,
-        m.is_publish,
-        m.publish_time,
-        m.is_read,
+        mr.status,
+        mr.is_read,
         t.create_time,
         t.update_time
         FROM sys_message_content t
-        JOIN sys_message m on t.id = m.content_id
-        JOIN sys_user su on m.send_id = su.id
-        JOIN sys_user ru on m.receive_id = ru.id
+        JOIN sys_message_receiver mr on t.id = mr.content_id
+        JOIN sys_user su on mr.send_id = su.id
+        JOIN sys_user ru on mr.receive_id = ru.id
         WHERE 1 = 1
         <if test="sendId!=null">
-            AND m.send_id = #{sendId}
+            AND mr.send_id = #{sendId}
         </if>
         <if test="receiveIdList!=null">
-            AND m.receive_id in
+            AND mr.receive_id in
             <foreach collection="receiveIdList" item="id" index="index" open="(" separator="," close=")">
                 #{id}
             </foreach>
-        </if>
-        <if test="isPublish!=null">
-            AND m.is_publish = #{isPublish}
         </if>
         <if test="type!=null">
             AND t.type = #{type}
@@ -71,19 +64,17 @@
                t.title,
                t.content,
                t.type,
-               m.status,
-               m.is_publish,
-               m.publish_time,
-               m.is_read,
+               mr.status,
+               mr.is_read,
                t.create_time,
                t.update_time
         FROM sys_message_content t
-                 JOIN sys_message m on t.id = m.content_id
-                 JOIN sys_user su on m.send_id = su.id
-                 JOIN sys_user ru on m.receive_id = ru.id
+                 JOIN sys_message_receiver mr on t.id = mr.content_id
+                 JOIN sys_user su on mr.send_id = su.id
+                 JOIN sys_user ru on mr.receive_id = ru.id
         WHERE 1 = 1
           AND t.id = #{id}
-          AND m.send_id = #{userId}
+          AND mr.send_id = #{userId}
     </select>
 
 </mapper>

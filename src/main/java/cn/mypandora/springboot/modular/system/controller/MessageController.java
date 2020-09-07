@@ -3,6 +3,7 @@ package cn.mypandora.springboot.modular.system.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
@@ -108,8 +109,8 @@ public class MessageController {
     @GetMapping("/{id}")
     @ResponseBody
     public Msg getMessageById(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        Long userId) {
-        return messageService.getMessageById(id, userId);
+        @NotBlank @RequestParam(value = "from") @ApiParam(value = "来源") String from, Long userId) {
+        return messageService.getMessageById(id, from, userId);
     }
 
     /**
@@ -178,8 +179,8 @@ public class MessageController {
     @DeleteMapping("/{id}")
     @ResponseBody
     public void deleteMessage(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        Long userId) {
-        messageService.deleteMessage(id, userId);
+        @NotBlank @RequestParam(value = "from") @ApiParam(value = "来源") String from, Long userId) {
+        messageService.deleteMessage(id, from, userId);
     }
 
     /**
@@ -194,8 +195,8 @@ public class MessageController {
     @DeleteMapping
     @ResponseBody
     public void deleteBatchMessage(@RequestBody @ApiParam(value = "站内信主键数组ids", required = true) Long[] ids,
-        Long userId) {
-        messageService.deleteBatchMessage(ids, userId);
+        @NotBlank @RequestParam(value = "from") @ApiParam(value = "来源") String from, Long userId) {
+        messageService.deleteBatchMessage(ids, from, userId);
     }
 
 }
