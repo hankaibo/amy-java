@@ -68,19 +68,19 @@
         WHERE 1 = 1
         AND du.department_id = #{departmentId}
         <if test="user.username!=null">
-            AND u.username = #{username}
+            AND u.username = #{user.username}
         </if>
         <if test="user.phone!=null">
-            AND u.phone = #{phone}
+            AND u.phone = #{user.phone}
         </if>
         <if test="user.mobile!=null">
-            AND u.phone = #{phone}
+            AND u.mobile = #{user.mobile}
         </if>
         <if test="user.sex!=null">
-            AND u.sex = #{sex}
+            AND u.sex = #{user.sex}
         </if>
         <if test="user.status!=null">
-            AND u.status = #{status}
+            AND u.status = #{user.status}
         </if>
     </select>
 
