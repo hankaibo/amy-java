@@ -109,8 +109,8 @@ public class MessageController {
     @GetMapping("/{id}")
     @ResponseBody
     public Msg getMessageById(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        @NotBlank @RequestParam(value = "from") @ApiParam(value = "来源") String from, Long userId) {
-        return messageService.getMessageById(id, from, userId);
+        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, Long userId) {
+        return messageService.getMessageById(id, source, userId);
     }
 
     /**
@@ -179,8 +179,8 @@ public class MessageController {
     @DeleteMapping("/{id}")
     @ResponseBody
     public void deleteMessage(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        @NotBlank @RequestParam(value = "from") @ApiParam(value = "来源") String from, Long userId) {
-        messageService.deleteMessage(id, from, userId);
+        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, Long userId) {
+        messageService.deleteMessage(id, source, userId);
     }
 
     /**
@@ -195,8 +195,8 @@ public class MessageController {
     @DeleteMapping
     @ResponseBody
     public void deleteBatchMessage(@RequestBody @ApiParam(value = "站内信主键数组ids", required = true) Long[] ids,
-        @NotBlank @RequestParam(value = "from") @ApiParam(value = "来源") String from, Long userId) {
-        messageService.deleteBatchMessage(ids, from, userId);
+        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, Long userId) {
+        messageService.deleteBatchMessage(ids, source, userId);
     }
 
 }

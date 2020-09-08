@@ -105,9 +105,9 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Msg getMessageById(Long id, String from, Long userId) {
+    public Msg getMessageById(Long id, String source, Long userId) {
         Msg info;
-        if (from.equals("INBOX")) {
+        if (source.equals("INBOX")) {
             info = messageReceiverMapper.getMessageById(id, userId);
         } else {
             info = messageSenderMapper.getMessageById(id, userId);
@@ -193,12 +193,12 @@ public class MessageServiceImpl implements MessageService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteMessage(Long id, String from, Long userId) {
-        if (from.equals("INBOX")) {
+    public void deleteMessage(Long id, String source, Long userId) {
+        if (source.equals("INBOX")) {
             Example example = new Example(MessageReceiver.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
             messageReceiverMapper.deleteByExample(example);
-        } else if (from.equals("SENT") || from.equals("DRAFT")) {
+        } else if (source.equals("SENT") || source.equals("DRAFT")) {
             Example example = new Example(MessageSender.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
             messageSenderMapper.deleteByExample(example);
@@ -208,12 +208,12 @@ public class MessageServiceImpl implements MessageService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBatchMessage(Long[] ids, String from, Long userId) {
-        if (from.equals("INBOX")) {
+    public void deleteBatchMessage(Long[] ids, String source, Long userId) {
+        if (source.equals("INBOX")) {
             Example example = new Example(MessageReceiver.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", Arrays.asList(ids));
             messageReceiverMapper.deleteByExample(example);
-        } else if (from.equals("SENT") || from.equals("DRAFT")) {
+        } else if (source.equals("SENT") || source.equals("DRAFT")) {
             Example example = new Example(MessageSender.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", Arrays.asList(ids));
             messageSenderMapper.deleteByExample(example);
