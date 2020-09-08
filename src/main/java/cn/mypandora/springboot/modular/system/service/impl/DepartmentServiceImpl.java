@@ -251,7 +251,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Optional<Department> optionalSource =
             departmentList.stream().filter(it -> it.getId().equals(sourceId)).findFirst();
-        Department sourceInfo = optionalSource.orElse(null);;
+        Department sourceInfo = optionalSource.orElse(null);
 
         Optional<Department> optionalTarget =
             departmentList.stream().filter(it -> it.getId().equals(targetId)).findFirst();
