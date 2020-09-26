@@ -22,17 +22,17 @@ public class JasyptUtil {
      * 
      * @param plainText
      *            待加密的原文
-     * @param factor
+     * @param key
      *            加密秘钥
      * @return java.lang.String
      */
-    public static String encryptWithMD5(String plainText, String factor) {
+    public static String encryptWithMD5(String plainText, String key) {
         // 1. 创建加解密工具实例
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         // 2. 加解密配置
         EnvironmentStringPBEConfig config = new EnvironmentStringPBEConfig();
         config.setAlgorithm(PBEWITHMD5ANDDES);
-        config.setPassword(factor);
+        config.setPassword(key);
         encryptor.setConfig(config);
         // 3. 加密
         return encryptor.encrypt(plainText);
@@ -43,17 +43,17 @@ public class JasyptUtil {
      * 
      * @param encryptedText
      *            待解密密文
-     * @param factor
+     * @param key
      *            解密秘钥
      * @return java.lang.String
      */
-    public static String decryptWithMD5(String encryptedText, String factor) {
+    public static String decryptWithMD5(String encryptedText, String key) {
         // 1. 创建加解密工具实例
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         // 2. 加解密配置
         EnvironmentStringPBEConfig config = new EnvironmentStringPBEConfig();
         config.setAlgorithm(PBEWITHMD5ANDDES);
-        config.setPassword(factor);
+        config.setPassword(key);
         encryptor.setConfig(config);
         // 3. 解密
         return encryptor.decrypt(encryptedText);
@@ -65,16 +65,16 @@ public class JasyptUtil {
      * 
      * @param plainText
      *            待加密的原文
-     * @param factor
+     * @param key
      *            加密秘钥
      * @return java.lang.String
      */
-    public static String encryptWithSHA512(String plainText, String factor) {
+    public static String encryptWithSHA512(String plainText, String key) {
         // 1. 创建加解密工具实例
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         // 2. 加解密配置
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-        config.setPassword(factor);
+        config.setPassword(key);
         config.setAlgorithm(PBEWITHHMACSHA512ANDAES_256);
         config.setKeyObtentionIterations("1000");
         config.setPoolSize("1");
@@ -92,16 +92,16 @@ public class JasyptUtil {
      * 
      * @param encryptedText
      *            待解密密文
-     * @param factor
+     * @param key
      *            解密秘钥
      * @return java.lang.String
      */
-    public static String decryptWithSHA512(String encryptedText, String factor) {
+    public static String decryptWithSHA512(String encryptedText, String key) {
         // 1. 创建加解密工具实例
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         // 2. 加解密配置
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-        config.setPassword(factor);
+        config.setPassword(key);
         config.setAlgorithm(PBEWITHHMACSHA512ANDAES_256);
         config.setKeyObtentionIterations("1000");
         config.setPoolSize("1");
@@ -115,14 +115,19 @@ public class JasyptUtil {
     }
 
     public static void main(String[] args) {
-        // 获取vm中自定义的参数
-        String factor = System.getProperty("jasypt.encryptor.password", "123456");
-        String plainText = "6779";
-        String encryptWithMD5Str = encryptWithMD5(plainText, factor);
-        String decryptWithMD5Str = decryptWithMD5(encryptWithMD5Str, factor);
+        // 获取vm中自定义密钥
+        String key = System.getProperty("jasypt.encryptor.password", "123456");
+        // 明文
+        String plainText = "123456";
 
-        String encryptWithSHA512Str = encryptWithSHA512(plainText, factor);
-        String decryptWithSHA512Str = decryptWithSHA512(encryptWithSHA512Str, factor);
+        // MD5 密文及明文
+        String encryptWithMD5Str = encryptWithMD5(plainText, key);
+        String decryptWithMD5Str = decryptWithMD5(encryptWithMD5Str, key);
+
+        // SHA512 密文及明文
+        String encryptWithSHA512Str = encryptWithSHA512(plainText, key);
+        String decryptWithSHA512Str = decryptWithSHA512(encryptWithSHA512Str, key);
+
         System.out.println("采用MD5加密前原文密文：" + encryptWithMD5Str);
         System.out.println("采用MD5解密后密文原文: " + decryptWithMD5Str);
         System.out.println();

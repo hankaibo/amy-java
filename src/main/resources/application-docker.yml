@@ -8,9 +8,9 @@ upload:
 ## 数据库
 spring:
   datasource:
-    url: ENC(aS/ZuXsX08uzqC2ta024JqkisiefL+SjpTyirI/YrckgwMMqL68bpHeCxOEJXJYgDzHhRycbDzvKKAtRb8dMtHZogRR/oP+WSImPIbd7LxiHecdht7O9kJwFbfrdPlo2IRzNUZM7aLsNC0wxJuR8gA==)
-    username: ENC(IdxJT9iGJA3XYxo2iRZ4IQ==)
-    password: ENC(MU8IYLJXxxv8ieJJWC8z/DTcsj0rQXvuIZqEeCm92DJRAcxbLnwTHA==)
+    url: jdbc:mysql://myspringboot-mysql:8706/my_database?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ENC(zVEkSEahlh21TZ7WJktU/zH9+Ds7KdH3fohT1q8911bnRK4Wfz0I88S6YstcfSkw)
+    password: ENC(PCukdwzjp9v1fKyGRC33ljVnmhGS5FOed5vjMXA/nabH20NLgfQKAQ7LrnGF1nG4mhjXMlC8+nBW8lRGdVuGdQ==)
     hikari:
       connection-timeout: 30000
       minimum-idle: 5
@@ -26,7 +26,7 @@ spring:
     host: myspringboot-redis
     # docker环境下，容器直连不需要端口号，直接使用容器名。
     # port:
-    password: ENC(vvYw/azP/VIWPNd0Pr8vGzFmpjDORgZk/eSDTuDGni5NVv2UrZI52g==)
+    password: ENC(wNrHLuvV5veiZrTrz6UGggfK88cZ9mlzlyodsWDnMtPdHaOPZ0BQo1JY7QzNqMsUEg16fGcV8futjsIsL2HAiw==)
     timeout: 3000
     lettuce:
       shutdown-timeout: 100ms
@@ -45,11 +45,3 @@ spring:
   # mvc
   mvc:
     static-path-pattern: /**
-
-###############################################################################
-## jasypt 真实环境下，请在命令行等安全地方使用 password
-## windows 系统变量要重启电脑才能生效
-## 有时候就是无法获取到${}引用的变量值，可能是缓存问题引起的，请清空缓存重启(大坑，)
-jasypt:
-  encryptor:
-    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
