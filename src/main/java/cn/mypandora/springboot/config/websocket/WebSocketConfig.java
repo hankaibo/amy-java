@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.config.websocket;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -18,6 +17,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        // topic 用作广播事件，queue 用作点播事件。
+        registry.enableSimpleBroker("/topic", "/queue");
+        // 前端访问的后台接口的前缀，为了与其它 http 接口统一，定义为 "/api/v1/messages"了。
+        registry.setApplicationDestinationPrefixes("/api/v1/messages");
+    }
+
+    @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 前端进行 WebSocket 连接的地址，这里设置为 "/ws"；
         // 开启跨域支持，真实环境中请使用一个具体的地址而非通配符；
@@ -25,18 +32,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
     }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        // 添加拦截器，处理客户端发来的请求
-        registration.interceptors(new WebSocketHandleInterceptor());
-    }
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 前端访问的后台接口的前缀，为了与其它 http 接口统一，定义为 "/api/v1"了。
-        registry.setApplicationDestinationPrefixes("/api/v1");
-        // 前端监听事件接口前缀，topic 我用作广播事件，queue 用作点播事件。
-        registry.enableSimpleBroker("/topic", "/queue");
-    }
+    // @Override
+    // public void configureClientInboundChannel(ChannelRegistration registration) {
+    // // 添加拦截器，处理客户端发来的请求
+    // registration.interceptors(new WebSocketHandleInterceptor());
+    // }
 
 }

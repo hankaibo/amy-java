@@ -8,6 +8,8 @@ import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -199,4 +201,12 @@ public class MessageController {
         messageService.deleteBatchMessage(ids, source, userId);
     }
 
+    @MessageMapping("/hello")
+    @SendTo("/topic/message")
+    public Msg greeting(Msg msg) throws Exception {
+        Thread.sleep(1000); // simulated delay
+        Msg foo = new Msg();
+        foo.setId(123L);
+        return foo;
+    }
 }
