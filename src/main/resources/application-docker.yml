@@ -3,8 +3,8 @@
 ###############################################################################
 ## 文件上传路径
 upload:
-  path: /home/ubuntu/tmp/upload/images/
-  remote-url: http://58.87.121.239:9080/
+  path: /root/upload/images/
+  remote-url: http://58.87.121.239:9001/images/
 ## 数据库
 spring:
   datasource:
