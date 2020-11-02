@@ -21,4 +21,11 @@
             ]]>)
     </select>
 
+    <select id="existsUserByUserId" resultType="int" parameterType="long">
+        SELECT 1
+        FROM sys_department_user du
+        WHERE du.user_id = #{id}
+        LIMIT 1
+    </select>
+
 </mapper>

@@ -7,7 +7,9 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 /**
- * WebSocketConfig EnableWebSocketMessageBroker 表示开启 Stomp WebSocket 服务，也就是可以在 controller 中使用 @MessageMapping 等。
+ * WebSocketConfig
+ * 
+ * EnableWebSocketMessageBroker 表示开启 Stomp WebSocket 服务，也就是可以在 controller 中使用 @MessageMapping 等。
  *
  * @author hankaibo
  * @date 2019/10/22
