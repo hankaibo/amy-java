@@ -5,33 +5,40 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.config.exception.StorageException;
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.FileUtil;
+import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
-import cn.mypandora.springboot.modular.system.model.po.DepartmentUser;
-import cn.mypandora.springboot.modular.system.model.po.User;
-import cn.mypandora.springboot.modular.system.model.po.UserRole;
+import cn.mypandora.springboot.modular.system.model.po.*;
+import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
+import cn.mypandora.springboot.modular.system.model.vo.Token;
+import cn.mypandora.springboot.modular.system.service.ResourceService;
+import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import tk.mybatis.mapper.entity.Example;
 
 /**
@@ -40,12 +47,19 @@ import tk.mybatis.mapper.entity.Example;
  * @author hankaibo
  * @date 2019/6/14
  */
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final ObjectMapper om = new ObjectMapper();
 
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final DepartmentUserMapper departmentUserMapper;
+    private RoleService roleService;
+    private ResourceService resourceService;
+    private StringRedisTemplate stringRedisTemplate;
+
     @Value("${upload.path}")
     private String dirPath;
     @Value("${upload.remote-url}")
@@ -53,10 +67,60 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper,
-        DepartmentUserMapper departmentUserMapper) {
+        DepartmentUserMapper departmentUserMapper, RoleService roleService, ResourceService resourceService,
+        StringRedisTemplate stringRedisTemplate) {
         this.userMapper = userMapper;
         this.userRoleMapper = userRoleMapper;
         this.departmentUserMapper = departmentUserMapper;
+        this.roleService = roleService;
+        this.resourceService = resourceService;
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
+
+    @Override
+    public Token login(String username) {
+        User user = getUserByName(username);
+        Long userId = user.getId();
+
+        // 获取角色信息
+        Map<String, String> roleMap = getRoles(username);
+        String roleCodes = roleMap.get("code");
+        String roleIds = roleMap.get("id");
+
+        // 获取资源信息
+        String resourceCodes = getResourceCodes(username);
+        // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
+        long refreshPeriodTime = 36000L;
+
+        // 生成jwt并将签发的JWT存储到Redis： {JWT-ID-{username} , jwt}
+        String jwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username,
+            refreshPeriodTime >> 1, userId, roleIds, roleCodes, resourceCodes);
+        stringRedisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), jwt, refreshPeriodTime,
+            TimeUnit.SECONDS);
+
+        // 返回给前台数据
+        Token token = new Token();
+        token.setToken(jwt);
+        token.setRoles(roleCodes);
+        token.setResources(resourceCodes);
+
+        return token;
+    }
+
+    @Override
+    public void logout(String authorization) {
+        SecurityUtils.getSubject().logout();
+        String jwt = JsonWebTokenUtil.unBearer(authorization);
+        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
+        String username = jwtAccount.getAppId();
+        if (StringUtils.isEmpty(username)) {
+            throw new EntityNotFoundException(User.class, "Authorization错误，用户为空。");
+        }
+        String jwtInRedis = stringRedisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
+        if (StringUtils.isEmpty(jwtInRedis)) {
+            throw new EntityNotFoundException(User.class, "token为空。");
+        }
+        stringRedisTemplate.opsForValue().getOperations().delete(StringUtils.upperCase("JWT-ID-" + username));
     }
 
     @Override
@@ -237,14 +301,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id, Long departmentId) {
         // 用户多部门情况下，不能直接删除用户对象，而是删除与该用户相关联的部门
-        // 部门不为空，则删除用户与部门关系
         DepartmentUser departmentUser = new DepartmentUser();
         departmentUser.setUserId(id);
         departmentUser.setDepartmentId(departmentId);
         departmentUserMapper.delete(departmentUser);
 
-        // 部门为空，则删除用户及用户的所有角色
-        if (departmentId == null) {
+        // 如果用户没有部门时，物理删除该用户
+        Integer exists = departmentUserMapper.existsUserByUserId(id);
+        if (exists == null) {
             userMapper.deleteByPrimaryKey(id);
             // 删除用户所有角色
             Example userRole = new Example(UserRole.class);
@@ -262,12 +326,19 @@ public class UserServiceImpl implements UserService {
         batchDepartmentUser.createCriteria().andIn("userId", idSet).andEqualTo("departmentId", departmentId);
         departmentUserMapper.deleteByExample(batchDepartmentUser);
 
-        // 部门为空，则删除用户及用户的所有角色
-        if (departmentId == null) {
-            userMapper.deleteByIds(StringUtils.join(idSet, ','));
+        Set<Long> deleteId = new HashSet<>();
+        for (Long id : idSet) {
+            Integer exists = departmentUserMapper.existsUserByUserId(id);
+            if (exists == null) {
+                deleteId.add(id);
+            }
+        }
+
+        if (deleteId.size() > 0) {
+            userMapper.deleteByIds(StringUtils.join(deleteId, ','));
             // 删除用户所有角色（批量）。
             Example batchUserRole = new Example(UserRole.class);
-            batchUserRole.createCriteria().andIn("userId", idSet);
+            batchUserRole.createCriteria().andIn("userId", deleteId);
             userRoleMapper.deleteByExample(batchUserRole);
         }
     }
@@ -276,14 +347,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void grantUserRole(Long userId, Long[] plusRoleIds, Long[] minusRoleIds) {
         // 删除旧角色
-        if (minusRoleIds.length > 0) {
+        if (minusRoleIds != null && minusRoleIds.length > 0) {
             Example userRole = new Example(UserRole.class);
             userRole.createCriteria().andIn("roleId", Arrays.asList(minusRoleIds)).andEqualTo("userId", userId);
             userRoleMapper.deleteByExample(userRole);
         }
 
         // 添加新的角色
-        if (plusRoleIds.length > 0) {
+        if (plusRoleIds != null && plusRoleIds.length > 0) {
             LocalDateTime now = LocalDateTime.now();
             List<UserRole> userRoleList = new ArrayList<>();
             for (Long roleId : plusRoleIds) {
@@ -295,6 +366,42 @@ public class UserServiceImpl implements UserService {
             }
             userRoleMapper.insertList(userRoleList);
         }
+    }
+
+    /**
+     * 根据用户姓名，获取其角色码和id
+     * 
+     * @param username
+     *            用户名称
+     * @return 角色信息
+     */
+    private Map<String, String> getRoles(String username) {
+        // 获取角色信息
+        List<Role> roleList = roleService.listRoleByUserIdOrName(null, username);
+        List<String> roleCodeList = roleList.stream().map(Role::getCode).collect(Collectors.toList());
+        List<Long> roleIdList = roleList.stream().map(Role::getId).collect(Collectors.toList());
+
+        String roleCodes = StringUtils.join(roleCodeList, ',');
+        String roleIds = StringUtils.join(roleIdList, ',');
+
+        Map<String, String> map = new HashMap<>(2);
+        map.put("code", roleCodes);
+        map.put("id", roleIds);
+        return map;
+    }
+
+    /**
+     * 根据用户姓名，获取其资源码
+     * 
+     * @param username
+     *            用户名称
+     * @return 资源码
+     */
+    private String getResourceCodes(String username) {
+        List<Resource> resourceList =
+            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
+        List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
+        return StringUtils.join(resourceCodeList, ',');
     }
 
     /**

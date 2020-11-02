@@ -1,34 +1,17 @@
 package cn.mypandora.springboot.modular.system.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.mypandora.springboot.core.enums.StatusEnum;
-import cn.mypandora.springboot.core.util.JsonWebTokenUtil;
 import cn.mypandora.springboot.core.util.RequestResponseUtil;
-import cn.mypandora.springboot.modular.system.model.po.Resource;
-import cn.mypandora.springboot.modular.system.model.po.Role;
-import cn.mypandora.springboot.modular.system.model.po.User;
-import cn.mypandora.springboot.modular.system.model.vo.JwtAccount;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
-import cn.mypandora.springboot.modular.system.service.ResourceService;
-import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -47,17 +30,10 @@ import io.swagger.annotations.ApiOperation;
 public class LoginController {
 
     private UserService userService;
-    private RoleService roleService;
-    private ResourceService resourceService;
-    private StringRedisTemplate redisTemplate;
 
     @Autowired
-    public LoginController(UserService userService, RoleService roleService, ResourceService resourceService,
-        StringRedisTemplate redisTemplate) {
+    public LoginController(UserService userService) {
         this.userService = userService;
-        this.roleService = roleService;
-        this.resourceService = resourceService;
-        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -84,40 +60,7 @@ public class LoginController {
         // 获取用户信息
         Map<String, String> params = RequestResponseUtil.getRequestBodyMap(request);
         String username = params.get("username");
-        User user = userService.getUserByName(username);
-        Long userId = user.getId();
-
-        // 获取角色信息
-        List<Role> roleList = roleService.listRoleByUserIdOrName(null, username);
-        List<String> roleCodeList = roleList.stream().map(Role::getCode).collect(Collectors.toList());
-        List<Long> roleIdList = roleList.stream().map(Role::getId).collect(Collectors.toList());
-
-        String roleCodes = StringUtils.join(roleCodeList, ',');
-        String roleIds = StringUtils.join(roleIdList, ',');
-
-        // 获取资源信息
-        List<Resource> resourceList =
-            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
-        List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
-
-        String resourceCodes = StringUtils.join(resourceCodeList, ',');
-
-        // 时间以秒计算,token有效刷新时间是token有效过期时间的2倍
-        long refreshPeriodTime = 36000L;
-
-        // 生成jwt并将签发的JWT存储到Redis： {JWT-ID-{username} , jwt}
-        String jwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username,
-            refreshPeriodTime >> 1, userId, roleIds, roleCodes, resourceCodes);
-        redisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), jwt, refreshPeriodTime,
-            TimeUnit.SECONDS);
-
-        // 返回给前台数据
-        Token token = new Token();
-        token.setToken(jwt);
-        token.setRoles(roleCodes);
-        token.setResources(resourceCodes);
-
-        return token;
+        return userService.login(username);
     }
 
     /**
@@ -125,24 +68,11 @@ public class LoginController {
      *
      * @param authorization
      *            token
-     * @return 成功或异常
      */
     @ApiOperation(value = "用户登出", notes = "带token。")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(value = "authorization") String authorization) {
-        SecurityUtils.getSubject().logout();
-        String jwt = JsonWebTokenUtil.unBearer(authorization);
-        JwtAccount jwtAccount = JsonWebTokenUtil.parseJwt(jwt);
-        String username = jwtAccount.getAppId();
-        if (StringUtils.isEmpty(username)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("用户为空。");
-        }
-        String jwtInRedis = redisTemplate.opsForValue().get(StringUtils.upperCase("JWT-ID-" + username));
-        if (StringUtils.isEmpty(jwtInRedis)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("用户为空。");
-        }
-        redisTemplate.opsForValue().getOperations().delete(StringUtils.upperCase("JWT-ID-" + username));
-        return ResponseEntity.ok().body("成功");
+    public void logout(@RequestHeader(value = "authorization") String authorization) {
+        userService.logout(authorization);
     }
 
 }

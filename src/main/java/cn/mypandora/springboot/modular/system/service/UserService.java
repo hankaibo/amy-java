@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.modular.system.model.po.User;
+import cn.mypandora.springboot.modular.system.model.vo.Token;
 
 /**
  * UserService
@@ -12,6 +13,22 @@ import cn.mypandora.springboot.modular.system.model.po.User;
  * @date 2019/6/14
  */
 public interface UserService {
+    /**
+     * 通过用户名称获取token
+     * 
+     * @param username
+     *            用户名称
+     * @return token
+     */
+    Token login(String username);
+
+    /**
+     * 登出
+     * 
+     * @param authorization
+     *            用户authorization
+     */
+    void logout(String authorization);
 
     /**
      * 根据分页参数查询用户。
