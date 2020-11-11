@@ -203,7 +203,7 @@ public class MessageController {
 
     @MessageMapping("/hello")
     @SendTo("/topic/message")
-    public Msg greeting(Msg msg) throws Exception {
+    public Msg greeting() throws Exception {
         Thread.sleep(1000); // simulated delay
         Msg foo = new Msg();
         foo.setId(123L);
