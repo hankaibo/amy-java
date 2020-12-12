@@ -204,14 +204,10 @@ public class RoleServiceImpl implements RoleService {
         roleMapper.deleteByIds(ids);
 
         // 删除角色关联的资源
-        Example roleResource = new Example(RoleResource.class);
-        roleResource.createCriteria().andEqualTo("roleId", id);
-        roleResourceMapper.deleteByExample(roleResource);
+        clearResource(id);
 
         // 删除角色关联的用户
-        Example roleUser = new Example(UserRole.class);
-        roleUser.createCriteria().andEqualTo("roleId", id);
-        userRoleMapper.deleteByExample(roleUser);
+        clearUser(id);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -301,6 +297,19 @@ public class RoleServiceImpl implements RoleService {
         roleResourceMapper.deleteByExample(roleResource);
 
         filterChainManager.reloadFilterChain();
+    }
+
+    /**
+     * 清空指定角色用户
+     * 
+     * @param roleId
+     *            角色id
+     */
+    public void clearUser(Long roleId) {
+        // 删除旧的关联用户
+        Example roleUser = new Example(UserRole.class);
+        roleUser.createCriteria().andEqualTo("roleId", roleId);
+        userRoleMapper.deleteByExample(roleUser);
     }
 
     /**
