@@ -129,7 +129,12 @@ public class RoleServiceImpl implements RoleService {
         role.setUpdateTime(now);
 
         Role info = getRoleByIdOrName(role.getId(), null, userId);
+        // 父角色修改之后，一是清空该角色的权限。二是修改涉及的左右节点。
         if (!info.getParentId().equals(role.getParentId())) {
+            // 清空从旧父角色继承的权限
+            clearResource(role.getId());
+
+            // 修改相关节点值
             Role newParentRole = getRoleByIdOrName(role.getParentId(), null, userId);
             Role oldParentRole = getRoleByIdOrName(info.getParentId(), null, userId);
             Role commonAncestry = getCommonAncestry(newParentRole, oldParentRole);
@@ -281,6 +286,21 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Role> listRoleByUserIdOrName(Long userId, String username) {
         return roleMapper.listByUserIdOrName(userId, username, null);
+    }
+
+    /**
+     * 清空指定角色资源
+     * 
+     * @param roleId
+     *            角色id
+     */
+    public void clearResource(Long roleId) {
+        // 删除旧的资源
+        Example roleResource = new Example(RoleResource.class);
+        roleResource.createCriteria().andEqualTo("roleId", roleId);
+        roleResourceMapper.deleteByExample(roleResource);
+
+        filterChainManager.reloadFilterChain();
     }
 
     /**
