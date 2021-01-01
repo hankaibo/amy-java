@@ -11,51 +11,56 @@
 ## 项目目录
 ```
 myspringboot  
-├── sql -- sql脚本目录 
-|   ├── init_data -- 初始化数据文件
-|   └── init_table -- 初始化建表文件   
+├── logs -- 日志目录 
 ├── src/main/java/cn.mypandora.springboot 
-|   ├── config -- 通用配置  
-|   |    ├── exception -- restful 接口异常信息配置目录 
-|   |    ├── filter -- 自定义过滤器目录
-|   |    ├── shiro -- 权限框架配置目录 
-|   |    ├── swagger -- 在线接口配置目录 
-|   |    └── websocket -- websocket配置目录（未完）   
-|   ├── core -- 通用核心代码  
-|   |    ├── base -- 通用Mapper和分页类 
-|   |    ├── enums -- 枚举类 
-|   |    ├── exception -- 异常信息封装类 
-|   |    ├── listener -- websocket监听类（未完） 
-|   |    ├── shiro -- shiro扩展配置 
-|   |    ├── support -- XSS 过滤 
-|   |    └── utils -- 工具类  
-|   ├── modular -- 业务模块  
-|   |    ├── system -- 通用后台管理代码目录 
-|   |    └── your -- 放置你自己的业务代码
+|   ├── config                  -- 通用配置  
+|   |    ├── converter              -- 转换器配置目录 
+|   |    ├── exception              -- restful 接口异常信息配置目录 
+|   |    ├── filter                 -- filter配置目录
+|   |    ├── redis                  -- redis配置目录
+|   |    ├── shiro                  -- shiro配置目录 
+|   |    ├── swagger                -- swagger配置目录 
+|   |    └── websocket              -- websocket配置目录   
+|   ├── core                    -- 通用核心代码  
+|   |    ├── annotation             -- 自定义注解 
+|   |    ├── base                   -- 通用Mapper和分页类 
+|   |    ├── enums                  -- 自定义枚举类 
+|   |    ├── exception              -- 异常信息封装类 
+|   |    ├── listener               -- websocket监听类 
+|   |    ├── shiro                  -- shiro扩展配置 
+|   |    ├── support                -- XSS 过滤 
+|   |    └── utils                  -- 工具类  
+|   |    └── validate               -- 自定义校验组  
+|   ├── modular                 -- 业务模块  
+|   |    ├── system                 -- 通用后台管理代码目录 
+|   |    └── your                   -- 放置你自己的业务代码
 └── src/main/resources  
-    ├── mybatis -- Mybatis的Mapper.xml目录 
-    |   ├── mapper -- MyBatis sql语句配置目录
-    |   └── mybatis-config -- MyBatis配置文件  
-    ├── application.yml -- 项目默认配置文件  
-    ├── application-dev.yml -- 开发环境配置文件  
-    ├── application-docker.yml -- docker环境配置文件  
-    ├── application-prod.yml -- 生产环境配置文件  
-    └── logback-spring.xml -- 日志配置文件  
+    ├── mybatis                 -- Mybatis的Mapper.xml目录 
+    |   ├── mapper                  -- MyBatis sql语句配置目录
+    |   └── mybatis-config          -- MyBatis配置文件
+    ├── sql -- sql脚本目录 
+    |   └── init.sql            -- 初始化建表文件    
+    ├── application.yml         -- 项目默认配置文件  
+    ├── application-dev.yml     -- 开发环境配置文件  
+    ├── application-docker.yml  -- docker环境配置文件  
+    ├── application-prod.yml    -- 生产环境配置文件  
+    ├── application-test.yml    -- 测试环境配置文件  
+    └── logback-spring.xml      -- 日志配置文件  
 ```
 
 ## 技术选型
 
 [x] | 技术名 | 版本  
  :---: | :--- | :---  
-[x] | SpringBoot | 2.2.6 
-[x] | Redis(spring-boot-starter-data-redis) | 2.2.6
+[x] | SpringBoot | 2.3.3 
+[x] | Redis(spring-boot-starter-data-redis) | 2.3.3
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.1.1  
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
 [x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.13 
 [x] | Shiro | 1.5.3 
 [x] | jjwt | 0.10.7
 [x] | jBCrypt | 0.4.1
-[x] | jasypt-spring-boot-starter | 2.1.2
+[x] | jasypt-spring-boot-starter | 3.0.3
 [x] | Swagger2(springfox.swagger2) | 2.9.2  
 [x] | lombok | 1.18.10    
 
@@ -66,7 +71,7 @@ myspringboot
 ## 开发环境
 
 1. openjdk 11
-2. MariaDB 10.4.7
+2. MariaDB 10.4.13
 3. Redis 5.0
 
 ## 快速开始
@@ -81,9 +86,9 @@ myspringboot
 
 3. 导入数据库
 
-    安装 MySQL(MariaDB) 数据库，执行 init_table.sql 文件建表，执行 init_data 初始化数据；
+    安装 MySQL(MariaDB) 数据库，执行 init.sql 文件建表初始化数据；
     
-    安装 redis 创建 redis 数据库。
+    安装 redis。
 
 4. 配置数据库
 
