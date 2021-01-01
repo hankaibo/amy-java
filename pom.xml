@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>cn.mypandora</groupId>
-    <artifactId>springboot</artifactId>
+    <artifactId>myspringboot</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
