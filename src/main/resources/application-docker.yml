@@ -45,3 +45,16 @@ spring:
   # mvc
   mvc:
     static-path-pattern: /**
+
+###############################################################################
+## swagger
+springfox:
+  enable: false
+  application-name: @name@
+  application-version: @version@
+  application-description: @description@
+  try-host: http://localhost:${server.port}
+  author:
+    name: @project.author.name@
+    url: @project.author.url@
+    email: @project.author.email@
