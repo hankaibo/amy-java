@@ -45,8 +45,7 @@
         <!-- lombok -->
         <lombok.version>1.18.10</lombok.version>
         <!-- swagger -->
-        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
-        <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+        <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
         <!-- utils -->
         <commons-lang3.version>3.9</commons-lang3.version>
         <commons-pool2.version>2.8.0</commons-pool2.version>
@@ -154,27 +153,10 @@
         </dependency>
 
         <!-- swagger -->
-        <!--  https://blog.csdn.net/boyin333/article/details/87980108 -->
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox-swagger2.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.swagger</groupId>
-                    <artifactId>swagger-models</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>1.5.22</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox-swagger-ui.version}</version>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${springfox-boot-starter.version}</version>
         </dependency>
 
         <!-- tools -->
