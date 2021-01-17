@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 
 /**
- * ProjectProperties
+ * SwaggerProperties
  * <p>
  * 方法有三种，如下：
  * <ul>
@@ -16,8 +16,14 @@ import lombok.Data;
  * </ul>
  *
  * <p>
- * 读取配置文件(application*.xml)中的属性值。 注： 1. @Component 将该类作为Bean注入Ioc容器；
- * 2. @ConfigurationProperties批量注入配置文件的属性。@Value只能一个个指定。
+ * 读取配置文件(application*.xml)中的属性值。
+ * <p>
+ * 注：
+ * <ol>
+ * <li>1. @Component 将该类作为Bean注入Ioc容器；</li>
+ * <li>2. @ConfigurationProperties批量注入配置文件的属性。@Value只能一个个指定。</li>
+ * </ol>
+ * *
  *
  * @author hankaibo
  * @date 2019/6/17
@@ -26,23 +32,33 @@ import lombok.Data;
  */
 @Data
 @Component
-@ConfigurationProperties(prefix = "project")
-class ProjectProperties {
+@ConfigurationProperties(prefix = "springfox")
+class SwaggerProperties {
+
+    /**
+     * 是否开启swagger
+     */
+    private Boolean enable;
 
     /**
      * 项目名称
      */
-    private String name;
+    private String applicationName;
 
     /**
      * 项目版本号
      */
-    private String version;
+    private String applicationVersion;
 
     /**
      * 项目描述
      */
-    private String description;
+    private String applicationDescription;
+
+    /**
+     * 接口调度地址
+     */
+    private String tryHost;
 
     /**
      * swagger contact属性
@@ -50,7 +66,7 @@ class ProjectProperties {
     private ContactProperties author;
 
     /**
-     * ProjectProperties
+     * ContactProperties
      * <p>
      * swagger 作者、网址、邮箱
      *
