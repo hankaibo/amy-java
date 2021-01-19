@@ -25,6 +25,7 @@ import cn.mypandora.springboot.modular.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * RoleController
@@ -59,7 +60,7 @@ public class RoleController {
     @ApiOperation(value = "获取角色树")
     @GetMapping
     public List<RoleTree> listRoleTree(@NullOrNumber @RequestParam(value = "status",
-        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, Long userId) {
+        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, @ApiIgnore Long userId) {
         List<Role> roleList = roleService.listRole(status, userId);
         return TreeUtil.role2Tree(roleList);
     }
@@ -80,7 +81,7 @@ public class RoleController {
     public List<Role> listRoleChildren(@Positive @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
         @NullOrNumber @RequestParam(value = "status",
             required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         return roleService.listChildrenRole(id, status, userId);
     }
 
@@ -95,7 +96,7 @@ public class RoleController {
     @ApiOperation(value = "新建角色")
     @PostMapping
     public void addRole(@Validated({AddGroup.class}) @RequestBody @ApiParam(value = "角色数据", required = true) Role role,
-        Long userId) {
+        @ApiIgnore Long userId) {
         roleService.addRole(role, userId);
     }
 
@@ -111,7 +112,7 @@ public class RoleController {
     @ApiOperation(value = "获取角色详情")
     @GetMapping("/{id}")
     public Role getRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        Long userId) {
+        @ApiIgnore Long userId) {
         Role role = roleService.getRoleByIdOrName(id, null, userId);
         role.setRgt(null);
         role.setLft(null);
@@ -131,7 +132,7 @@ public class RoleController {
     @PutMapping("/{id}")
     public void updateRole(
         @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "角色数据", required = true) Role role,
-        Long userId) {
+        @ApiIgnore Long userId) {
         roleService.updateRole(role, userId);
     }
 
@@ -149,7 +150,7 @@ public class RoleController {
     @PatchMapping("/{id}/status")
     public void enableRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
         @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         roleService.enableRole(id, status, userId);
     }
 
@@ -164,7 +165,7 @@ public class RoleController {
     @ApiOperation(value = "删除角色")
     @DeleteMapping("/{id}")
     public void deleteRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        Long userId) {
+        @ApiIgnore Long userId) {
         roleService.deleteRole(id, userId);
     }
 
@@ -181,7 +182,8 @@ public class RoleController {
     @ApiOperation(value = "移动角色")
     @PutMapping
     public void moveRole(@Positive @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
-        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
+        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
+        @ApiIgnore Long userId) {
         roleService.moveRole(sourceId, targetId, userId);
     }
 
@@ -197,7 +199,7 @@ public class RoleController {
     public Map<String, List> listRoleResource(
         @Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
         @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         Role role = roleService.getRoleByIdOrName(id, null, userId);
 
         // 获取当前角色可分配的所有资源，即父角色资源
@@ -227,7 +229,8 @@ public class RoleController {
     @ApiOperation(value = "赋予角色资源。")
     @PostMapping("/{id}/resources")
     public void grantRoleResource(@PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        @Validated @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) RoleGrant roleGrant, Long userId) {
+        @Validated @RequestBody @ApiParam(value = "增加资源与删除资源对象", required = true) RoleGrant roleGrant,
+        @ApiIgnore Long userId) {
         Long[] plusResourceIds = roleGrant.getPlusResourceIds();
         Long[] minusResourceIds = roleGrant.getMinusResourceIds();
         roleService.grantRoleResource(id, plusResourceIds, minusResourceIds, userId);

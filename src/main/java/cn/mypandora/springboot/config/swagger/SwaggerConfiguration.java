@@ -76,34 +76,6 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 业务模块接口组
-     *
-     * @return Docket
-     */
-    @Bean
-    public Docket docketBusiness() {
-        return new Docket(DocumentationType.OAS_30).groupName("business API")
-            // 是否开启swagger
-            .enable(swaggerProperties.getEnable())
-            // 将api的元信息设置为包含在json响应中
-            .apiInfo(apiInfo())
-            // 接口调试地址
-            .host(swaggerProperties.getTryHost())
-            // 选择哪些接口信作为swagger的doc发布
-            .select()
-            // 指定包
-            .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.hospital.controller"))
-            // 指定前缀
-            .paths(PathSelectors.regex("/api/.*")).build()
-            // 支持的通讯协议集合
-            .protocols(new LinkedHashSet<>(Arrays.asList("https", "http")))
-            // 授权信息设置，必要的header token 等认证信息
-            .securitySchemes(securitySchemes())
-            // 授权信息全局应用
-            .securityContexts(securityContexts());
-    }
-
-    /**
      * swagger 信息
      *
      * @return swagger页面信息
@@ -117,7 +89,7 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
     }
 
     private List<SecurityScheme> securitySchemes() {
-        ApiKey apiKey = new ApiKey("Authorization", "token", In.HEADER.toValue());
+        ApiKey apiKey = new ApiKey("Authorization", "Authorization", In.HEADER.toValue());
         return Collections.singletonList(apiKey);
     }
 

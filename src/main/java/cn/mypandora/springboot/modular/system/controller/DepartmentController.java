@@ -19,6 +19,7 @@ import cn.mypandora.springboot.modular.system.service.DepartmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * DepartmentController
@@ -51,7 +52,7 @@ public class DepartmentController {
     @ApiOperation(value = "获取部门树")
     @GetMapping
     public List<DepartmentTree> listDepartmentTree(@NullOrNumber @RequestParam(value = "status",
-        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, Long userId) {
+        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, @ApiIgnore Long userId) {
         List<Department> departmentList = departmentService.listDepartment(status, userId);
         return TreeUtil.department2Tree(departmentList);
     }
@@ -73,7 +74,7 @@ public class DepartmentController {
         @Positive @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
         @NullOrNumber @RequestParam(value = "status",
             required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         return departmentService.listChildrenDepartment(id, status, userId);
     }
 
@@ -89,7 +90,7 @@ public class DepartmentController {
     @PostMapping
     public void addDepartment(
         @Validated({AddGroup.class}) @RequestBody @ApiParam(value = "部门数据", required = true) Department department,
-        Long userId) {
+        @ApiIgnore Long userId) {
         departmentService.addDepartment(department, userId);
     }
 
@@ -105,7 +106,7 @@ public class DepartmentController {
     @ApiOperation(value = "获取部门详情")
     @GetMapping("/{id}")
     public Department getDepartmentById(
-        @Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id, Long userId) {
+        @Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id, @ApiIgnore Long userId) {
         Department department = departmentService.getDepartmentById(id, userId);
         department.setRgt(null);
         department.setLft(null);
@@ -125,7 +126,7 @@ public class DepartmentController {
     @PutMapping("/{id}")
     public void updateDepartment(
         @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "部门数据", required = true) Department department,
-        Long userId) {
+        @ApiIgnore Long userId) {
         departmentService.updateDepartment(department, userId);
     }
 
@@ -143,7 +144,7 @@ public class DepartmentController {
     @PatchMapping("/{id}/status")
     public void enableDepartment(@Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
         @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         departmentService.enableDepartment(id, status, userId);
     }
 
@@ -158,7 +159,7 @@ public class DepartmentController {
     @ApiOperation(value = "删除部门")
     @DeleteMapping("/{id}")
     public void deleteDepartment(@Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
-        Long userId) {
+        @ApiIgnore Long userId) {
         departmentService.deleteDepartment(id, userId);
     }
 
@@ -175,7 +176,8 @@ public class DepartmentController {
     @ApiOperation(value = "移动部门")
     @PutMapping
     public void moveDepartment(@Positive @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
-        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
+        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
+        @ApiIgnore Long userId) {
         departmentService.moveDepartment(sourceId, targetId, userId);
     }
 
