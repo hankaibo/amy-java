@@ -24,6 +24,7 @@ import cn.mypandora.springboot.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * UserController
@@ -55,7 +56,7 @@ public class UserController {
      */
     @ApiOperation(value = "获取当前登录用户信息")
     @GetMapping("/info")
-    public User getCurrentUser(Long userId) {
+    public User getCurrentUser(@ApiIgnore Long userId) {
         return userService.getUserById(userId);
     }
 
@@ -69,7 +70,7 @@ public class UserController {
      */
     @ApiOperation(value = "更新当前登录用户信息")
     @PutMapping("/info")
-    public void updateCurrentUser(Long userId,
+    public void updateCurrentUser(@ApiIgnore Long userId,
         @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "用户数据", required = true) User user) {
         // 只能修改自己
         if (userId.equals(user.getId())) {
@@ -269,7 +270,7 @@ public class UserController {
     public Map<String, List> listUserRole(
         @Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
         @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         // 获取当前登录用户的所有角色
         List<Role> roleList = roleService.listRole(status, userId);
         List<RoleTree> roleTrees = TreeUtil.role2Tree(roleList);

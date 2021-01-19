@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * LoginController
@@ -37,8 +38,9 @@ public class LoginController {
     }
 
     /**
-     * 用户登录，返回token。 关于当前登录用户是否有操作部门、角色、资源的权限，有如下两种方案。 方案一：
-     * 用户登录时，获取当前登录用户的userId,departmentIds,roleIds,roleCodes,resourceIds,resourceCodes，并作为token数据返回给前端。
+     * 用户登录，返回token。 关于当前登录用户是否有操作部门、角色、资源的权限，有如下两种方案。
+     * <p>
+     * 方案一： 用户登录时，获取当前登录用户的userId,departmentIds,roleIds,roleCodes,resourceIds,resourceCodes，并作为token数据返回给前端。
      * 用户操作部门、角色和资源时，从token中取出上述资源，进行用户是否有权限的判断。 优点：每次从token中获取，不用再查询数据库，减少了sql操作。
      * 缺点：如果动态修改了当前用户的部门、角色和资源，只要他不退出重新登录就依然有操作权限。
      * <p>
@@ -50,10 +52,8 @@ public class LoginController {
      *            request
      * @return token
      */
-    @ApiOperation(value = "用户登录", notes = "输入名称与密码，返回token与role信息。")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "authorization", paramType = "header", dataType = "String", access = "hidden"),
-        @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
+    @ApiOperation(value = "用户登录")
+    @ApiImplicitParams({@ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
         @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")})
     @PostMapping("/login")
     public Token login(HttpServletRequest request) {
@@ -69,9 +69,9 @@ public class LoginController {
      * @param authorization
      *            token
      */
-    @ApiOperation(value = "用户登出", notes = "带token。")
+    @ApiOperation(value = "用户登出")
     @PostMapping("/logout")
-    public void logout(@RequestHeader(value = "authorization") String authorization) {
+    public void logout(@RequestHeader(value = "authorization") @ApiIgnore String authorization) {
         userService.logout(authorization);
     }
 

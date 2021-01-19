@@ -23,6 +23,7 @@ import cn.mypandora.springboot.modular.system.service.MessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * MessageController
@@ -67,7 +68,7 @@ public class MessageController {
         @Range(min = 0, max = 1) @RequestParam(value = "isPublish") @ApiParam(value = "是否发布") Integer isPublish,
         @Range(min = 1, max = 3) @RequestParam(value = "type",
             required = false) @ApiParam(value = "站内信类型") Integer type,
-        Long userId) {
+        @ApiIgnore Long userId) {
         Msg msg = new Msg();
         if (sendId != null) {
             msg.setSendId(userId);
@@ -93,7 +94,8 @@ public class MessageController {
     @PostMapping
     @ResponseBody
     public void addMessage(
-        @Validated({AddGroup.class}) @RequestBody @ApiParam(value = "站内信数据", required = true) Msg msg, Long userId) {
+        @Validated({AddGroup.class}) @RequestBody @ApiParam(value = "站内信数据", required = true) Msg msg,
+        @ApiIgnore Long userId) {
         msg.setSendId(userId);
         messageService.addMessage(msg);
     }
@@ -111,7 +113,7 @@ public class MessageController {
     @GetMapping("/{id}")
     @ResponseBody
     public Msg getMessageById(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, Long userId) {
+        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, @ApiIgnore Long userId) {
         return messageService.getMessageById(id, source, userId);
     }
 
@@ -128,7 +130,7 @@ public class MessageController {
     @ResponseBody
     public void updateMessage(
         @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "站内信数据", required = true) MsgUpdate msgUpdate,
-        Long userId) {
+        @ApiIgnore Long userId) {
         Msg msg = msgUpdate.getMsg();
         msg.setSendId(userId);
         Long[] plusReceiveIds = msgUpdate.getPlusReceiveIds();
@@ -149,7 +151,7 @@ public class MessageController {
     @PatchMapping("/{id}/publication")
     @ResponseBody
     public void publishMessage(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        Long userId) {
+        @ApiIgnore Long userId) {
         messageService.publishMessage(id, userId);
     }
 
@@ -165,7 +167,7 @@ public class MessageController {
     @PutMapping
     @ResponseBody
     public void publishBatchMessage(@RequestBody @ApiParam(value = "站内信主键数组ids", required = true) Long[] ids,
-        Long userId) {
+        @ApiIgnore Long userId) {
         messageService.publishBatchMessage(ids, userId);
     }
 
@@ -181,7 +183,7 @@ public class MessageController {
     @DeleteMapping("/{id}")
     @ResponseBody
     public void deleteMessage(@Positive @PathVariable("id") @ApiParam(value = "站内信主键id", required = true) Long id,
-        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, Long userId) {
+        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, @ApiIgnore Long userId) {
         messageService.deleteMessage(id, source, userId);
     }
 
@@ -197,7 +199,7 @@ public class MessageController {
     @DeleteMapping
     @ResponseBody
     public void deleteBatchMessage(@RequestBody @ApiParam(value = "站内信主键数组ids", required = true) Long[] ids,
-        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, Long userId) {
+        @NotBlank @RequestParam(value = "source") @ApiParam(value = "来源") String source, @ApiIgnore Long userId) {
         messageService.deleteBatchMessage(ids, source, userId);
     }
 

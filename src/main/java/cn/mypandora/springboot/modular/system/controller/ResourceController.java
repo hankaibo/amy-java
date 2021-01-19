@@ -19,6 +19,7 @@ import cn.mypandora.springboot.modular.system.service.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * ResourceController
@@ -56,7 +57,7 @@ public class ResourceController {
         @Range(min = 1, max = 2) @RequestParam("type") @ApiParam(value = "资源类型(1:菜单，2:接口)") Integer type,
         @NullOrNumber @RequestParam(value = "status",
             required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         List<Resource> resourceList = resourceService.listResource(type, status, userId);
         return TreeUtil.resource2Tree(resourceList);
     }
@@ -81,7 +82,7 @@ public class ResourceController {
         @Range(min = 1, max = 2) @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
         @NullOrNumber @RequestParam(value = "status",
             required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         return resourceService.listChildrenResource(id, type, status, userId);
     }
 
@@ -96,7 +97,7 @@ public class ResourceController {
     @ApiOperation(value = "新建资源", notes = "根据数据新建资源。")
     @PostMapping
     public void addResource(@Valid @RequestBody @ApiParam(value = "资源数据", required = true) Resource resource,
-        Long userId) {
+        @ApiIgnore Long userId) {
         resourceService.addResource(resource, userId);
     }
 
@@ -112,7 +113,7 @@ public class ResourceController {
     @ApiOperation(value = "获取资源详情", notes = "根据资源id查询资源详情。")
     @GetMapping("/{id}")
     public Resource listResourceById(@Positive @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
-        Long userId) {
+        @ApiIgnore Long userId) {
         Resource resource = resourceService.getResourceById(id, userId);
         resource.setRgt(null);
         resource.setLft(null);
@@ -133,7 +134,7 @@ public class ResourceController {
     @ApiOperation(value = "更新资源", notes = "根据资源数据更新资源。")
     @PutMapping("/{id}")
     public void updateResource(@Valid @RequestBody @ApiParam(value = "资源数据", required = true) Resource resource,
-        Long userId) {
+        @ApiIgnore Long userId) {
         resourceService.updateResource(resource, userId);
     }
 
@@ -151,7 +152,7 @@ public class ResourceController {
     @PatchMapping("/{id}/status")
     public void enableResource(@Positive @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
         @Range(min = 0, max = 1) @RequestParam("status") @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        Long userId) {
+        @ApiIgnore Long userId) {
         resourceService.enableResource(id, status, userId);
     }
 
@@ -166,7 +167,7 @@ public class ResourceController {
     @ApiOperation(value = "删除资源", notes = "根据资源Id删除资源。")
     @DeleteMapping("/{id}")
     public void deleteResource(@Positive @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
-        Long userId) {
+        @ApiIgnore Long userId) {
         resourceService.deleteResource(id, userId);
     }
 
@@ -183,14 +184,16 @@ public class ResourceController {
     @ApiOperation(value = "移动资源", notes = "将当前资源上移或下移。")
     @PutMapping
     public void move(@Positive @RequestParam("from") @ApiParam(value = "源id", required = true) Long sourceId,
-        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId, Long userId) {
+        @Positive @RequestParam("to") @ApiParam(value = "目标id", required = true) Long targetId,
+        @ApiIgnore Long userId) {
         resourceService.moveResource(sourceId, targetId, userId);
     }
 
     @ApiOperation(value = "批量导入资源", notes = "批量导入文件中资源。")
     @PostMapping("/batch")
     public void importBatch(
-        @NotEmpty @RequestBody @ApiParam(value = "资源列表", required = true) List<Resource> resourceList, Long userId) {
+        @NotEmpty @RequestBody @ApiParam(value = "资源列表", required = true) List<Resource> resourceList,
+        @ApiIgnore Long userId) {
         resourceService.importBatchResource(resourceList, userId);
     }
 
