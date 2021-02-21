@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 
 import cn.mypandora.springboot.config.exception.BusinessException;
@@ -50,8 +49,6 @@ import tk.mybatis.mapper.entity.Example;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-
-    private static final ObjectMapper om = new ObjectMapper();
 
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;

@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MyRedisCacheConfiguration extends CachingConfigurerSupport {
 
     private static final String KEY_PREFIX = "CACHE:";
-    private static final ObjectMapper om = new ObjectMapper();
+    private static final ObjectMapper OM = new ObjectMapper();
 
     @Bean
     @Override
@@ -52,7 +52,7 @@ public class MyRedisCacheConfiguration extends CachingConfigurerSupport {
 
             for (Object param : params) {
                 try {
-                    joiner.add(om.writeValueAsString(param));
+                    joiner.add(OM.writeValueAsString(param));
                 } catch (JsonProcessingException e) {
                     log.error("缓存方法失败：" + target.getClass() + "#" + method.getName() + ":" + param);
                 }

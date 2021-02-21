@@ -266,7 +266,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .map(BaseEntity::getId).collect(Collectors.toList());
         // 同层级、相邻
         if (!(sourceInfo.getLevel().equals(targetInfo.getLevel()))
-            || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
+            || (Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) != 1)) {
             throw new BusinessException(Department.class, "所选部门错误，不是同级相邻部门。");
         }
 

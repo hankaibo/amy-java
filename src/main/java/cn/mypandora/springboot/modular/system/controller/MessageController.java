@@ -206,7 +206,8 @@ public class MessageController {
     @MessageMapping("/hello")
     @SendTo("/topic/message")
     public Msg greeting() throws Exception {
-        Thread.sleep(1000); // simulated delay
+        // simulated delay
+        Thread.sleep(1000);
         Msg foo = new Msg();
         foo.setId(123L);
         return foo;
