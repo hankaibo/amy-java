@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.3.RELEASE</version>
+        <version>2.3.9.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -29,12 +29,11 @@
         <project.author.email>name@email.com</project.author.email>
         <!-- jar版本 -->
         <!-- mybatis,mapper,pagehelper,druid -->
-        <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
         <jasypt-spring-boot-starter.version>3.0.3</jasypt-spring-boot-starter.version>
         <mybatis-spring-boot-starter.version>2.1.1</mybatis-spring-boot-starter.version>
         <mapper-spring-boot-starter.version>2.1.5</mapper-spring-boot-starter.version>
         <pagehelper-spring-boot-starter.version>1.2.13</pagehelper-spring-boot-starter.version>
-        <!-- shiro,token -->
+        <!-- shiro,jwt -->
         <shiro-core.version>1.5.3</shiro-core.version>
         <shiro-web.version>1.5.3</shiro-web.version>
         <shiro-spring.version>1.5.3</shiro-spring.version>
@@ -42,15 +41,8 @@
         <jjwt-api.version>0.10.7</jjwt-api.version>
         <jjwt-impl.version>0.10.7</jjwt-impl.version>
         <jjwt-jackson.version>0.10.7</jjwt-jackson.version>
-        <!-- lombok -->
-        <lombok.version>1.18.10</lombok.version>
         <!-- swagger -->
         <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
-        <!-- utils -->
-        <commons-lang3.version>3.9</commons-lang3.version>
-        <commons-pool2.version>2.8.0</commons-pool2.version>
-        <!-- 兼容Java 11 -->
-        <jaxb-api.version>2.3.1</jaxb-api.version>
     </properties>
 
     <dependencies>
@@ -77,7 +69,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -149,7 +140,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
         </dependency>
 
         <!-- swagger -->
@@ -163,12 +153,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
-            <version>${commons-pool2.version}</version>
         </dependency>
 
         <!-- 热启动 -->
@@ -210,7 +198,6 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>${jaxb-api.version}</version>
         </dependency>
 
     </dependencies>
@@ -249,6 +236,12 @@
                     <fork>true</fork>
                     <!-- step 2 Compiler/Build project automatically-->
                     <!-- step 3 Registry/compiler.automake.allow.when.app.running-->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                        </exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

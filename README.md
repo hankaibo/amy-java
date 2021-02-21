@@ -53,7 +53,7 @@ myspringboot
 
 [x] | 技术名 | 版本
  :---: | :--- | :---  
-[x] | SpringBoot | 2.3.3
+[x] | SpringBoot | 2.3.9
 [x] | Redis(spring-boot-starter-data-redis) | 2.3.3
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.1.1
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
@@ -63,7 +63,6 @@ myspringboot
 [x] | jBCrypt | 0.4.1
 [x] | jasypt-spring-boot-starter | 3.0.3
 [x] | Swagger3 | 3.0.0
-[x] | lombok | 1.18.10
 
 ## 使用说明
 
