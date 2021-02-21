@@ -33,23 +33,23 @@ public class Role extends BaseTree {
      * 角色编码
      */
     @ApiModelProperty(value = "角色编码")
-    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "角色编码不能为空")
-    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "角色编码长度请在1至255字符之间")
+    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "{role.code.notBlank}")
+    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{role.code.size}")
     private String code;
 
     /**
      * 状态
      */
     @ApiModelProperty(value = "角色状态")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "角色状态值不可为空")
-    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "角色状态可选值为0或者1")
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{role.status.notNull}")
+    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "{role.status.range}")
     private Integer status;
 
     /**
      * 角色描述
      */
     @ApiModelProperty(value = "角色描述")
-    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "角色描述最大255字符")
+    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{role.description.size}")
     private String description;
 
 }

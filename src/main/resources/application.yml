@@ -11,6 +11,9 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
   jackson:
     default-property-inclusion: non_null
+  messages:
+    basename: i18n/base,i18n/tree,i18/department,i18n/user,i18n/role
+    encoding: UTF-8
 ###############################################################################
 ## mybatis
 mybatis:

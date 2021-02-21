@@ -32,8 +32,8 @@ public abstract class BaseTree extends BaseEntity {
      * 节点名称
      */
     @ApiModelProperty(value = "名称")
-    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "名称不能为空")
-    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "名称长度请在1至255字符之间")
+    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "{tree.name.notBlank}")
+    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{tree.name.size}")
     protected String name;
 
     /**
@@ -58,8 +58,8 @@ public abstract class BaseTree extends BaseEntity {
      * 父节点
      */
     @ApiModelProperty(value = "父节点id")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "父节点不能为空")
-    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "父节点必须为正整数")
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{tree.parentId.notNull}")
+    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "{tree.parentId.positive}")
     protected Long parentId;
 
     /**

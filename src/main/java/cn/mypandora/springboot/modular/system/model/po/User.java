@@ -43,30 +43,30 @@ public class User extends BaseEntity {
      * 用户名
      */
     @ApiModelProperty(value = "用户名称")
-    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "用户名称不能为空")
-    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "名称长度请在1至255字符之间")
+    @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "{user.username.notBlank}")
+    @Size(min = 1, max = 2, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.username.size}")
     private String username;
 
     /**
      * 昵称
      */
     @ApiModelProperty(value = "用户昵称")
-    @Size(max = 32, groups = {AddGroup.class, UpdateGroup.class}, message = "用户昵称长度最大至32字符")
+    @Size(max = 32, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.nickName.size}")
     private String nickname;
 
     /**
      * 真实名称
      */
     @ApiModelProperty(value = "用户真实姓名")
-    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "用户真实名称长度最大至255字符")
+    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.realName.size}")
     private String realName;
 
     /**
      * 密码
      */
     @ApiModelProperty(hidden = true)
-    @NotBlank(groups = {AddGroup.class}, message = "密码不能为空")
-    @Size(min = 6, max = 32, groups = {AddGroup.class}, message = "密码长度请在6至32字符之间")
+    @NotBlank(groups = {AddGroup.class}, message = "{user.password.notBlank}")
+    @Size(min = 6, max = 32, groups = {AddGroup.class}, message = "{user.password.size}")
     private String password;
 
     /**
@@ -79,64 +79,64 @@ public class User extends BaseEntity {
      * 状态
      */
     @ApiModelProperty(value = "用户状态,1表示开启,0表示禁用")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "状态值不可为空")
-    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "状态可选值为0或者1")
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{user.status.notNull}")
+    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.status.range}")
     private Integer status;
 
     /**
      * 头像
      */
     @ApiModelProperty(value = "用户头像地址")
-    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "用户头像地址最长至255字符")
+    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.avatar.size}")
     private String avatar;
 
     /**
      * Email
      */
     @ApiModelProperty(value = "用户邮箱")
-    @Email(groups = {AddGroup.class, UpdateGroup.class}, message = "邮箱格式不正确")
+    @Email(groups = {AddGroup.class, UpdateGroup.class}, message = "{user.email.email}")
     private String email;
 
     /**
      * 座机
      */
     @ApiModelProperty(value = "用户座机号码")
-    @Size(max = 32, groups = {AddGroup.class, UpdateGroup.class}, message = "用户座机号码最大32至字符")
+    @Size(max = 32, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.phone.size}")
     private String phone;
 
     /**
      * 电话
      */
     @ApiModelProperty(value = "用户手机号码")
-    @Size(max = 32, groups = {AddGroup.class, UpdateGroup.class}, message = "用户手机号码最大32至字符")
+    @Size(max = 32, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.mobile.size}")
     private String mobile;
 
     /**
      * 性别
      */
     @ApiModelProperty(value = "用户性别")
-    @Range(min = 0, max = 2, groups = {AddGroup.class, UpdateGroup.class}, message = "用户性别可选值为0,1,2")
+    @Range(min = 0, max = 2, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.sex.range}")
     private Byte sex;
 
     /**
      * 用户个性签名
      */
     @ApiModelProperty(value = "用户个性签名")
-    @Size(max = 128, message = "用户个性签名最大128个字符")
+    @Size(max = 128, message = "{user.signature.size}")
     private String signature;
 
     /**
      * 用户简介
      */
     @ApiModelProperty(value = "用户简介")
-    @Size(max = 255, message = "用户简介最大255个字符")
+    @Size(max = 255, message = "{user.profile.size}")
     private String profile;
 
     /**
      * 用户街道地址
      */
-    @ApiModelProperty(value = "用户街道地址")
-    @Size(max = 255, message = "用户街道地址最大255个字符")
+    @ApiModelProperty(value = "用户地址")
+    @Size(max = 255, message = "{user.address.size}")
     private String address;
 
     /**
