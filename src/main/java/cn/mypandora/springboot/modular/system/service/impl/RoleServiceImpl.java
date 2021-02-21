@@ -230,7 +230,7 @@ public class RoleServiceImpl implements RoleService {
                 .map(BaseEntity::getId).collect(Collectors.toList());
 
         if (!(sourceInfo.getLevel().equals(targetInfo.getLevel()))
-            || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
+            || (Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) != 1)) {
             throw new BusinessException(Role.class, "角色错误。");
         }
 

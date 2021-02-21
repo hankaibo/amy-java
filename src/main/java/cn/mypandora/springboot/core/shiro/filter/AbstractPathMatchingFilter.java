@@ -36,17 +36,17 @@ public abstract class AbstractPathMatchingFilter extends PathMatchingFilter {
         requestURI = safeFormatUrl(requestURI);
         // path: url==method eg: http://api/menu==GET 需要解析出path中的url和httpMethod
         String[] strings = path.split("==");
-        String URL = strings[0];
+        String url = strings[0];
         String method = strings[1];
 
-        URL = safeFormatUrl(URL);
+        url = safeFormatUrl(url);
         if (strings.length == 1) {
             // 分割出来只有URL
-            return this.pathsMatch(URL, requestURI);
+            return this.pathsMatch(url, requestURI);
         } else {
             // 分割出url+httpMethod,判断httpMethod和request请求的method是否一致,不一致直接false
             String httpMethod = WebUtils.toHttp(request).getMethod().toUpperCase();
-            return httpMethod.equals(method) && this.pathsMatch(URL, requestURI);
+            return httpMethod.equals(method) && this.pathsMatch(url, requestURI);
         }
     }
 

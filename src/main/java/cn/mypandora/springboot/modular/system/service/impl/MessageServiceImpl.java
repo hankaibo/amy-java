@@ -34,9 +34,13 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private MessageSenderMapper messageSenderMapper;
-    private MessageReceiverMapper messageReceiverMapper;
-    private MessageContentMapper messageContentMapper;
+    private final MessageSenderMapper messageSenderMapper;
+    private final MessageReceiverMapper messageReceiverMapper;
+    private final MessageContentMapper messageContentMapper;
+
+    private final String INBOX = "INBOX";
+    private final String SENT = "SENT";
+    private final String DRAFT = "DRAFT";
 
     @Autowired
     public MessageServiceImpl(MessageSenderMapper messageSenderMapper, MessageReceiverMapper messageReceiverMapper,
@@ -49,13 +53,13 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public PageInfo<Msg> pageMessage(int pageNum, int pageSize, Msg msg) {
         PageHelper.startPage(pageNum, pageSize);
+        List<Msg> msgList;
         if (msg.getSendId() != null) {
-            List<Msg> msgList = messageSenderMapper.listMsg(msg);
-            return new PageInfo<>(msgList);
+            msgList = messageSenderMapper.listMsg(msg);
         } else {
-            List<Msg> msgList = messageReceiverMapper.listMsg(msg);
-            return new PageInfo<>(msgList);
+            msgList = messageReceiverMapper.listMsg(msg);
         }
+        return new PageInfo<>(msgList);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -107,7 +111,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Msg getMessageById(Long id, String source, Long userId) {
         Msg info;
-        if (source.equals("INBOX")) {
+        if (INBOX.equals(source)) {
             info = messageReceiverMapper.getMessageById(id, userId);
         } else {
             info = messageSenderMapper.getMessageById(id, userId);
@@ -194,11 +198,11 @@ public class MessageServiceImpl implements MessageService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteMessage(Long id, String source, Long userId) {
-        if (source.equals("INBOX")) {
+        if (INBOX.equals(source)) {
             Example example = new Example(MessageReceiver.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
             messageReceiverMapper.deleteByExample(example);
-        } else if (source.equals("SENT") || source.equals("DRAFT")) {
+        } else if (SENT.equals(source) || DRAFT.equals(source)) {
             Example example = new Example(MessageSender.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", id);
             messageSenderMapper.deleteByExample(example);
@@ -209,11 +213,11 @@ public class MessageServiceImpl implements MessageService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteBatchMessage(Long[] ids, String source, Long userId) {
-        if (source.equals("INBOX")) {
+        if (INBOX.equals(source)) {
             Example example = new Example(MessageReceiver.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", Arrays.asList(ids));
             messageReceiverMapper.deleteByExample(example);
-        } else if (source.equals("SENT") || source.equals("DRAFT")) {
+        } else if (SENT.equals(source) || DRAFT.equals(source)) {
             Example example = new Example(MessageSender.class);
             example.createCriteria().andEqualTo("sendId", userId).andEqualTo("contentId", Arrays.asList(ids));
             messageSenderMapper.deleteByExample(example);
