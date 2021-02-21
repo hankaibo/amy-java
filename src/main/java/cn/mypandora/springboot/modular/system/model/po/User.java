@@ -44,7 +44,7 @@ public class User extends BaseEntity {
      */
     @ApiModelProperty(value = "用户名称")
     @NotBlank(groups = {AddGroup.class, UpdateGroup.class}, message = "{user.username.notBlank}")
-    @Size(min = 1, max = 2, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.username.size}")
+    @Size(min = 1, max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.username.size}")
     private String username;
 
     /**
