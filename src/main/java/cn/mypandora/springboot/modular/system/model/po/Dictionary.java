@@ -2,14 +2,19 @@ package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Range;
+import org.apache.ibatis.type.JdbcType;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
+import cn.mypandora.springboot.core.validate.AddGroup;
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tk.mybatis.mapper.annotation.ColumnType;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -60,8 +65,9 @@ public class Dictionary extends BaseEntity {
      * 状态 1:开启，0:禁用
      */
     @ApiModelProperty(value = "字典状态")
-    @Range(min = 0, max = 1)
-    private Integer status;
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{dictionary.status.notNull}")
+    @ColumnType(jdbcType = JdbcType.VARCHAR)
+    private StatusEnum status;
 
     /**
      * 排序

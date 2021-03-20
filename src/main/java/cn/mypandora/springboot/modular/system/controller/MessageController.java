@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.MessageTypeEnum;
 import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
 import cn.mypandora.springboot.modular.system.model.vo.Msg;
@@ -66,8 +67,7 @@ public class MessageController {
         @RequestParam(value = "sendId", required = false) @ApiParam(value = "发信人") Long sendId,
         @RequestParam(value = "receiveId", required = false) @ApiParam(value = "收信人") Long receiveId,
         @Range(min = 0, max = 1) @RequestParam(value = "isPublish") @ApiParam(value = "是否发布") Integer isPublish,
-        @Range(min = 1, max = 3) @RequestParam(value = "type",
-            required = false) @ApiParam(value = "站内信类型") Integer type,
+        @RequestParam(value = "type", required = false) @ApiParam(value = "站内信类型") MessageTypeEnum type,
         @ApiIgnore Long userId) {
         Msg msg = new Msg();
         if (sendId != null) {

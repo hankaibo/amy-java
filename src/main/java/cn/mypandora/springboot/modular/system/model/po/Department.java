@@ -4,13 +4,17 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Range;
+import org.apache.ibatis.type.JdbcType;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import tk.mybatis.mapper.annotation.ColumnType;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -22,6 +26,8 @@ import tk.mybatis.mapper.code.Style;
  */
 @ApiModel("部门实体")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sys_department")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Department extends BaseTree {
@@ -33,8 +39,8 @@ public class Department extends BaseTree {
      */
     @ApiModelProperty(value = "部门状态")
     @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{department.status.notNull}")
-    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "{department.status.range}")
-    private Integer status;
+    @ColumnType(jdbcType = JdbcType.VARCHAR)
+    private StatusEnum status;
 
     /**
      * 描述

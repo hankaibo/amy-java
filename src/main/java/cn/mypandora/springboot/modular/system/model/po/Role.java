@@ -5,13 +5,17 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Range;
+import org.apache.ibatis.type.JdbcType;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import tk.mybatis.mapper.annotation.ColumnType;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -23,6 +27,8 @@ import tk.mybatis.mapper.code.Style;
  */
 @ApiModel("角色实体")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sys_role")
 @NameStyle(Style.camelhumpAndLowercase)
 public class Role extends BaseTree {
@@ -42,8 +48,8 @@ public class Role extends BaseTree {
      */
     @ApiModelProperty(value = "角色状态")
     @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{role.status.notNull}")
-    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "{role.status.range}")
-    private Integer status;
+    @ColumnType(jdbcType = JdbcType.VARCHAR)
+    private StatusEnum status;
 
     /**
      * 角色描述

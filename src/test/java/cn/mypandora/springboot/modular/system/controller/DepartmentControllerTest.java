@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
 
@@ -56,7 +57,7 @@ public class DepartmentControllerTest {
         department.setName("Mock");
         departmentList.add(department);
         // 添加模拟数据
-        when(service.listDepartment(1, 1L)).thenReturn(departmentList);
+        when(service.listDepartment(StatusEnum.ENABLED, 1L)).thenReturn(departmentList);
         // 调用返回上面定义的模拟数据，避免与 service 层深度耦合。
         this.mockMvc.perform(get("/api/v1/departments").contentType(MediaType.APPLICATION_JSON)).andDo(print())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())

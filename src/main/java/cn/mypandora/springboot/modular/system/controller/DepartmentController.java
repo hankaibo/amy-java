@@ -4,12 +4,11 @@ import java.util.List;
 
 import javax.validation.constraints.Positive;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
@@ -44,15 +43,16 @@ public class DepartmentController {
      * 获取部门树。
      *
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            当前登录用户id
      * @return 部门树
      */
     @ApiOperation(value = "获取部门树")
     @GetMapping
-    public List<DepartmentTree> listDepartmentTree(@NullOrNumber @RequestParam(value = "status",
-        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, @ApiIgnore Long userId) {
+    public List<DepartmentTree> listDepartmentTree(
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
+        @ApiIgnore Long userId) {
         List<Department> departmentList = departmentService.listDepartment(status, userId);
         return TreeUtil.department2Tree(departmentList);
     }
@@ -63,7 +63,7 @@ public class DepartmentController {
      * @param id
      *            主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            当前登录用户id
      * @return 某个部门的直接子部门
@@ -72,8 +72,7 @@ public class DepartmentController {
     @GetMapping("/{id}/children")
     public List<Department> listDepartmentChildren(
         @Positive @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-        @NullOrNumber @RequestParam(value = "status",
-            required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         return departmentService.listChildrenDepartment(id, status, userId);
     }
@@ -136,15 +135,14 @@ public class DepartmentController {
      * @param id
      *            部门主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            当前登录用户id
      */
     @ApiOperation(value = "启用禁用部门")
     @PatchMapping("/{id}/status")
     public void enableDepartment(@Positive @PathVariable("id") @ApiParam(value = "部门主键id", required = true) Long id,
-        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
-        @ApiIgnore Long userId) {
+        @RequestParam @ApiParam(value = "状态", required = true) StatusEnum status, @ApiIgnore Long userId) {
         departmentService.enableDepartment(id, status, userId);
     }
 

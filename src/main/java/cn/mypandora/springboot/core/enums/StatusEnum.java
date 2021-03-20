@@ -3,7 +3,7 @@ package cn.mypandora.springboot.core.enums;
 import lombok.Getter;
 
 /**
- * StatusEnum
+ * StatusEnum 状态枚举类，基础实体的启用禁用状态。
  *
  * @author hankaibo
  * @date 2020/1/8
@@ -12,14 +12,14 @@ import lombok.Getter;
 public enum StatusEnum {
 
     /**
-     * ENABLED : 1 DISABLED: 0
+     * ENABLED DISABLED
      */
-    ENABLED(1), DISABLED(0);
+    ENABLED("启用"), DISABLED("禁用");
 
-    private int value;
+    private String name;
 
-    StatusEnum(int value) {
-        this.value = value;
+    StatusEnum(String name) {
+        this.name = name;
     }
 
 }

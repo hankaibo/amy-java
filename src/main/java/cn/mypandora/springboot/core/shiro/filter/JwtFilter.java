@@ -98,8 +98,8 @@ public class JwtFilter extends AbstractPathMatchingFilter {
                         String roleIds = StringUtils.join(roleIdList, ',');
 
                         // 获取资源信息
-                        List<Resource> resourceList = resourceService.listResourceByUserIdOrName(null, username, null,
-                            StatusEnum.ENABLED.getValue());
+                        List<Resource> resourceList =
+                            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED);
                         List<String> resourceCodeList =
                             resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
 

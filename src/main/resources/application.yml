@@ -28,6 +28,7 @@ mapper:
   not-empty: false
   identity: Mysql
   wrap-keyword: "`{0}`"
+  enumAsSimpleType: true
 ###############################################################################
 ## pagehelper
 pagehelper:

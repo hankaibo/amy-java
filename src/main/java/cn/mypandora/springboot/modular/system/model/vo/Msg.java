@@ -11,6 +11,8 @@ import org.hibernate.validator.constraints.Range;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import cn.mypandora.springboot.core.enums.MessageTypeEnum;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.CustomLocalDateTimeDeserializer;
 import cn.mypandora.springboot.core.util.CustomLocalDateTimeSerializer;
 import cn.mypandora.springboot.core.validate.AddGroup;
@@ -79,16 +81,14 @@ public class Msg {
      */
     @ApiModelProperty(value = "站内信类型")
     @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "站内信类型不可为空")
-    @Range(min = 1, max = 3, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信类型可选值为1到3")
-    private Integer type;
+    private MessageTypeEnum type;
 
     /**
      * 站内信状态
      */
     @ApiModelProperty(value = "站内信状态")
     @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "站内信状态不可为空")
-    @Range(min = 0, max = 1, groups = {AddGroup.class, UpdateGroup.class}, message = "站内信状态可选值为0或者1")
-    private Integer status;
+    private StatusEnum status;
 
     /**
      * 是否发布
