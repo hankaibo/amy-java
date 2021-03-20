@@ -10,6 +10,7 @@ import com.github.pagehelper.PageHelper;
 
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.mapper.DictionaryMapper;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
@@ -73,7 +74,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void enableDictionary(Long id, Integer status) {
+    public void enableDictionary(Long id, StatusEnum status) {
         LocalDateTime now = LocalDateTime.now();
         Dictionary dictionary = new Dictionary();
         dictionary.setId(id);

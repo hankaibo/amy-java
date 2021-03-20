@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 
 /**
@@ -20,10 +21,10 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * 获取整棵树（一次性全部加载，适合数据量少的情况）。
      *
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 整棵树
      */
-    List<Department> listAll(Integer status);
+    List<Department> listAll(StatusEnum status);
 
     /**
      * 根据用户id查询其所有部门。
@@ -31,10 +32,10 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * @param userId
      *            用户id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 用户所有部门
      */
-    List<Department> listByUserId(@Param("userId") Long userId, @Param("status") Integer status);
+    List<Department> listByUserId(@Param("userId") Long userId, @Param("status") StatusEnum status);
 
     /**
      * 获得本部门的所有祖先部门。
@@ -42,10 +43,10 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * @param id
      *            当前操作部门id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 本部门的所有祖先部门
      */
-    List<Department> listAncestries(@Param("id") Long id, @Param("status") Integer status);
+    List<Department> listAncestries(@Param("id") Long id, @Param("status") StatusEnum status);
 
     /**
      * 获得本部门的所有后代部门。
@@ -53,10 +54,10 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * @param id
      *            当前操作部门id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 本部门的所有后代部门
      */
-    List<Department> listDescendants(@Param("id") Long id, @Param("status") Integer status);
+    List<Department> listDescendants(@Param("id") Long id, @Param("status") StatusEnum status);
 
     /**
      * 获得本部门的孩子部门。
@@ -64,10 +65,10 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * @param id
      *            当前操作部门id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 本部门的孩子部门
      */
-    List<Department> listChildren(@Param("id") Long id, @Param("status") Integer status);
+    List<Department> listChildren(@Param("id") Long id, @Param("status") StatusEnum status);
 
     /**
      * 将树形结构中所有大于当前部门右值的左部门值+N
@@ -118,9 +119,9 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * @param idList
      *            部门id集合
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      */
-    void enableDescendants(@Param("idList") List<Long> idList, @Param("status") Integer status);
+    void enableDescendants(@Param("idList") List<Long> idList, @Param("status") StatusEnum status);
 
     /**
      * 锁定数据，防止被修改左右值。

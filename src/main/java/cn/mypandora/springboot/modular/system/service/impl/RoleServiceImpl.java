@@ -44,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> listRole(Integer status, Long userId) {
+    public List<Role> listRole(StatusEnum status, Long userId) {
         // 获取用户的所有角色并过滤掉子孙角色，以减少后面重复角色的获取。
         List<Role> allRoleList = roleMapper.listByUserIdOrName(userId, null, status);
         List<Role> roleList = listTopAncestryRole(allRoleList);
@@ -62,7 +62,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> listChildrenRole(Long id, Integer status, Long userId) {
+    public List<Role> listChildrenRole(Long id, StatusEnum status, Long userId) {
         List<Role> allRoleList = listRole(null, userId);
 
         List<Role> roleList = roleMapper.listChildren(id, status);
@@ -168,7 +168,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void enableRole(Long id, Integer status, Long userId) {
+    public void enableRole(Long id, StatusEnum status, Long userId) {
         List<Role> roleList = listRole(null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = roleList.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -380,13 +380,14 @@ public class RoleServiceImpl implements RoleService {
         }
         // 两者没有包含关系的情况下
         Long newId = role1.getId();
-        List<Role> newParentAncestries = roleMapper.listAncestries(newId, StatusEnum.ENABLED.getValue());
+        //
+        List<Role> newParentAncestries = roleMapper.listAncestries(newId, StatusEnum.ENABLED);
         if (newParentAncestries.size() == 0) {
             newParentAncestries.add(role1);
         }
 
         Long oldId = role2.getId();
-        List<Role> oldParentAncestries = roleMapper.listAncestries(oldId, StatusEnum.ENABLED.getValue());
+        List<Role> oldParentAncestries = roleMapper.listAncestries(oldId, StatusEnum.ENABLED);
         if (oldParentAncestries.size() == 0) {
             oldParentAncestries.add(role2);
         }

@@ -6,7 +6,7 @@
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
         <result column="real_name" jdbcType="VARCHAR" property="realName"/>
-        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
         <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>

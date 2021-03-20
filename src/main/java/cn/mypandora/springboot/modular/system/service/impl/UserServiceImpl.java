@@ -255,7 +255,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void enableUser(Long id, Integer status) {
+    public void enableUser(Long id, StatusEnum status) {
         LocalDateTime now = LocalDateTime.now();
         User user = new User();
         user.setId(id);
@@ -396,7 +396,7 @@ public class UserServiceImpl implements UserService {
      */
     private String getResourceCodes(String username) {
         List<Resource> resourceList =
-            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
+            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED);
         List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
         return StringUtils.join(resourceCodeList, ',');
     }

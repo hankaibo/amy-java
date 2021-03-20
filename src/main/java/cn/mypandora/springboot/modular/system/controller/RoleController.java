@@ -6,12 +6,12 @@ import java.util.Map;
 
 import javax.validation.constraints.Positive;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
@@ -52,15 +52,16 @@ public class RoleController {
      * 获取角色树。
      *
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 角色树
      */
     @ApiOperation(value = "获取角色树")
     @GetMapping
-    public List<RoleTree> listRoleTree(@NullOrNumber @RequestParam(value = "status",
-        required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status, @ApiIgnore Long userId) {
+    public List<RoleTree> listRoleTree(
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
+        @ApiIgnore Long userId) {
         List<Role> roleList = roleService.listRole(status, userId);
         return TreeUtil.role2Tree(roleList);
     }
@@ -71,7 +72,7 @@ public class RoleController {
      * @param id
      *            主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 某个角色的直接子角色
@@ -79,8 +80,7 @@ public class RoleController {
     @ApiOperation(value = "获取子角色列表")
     @GetMapping("/{id}/children")
     public List<Role> listRoleChildren(@Positive @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-        @NullOrNumber @RequestParam(value = "status",
-            required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         return roleService.listChildrenRole(id, status, userId);
     }
@@ -142,15 +142,14 @@ public class RoleController {
      * @param id
      *            角色主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      */
     @ApiOperation(value = "启用禁用角色")
     @PatchMapping("/{id}/status")
     public void enableRole(@Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "状态(1:启用，0:禁用)", required = true) Integer status,
-        @ApiIgnore Long userId) {
+        @RequestParam @ApiParam(value = "状态", required = true) StatusEnum status, @ApiIgnore Long userId) {
         roleService.enableRole(id, status, userId);
     }
 
@@ -198,7 +197,7 @@ public class RoleController {
     @GetMapping("/{id}/resources")
     public Map<String, List> listRoleResource(
         @Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+        @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         Role role = roleService.getRoleByIdOrName(id, null, userId);
 

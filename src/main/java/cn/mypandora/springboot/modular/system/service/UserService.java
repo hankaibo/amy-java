@@ -3,6 +3,7 @@ package cn.mypandora.springboot.modular.system.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.User;
 import cn.mypandora.springboot.modular.system.model.vo.Token;
 
@@ -98,9 +99,9 @@ public interface UserService {
      * @param id
      *            用户id
      * @param status
-     *            启用(1),禁用(0)
+     *            状态
      */
-    void enableUser(Long id, Integer status);
+    void enableUser(Long id, StatusEnum status);
 
     /**
      * 重置用户密码。

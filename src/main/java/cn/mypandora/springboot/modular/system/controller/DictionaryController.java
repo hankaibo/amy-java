@@ -6,12 +6,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import cn.mypandora.springboot.modular.system.service.DictionaryService;
 import io.swagger.annotations.Api;
@@ -109,12 +109,12 @@ public class DictionaryController {
      * @param id
      *            字典主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      */
     @ApiOperation(value = "启用禁用字典", notes = "根据字典id启用或禁用其状态。")
     @PatchMapping("/{id}/status")
     public void enableDictionary(@Positive @PathVariable("id") @ApiParam(value = "字典主键id", required = true) Long id,
-        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
+        @RequestParam @ApiParam(value = "字典状态", required = true) StatusEnum status) {
         dictionaryService.enableDictionary(id, status);
     }
 

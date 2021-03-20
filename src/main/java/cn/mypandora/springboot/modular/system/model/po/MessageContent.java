@@ -1,10 +1,17 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+import org.apache.ibatis.type.JdbcType;
+
+import cn.mypandora.springboot.core.enums.MessageTypeEnum;
+import cn.mypandora.springboot.core.validate.AddGroup;
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import tk.mybatis.mapper.annotation.ColumnType;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -36,6 +43,8 @@ public class MessageContent extends BaseEntity {
      * 站内信类型
      */
     @ApiModelProperty(value = "站内信类型")
-    private Integer type;
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{messageContent.type.notNull}")
+    @ColumnType(jdbcType = JdbcType.VARCHAR)
+    private MessageTypeEnum type;
 
 }

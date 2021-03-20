@@ -11,7 +11,7 @@ import lombok.Data;
  *
  * @author hankaibo
  * @date 2019/10/31
- * @see <a href="https://ant.design/components/tree-cn/#components-tree-demo-directory">tree</a>
+ * @see <a href="https://ant.design/components/tree-cn/">tree</a>
  */
 @ApiModel(value = "ant design tree 组件")
 @Data
@@ -20,6 +20,6 @@ public class DepartmentTree extends Tree {
     /**
      * 子节点
      */
-    @ApiModelProperty(value = "子节点数组", example = "[]")
+    @ApiModelProperty(value = "子节点数组")
     private List<DepartmentTree> children;
 }

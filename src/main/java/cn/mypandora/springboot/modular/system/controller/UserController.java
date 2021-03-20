@@ -6,14 +6,13 @@ import java.util.Map;
 
 import javax.validation.constraints.Positive;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.core.validate.*;
 import cn.mypandora.springboot.modular.system.model.po.Role;
@@ -110,7 +109,7 @@ public class UserController {
         @RequestParam(value = "phone", required = false) @ApiParam(value = "电话") String phone,
         @RequestParam(value = "mobile", required = false) @ApiParam(value = "手机") String mobile,
         @RequestParam(value = "sex", required = false) @ApiParam(value = "性别") Byte sex,
-        @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @RequestParam(value = "departmentId", required = false) @ApiParam(value = "部门id") Long departmentId) {
         User user = new User();
         user.setUsername(username);
@@ -178,12 +177,12 @@ public class UserController {
      * @param id
      *            用户主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      */
     @ApiOperation(value = "用户状态启用禁用")
     @PatchMapping("/{id}/status")
     public void enableUser(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @Range(min = 0, max = 1) @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) Integer status) {
+        @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) StatusEnum status) {
         userService.enableUser(id, status);
     }
 
@@ -260,7 +259,7 @@ public class UserController {
      * @param id
      *            用户主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            当前登录用户id
      * @return 用户所包含的角色
@@ -269,7 +268,7 @@ public class UserController {
     @GetMapping("/{id}/roles")
     public Map<String, List> listUserRole(
         @Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") Integer status,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         // 获取当前登录用户的所有角色
         List<Role> roleList = roleService.listRole(status, userId);

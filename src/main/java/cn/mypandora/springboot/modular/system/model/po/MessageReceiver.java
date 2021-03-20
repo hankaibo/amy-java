@@ -2,10 +2,17 @@ package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
+import org.apache.ibatis.type.JdbcType;
+
+import cn.mypandora.springboot.core.enums.StatusEnum;
+import cn.mypandora.springboot.core.validate.AddGroup;
+import cn.mypandora.springboot.core.validate.UpdateGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import tk.mybatis.mapper.annotation.ColumnType;
 import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
@@ -57,7 +64,9 @@ public class MessageReceiver extends BaseEntity {
      * 站内信状态
      */
     @ApiModelProperty(value = "站内信状态")
-    private Integer status;
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{messageReceive.status.notNull}")
+    @ColumnType(jdbcType = JdbcType.VARCHAR)
+    private StatusEnum status;
 
     /**
      * 是否已读

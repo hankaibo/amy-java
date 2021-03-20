@@ -61,12 +61,12 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> listResource(Integer type, Integer status, Long userId) {
+    public List<Resource> listResource(ResourceTypeEnum type, StatusEnum status, Long userId) {
         return resourceMapper.listByUserIdOrName(userId, null, type, status);
     }
 
     @Override
-    public List<Resource> listChildrenResource(Long id, Integer type, Integer status, Long userId) {
+    public List<Resource> listChildrenResource(Long id, ResourceTypeEnum type, StatusEnum status, Long userId) {
         List<Resource> allResourceList = listResource(type, status, userId);
 
         List<Resource> resourceList = resourceMapper.listChildren(id, type, status);
@@ -76,7 +76,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addResource(Resource resource, Long userId) {
-        List<Resource> menuList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> menuList = listResource(ResourceTypeEnum.MENU, StatusEnum.ENABLED, userId);
         if (menuList.stream().noneMatch(item -> item.getId().equals(resource.getParentId()))) {
             throw new BusinessException(Resource.class, "父级资源选择错误。");
         }
@@ -168,7 +168,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void enableResource(Long id, Integer status, Long userId) {
+    public void enableResource(Long id, StatusEnum status, Long userId) {
         List<Resource> resourceList = listResource(null, null, userId);
         List<Long> idList = listDescendantId(id);
         List<Long> allIdList = resourceList.stream().map(BaseEntity::getId).collect(Collectors.toList());
@@ -236,7 +236,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void importBatchResource(List<Resource> resourceList, Long userId) {
-        List<Resource> menuList = listResource(ResourceTypeEnum.MENU.getValue(), StatusEnum.ENABLED.getValue(), userId);
+        List<Resource> menuList = listResource(ResourceTypeEnum.MENU, StatusEnum.ENABLED, userId);
         if (menuList.stream().noneMatch(item -> item.getId().equals(resourceList.get(0).getParentId()))) {
             throw new BusinessException(Resource.class, "父级资源选择错误。");
         }
@@ -270,7 +270,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> listResourceByRoleIds(Long[] roleIds, Integer type, Integer status, Long userId) {
+    public List<Resource> listResourceByRoleIds(Long[] roleIds, ResourceTypeEnum type, StatusEnum status, Long userId) {
         List<Resource> allResourceList = listResource(type, status, userId);
 
         List<Resource> resourceList = resourceMapper.listByRoleIds(roleIds, type, status);
@@ -278,7 +278,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> listResourceByUserIdOrName(Long userId, String username, Integer type, Integer status) {
+    public List<Resource> listResourceByUserIdOrName(Long userId, String username, ResourceTypeEnum type,
+        StatusEnum status) {
         return resourceMapper.listByUserIdOrName(userId, username, type, status);
     }
 
@@ -330,13 +331,13 @@ public class ResourceServiceImpl implements ResourceService {
         }
         // 两者没有包含关系的情况下
         Long newId = resource1.getId();
-        List<Resource> newParentAncestries = resourceMapper.listAncestries(newId, null, StatusEnum.ENABLED.getValue());
+        List<Resource> newParentAncestries = resourceMapper.listAncestries(newId, null, StatusEnum.ENABLED);
         if (newParentAncestries.size() == 0) {
             newParentAncestries.add(resource1);
         }
 
         Long oldId = resource2.getId();
-        List<Resource> oldParentAncestries = resourceMapper.listAncestries(oldId, null, StatusEnum.ENABLED.getValue());
+        List<Resource> oldParentAncestries = resourceMapper.listAncestries(oldId, null, StatusEnum.ENABLED);
         if (oldParentAncestries.size() == 0) {
             oldParentAncestries.add(resource2);
         }

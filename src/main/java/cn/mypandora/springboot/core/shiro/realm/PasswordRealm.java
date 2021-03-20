@@ -81,7 +81,7 @@ public class PasswordRealm extends AuthorizingRealm {
             throw new UnknownAccountException("用户不存在");
         }
 
-        if (info.getStatus().equals(StatusEnum.DISABLED.getValue())) {
+        if (info.getStatus().equals(StatusEnum.DISABLED)) {
             throw new DisabledAccountException("你的账户已被禁用,请联系管理员开通.");
         }
 

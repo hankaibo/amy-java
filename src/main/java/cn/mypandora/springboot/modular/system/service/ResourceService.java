@@ -2,6 +2,8 @@ package cn.mypandora.springboot.modular.system.service;
 
 import java.util.List;
 
+import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.shiro.rule.RolePermRule;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 
@@ -24,14 +26,14 @@ public interface ResourceService {
      * 获得指定用户的资源树（一次性全部加载，适合数据量少的情况）。
      *
      * @param type
-     *            资源类型(1:菜单，2:接口)
+     *            资源类型
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 资源列表
      */
-    List<Resource> listResource(Integer type, Integer status, Long userId);
+    List<Resource> listResource(ResourceTypeEnum type, StatusEnum status, Long userId);
 
     /**
      * 获得本资源的直接子资源。
@@ -39,14 +41,14 @@ public interface ResourceService {
      * @param id
      *            当前操作资源id
      * @param type
-     *            资源类型(1:菜单，2:接口)
+     *            资源类型
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 资源列表
      */
-    List<Resource> listChildrenResource(Long id, Integer type, Integer status, Long userId);
+    List<Resource> listChildrenResource(Long id, ResourceTypeEnum type, StatusEnum status, Long userId);
 
     /**
      * 添加资源。
@@ -89,7 +91,7 @@ public interface ResourceService {
      * @param userId
      *            用户id
      */
-    void enableResource(Long id, Integer status, Long userId);
+    void enableResource(Long id, StatusEnum status, Long userId);
 
     /**
      * 删除资源。
@@ -129,14 +131,14 @@ public interface ResourceService {
      * @param roleIds
      *            角色主键id
      * @param type
-     *            资源类型(1:菜单，2:接口)
+     *            资源类型
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 所有资源数据
      */
-    List<Resource> listResourceByRoleIds(Long[] roleIds, Integer type, Integer status, Long userId);
+    List<Resource> listResourceByRoleIds(Long[] roleIds, ResourceTypeEnum type, StatusEnum status, Long userId);
 
     /**
      * 查询用户的所有资源。 注：按钮（接口）类型的资源，用于前台动态按钮显示与隐藏。
@@ -146,11 +148,11 @@ public interface ResourceService {
      * @param username
      *            用户名称
      * @param type
-     *            资源类型(1:菜单，2:接口)
+     *            资源类型
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 角色资源
      */
-    List<Resource> listResourceByUserIdOrName(Long userId, String username, Integer type, Integer status);
+    List<Resource> listResourceByUserIdOrName(Long userId, String username, ResourceTypeEnum type, StatusEnum status);
 
 }

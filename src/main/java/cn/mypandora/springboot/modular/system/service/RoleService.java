@@ -2,6 +2,7 @@ package cn.mypandora.springboot.modular.system.service;
 
 import java.util.List;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 
 /**
@@ -16,12 +17,12 @@ public interface RoleService {
      * 获得指定用户的角色树（一次性全部加载，适合数据量少的情况）。
      *
      * @param status
-     *            状态(1:启用，0:禁用)，默认为空查询所有
+     *            状态，默认为空查询所有
      * @param userId
      *            用户id
      * @return 角色列表
      */
-    List<Role> listRole(Integer status, Long userId);
+    List<Role> listRole(StatusEnum status, Long userId);
 
     /**
      * 获得本角色的直接子角色。
@@ -29,12 +30,12 @@ public interface RoleService {
      * @param id
      *            当前操作角色id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 角色列表
      */
-    List<Role> listChildrenRole(Long id, Integer status, Long userId);
+    List<Role> listChildrenRole(Long id, StatusEnum status, Long userId);
 
     /**
      * 添加角色。
@@ -75,11 +76,11 @@ public interface RoleService {
      * @param id
      *            角色id
      * @param status
-     *            启用(1),禁用(0)
+     *            状态
      * @param userId
      *            用户id
      */
-    void enableRole(Long id, Integer status, Long userId);
+    void enableRole(Long id, StatusEnum status, Long userId);
 
     /**
      * 删除角色。

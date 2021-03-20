@@ -84,7 +84,7 @@ public class Tree {
      * 状态 冗余字段，列表显示
      */
     @ApiModelProperty(value = "状态(列表显示)", example = "1")
-    private Integer status;
+    private String status;
 
     /**
      * 描述 冗余字段，列表显示

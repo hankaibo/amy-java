@@ -37,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> listDepartment(Integer status, Long userId) {
+    public List<Department> listDepartment(StatusEnum status, Long userId) {
         // 获取用户的所有部门并过滤掉子孙部门，以减少后面重复部门的获取。
         List<Department> allDepartmentList = departmentMapper.listByUserId(userId, status);
         List<Department> departmentList = listTopAncestryDepartment(allDepartmentList);
@@ -56,7 +56,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> listChildrenDepartment(Long id, Integer status, Long userId) {
+    public List<Department> listChildrenDepartment(Long id, StatusEnum status, Long userId) {
         // 获取当前用户的部门范围
         List<Department> allDepartmentList = listDepartment(null, userId);
 
@@ -193,7 +193,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void enableDepartment(Long id, Integer status, Long userId) {
+    public void enableDepartment(Long id, StatusEnum status, Long userId) {
         // 本部门及子孙部门是否有用户判断
         int count = departmentUserMapper.countUserByDepartmentId(id);
         if (count > 0) {
@@ -357,13 +357,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         // 两者没有包含关系的情况下
         Long newId = department1.getId();
-        List<Department> newParentAncestries = departmentMapper.listAncestries(newId, StatusEnum.ENABLED.getValue());
+        List<Department> newParentAncestries = departmentMapper.listAncestries(newId, StatusEnum.ENABLED);
         if (newParentAncestries.size() == 0) {
             newParentAncestries.add(department1);
         }
 
         Long oldId = department2.getId();
-        List<Department> oldParentAncestries = departmentMapper.listAncestries(oldId, StatusEnum.ENABLED.getValue());
+        List<Department> oldParentAncestries = departmentMapper.listAncestries(oldId, StatusEnum.ENABLED);
         if (oldParentAncestries.size() == 0) {
             oldParentAncestries.add(department2);
         }

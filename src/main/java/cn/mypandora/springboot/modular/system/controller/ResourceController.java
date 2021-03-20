@@ -6,12 +6,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import cn.mypandora.springboot.core.annotation.NullOrNumber;
+import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
@@ -44,19 +44,17 @@ public class ResourceController {
      * 获取资源树。
      *
      * @param type
-     *            资源类型(1:菜单，2:接口)
+     *            资源类型
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 资源树
      */
     @ApiOperation(value = "获取资源树")
     @GetMapping
-    public List<ResourceTree> listResource(
-        @Range(min = 1, max = 2) @RequestParam("type") @ApiParam(value = "资源类型(1:菜单，2:接口)") Integer type,
-        @NullOrNumber @RequestParam(value = "status",
-            required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+    public List<ResourceTree> listResource(@RequestParam("type") @ApiParam(value = "资源类型") ResourceTypeEnum type,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         List<Resource> resourceList = resourceService.listResource(type, status, userId);
         return TreeUtil.resource2Tree(resourceList);
@@ -68,9 +66,9 @@ public class ResourceController {
      * @param id
      *            主键id
      * @param type
-     *            资源类型(1:菜单，2:接口)
+     *            资源类型
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      * @return 某个资源的直接子资源
@@ -79,9 +77,8 @@ public class ResourceController {
     @GetMapping("/{id}/children")
     public List<Resource> listChildrenResource(
         @Positive @PathVariable("id") @ApiParam(value = "主键id", required = true) Long id,
-        @Range(min = 1, max = 2) @RequestParam("type") @ApiParam(value = "资源类型（1:菜单，2:接口）") Integer type,
-        @NullOrNumber @RequestParam(value = "status",
-            required = false) @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
+        @RequestParam("type") @ApiParam(value = "资源类型 ") ResourceTypeEnum type,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         return resourceService.listChildrenResource(id, type, status, userId);
     }
@@ -144,15 +141,14 @@ public class ResourceController {
      * @param id
      *            资源主键id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @param userId
      *            用户id
      */
     @ApiOperation(value = "启用禁用资源", notes = "根据状态启用禁用资源。")
     @PatchMapping("/{id}/status")
     public void enableResource(@Positive @PathVariable("id") @ApiParam(value = "资源主键id", required = true) Long id,
-        @Range(min = 0, max = 1) @RequestParam("status") @ApiParam(value = "状态(1:启用，0:禁用)") Integer status,
-        @ApiIgnore Long userId) {
+        @RequestParam("status") @ApiParam(value = "状态") StatusEnum status, @ApiIgnore Long userId) {
         resourceService.enableResource(id, status, userId);
     }
 

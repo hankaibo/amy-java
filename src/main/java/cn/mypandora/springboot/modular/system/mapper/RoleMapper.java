@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import cn.mypandora.springboot.core.base.MyBaseMapper;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 
 /**
@@ -19,10 +20,10 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * 获取整棵树（一次性全部加载，适合数据量少的情况）。
      *
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 整棵树
      */
-    List<Role> listAll(Integer status);
+    List<Role> listAll(StatusEnum status);
 
     /**
      * 根据用户id查询其所有角色。
@@ -32,11 +33,11 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * @param username
      *            用户名
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 用户所有角色
      */
     List<Role> listByUserIdOrName(@Param("userId") Long userId, @Param("username") String username,
-        @Param("status") Integer status);
+        @Param("status") StatusEnum status);
 
     /**
      * 获得本角色的所有祖先角色。
@@ -44,10 +45,10 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * @param id
      *            当前操作角色id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 本角色的所有祖先角色
      */
-    List<Role> listAncestries(@Param("id") Long id, @Param("status") Integer status);
+    List<Role> listAncestries(@Param("id") Long id, @Param("status") StatusEnum status);
 
     /**
      * 获得本角色的所有后代角色。
@@ -55,10 +56,10 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * @param id
      *            当前操作角色id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 本角色的所有后代角色
      */
-    List<Role> listDescendants(@Param("id") Long id, @Param("status") Integer status);
+    List<Role> listDescendants(@Param("id") Long id, @Param("status") StatusEnum status);
 
     /**
      * 获得本角色的孩子角色。
@@ -66,10 +67,10 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * @param id
      *            当前操作角色id
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      * @return 本角色的孩子角色
      */
-    List<Role> listChildren(@Param("id") Long id, @Param("status") Integer status);
+    List<Role> listChildren(@Param("id") Long id, @Param("status") StatusEnum status);
 
     /**
      * 将树形结构中所有大于当前节点右值的左节点值+N
@@ -120,9 +121,9 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * @param idList
      *            角色id集合
      * @param status
-     *            状态(1:启用，0:禁用)
+     *            状态
      */
-    void enableDescendants(@Param("idList") List<Long> idList, @Param("status") Integer status);
+    void enableDescendants(@Param("idList") List<Long> idList, @Param("status") StatusEnum status);
 
     /**
      * 锁定数据，防止被修改左右值。

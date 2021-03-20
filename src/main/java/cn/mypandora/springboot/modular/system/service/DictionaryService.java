@@ -1,6 +1,7 @@
 package cn.mypandora.springboot.modular.system.service;
 
 import cn.mypandora.springboot.core.base.PageInfo;
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 
 /**
@@ -50,14 +51,14 @@ public interface DictionaryService {
     void updateDictionary(Dictionary dictionary);
 
     /**
-     * 启用禁用字典。 1:开启; 0:禁用。
+     * 启用禁用字典。
      *
      * @param id
      *            字典id
      * @param status
-     *            启用(1),禁用(0)
+     *            状态
      */
-    void enableDictionary(Long id, Integer status);
+    void enableDictionary(Long id, StatusEnum status);
 
     /**
      * 删除字典。

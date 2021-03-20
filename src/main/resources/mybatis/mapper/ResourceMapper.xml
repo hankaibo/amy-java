@@ -9,10 +9,10 @@
         <result column="rgt" jdbcType="INTEGER" property="rgt"/>
         <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="code" jdbcType="VARCHAR" property="code"/>
-        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
         <result column="is_update" jdbcType="INTEGER" property="isUpdate"/>
         <result column="uri" jdbcType="VARCHAR" property="uri"/>
-        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
         <result column="method" jdbcType="VARCHAR" property="method"/>
         <result column="icon" jdbcType="VARCHAR" property="icon"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
