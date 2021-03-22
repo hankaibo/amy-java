@@ -69,6 +69,7 @@ public class RequestResponseUtil {
         } else {
             try {
                 ObjectMapper mapper = new ObjectMapper();
+                // request.getInputStream之后，后面无法再从取读取。
                 Map<String, String> maps = mapper.readValue(request.getInputStream(), Map.class);
                 dataMap.putAll(maps);
                 request.setAttribute(STR_BODY, dataMap);

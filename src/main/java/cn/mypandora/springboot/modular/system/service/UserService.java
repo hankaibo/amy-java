@@ -94,7 +94,7 @@ public interface UserService {
     void updateUser(User user, Long[] plusDepartmentIds, Long[] minusDepartmentIds);
 
     /**
-     * 启用禁用用户。 1:开启; 0:禁用。(所有部门)
+     * 启用禁用用户。 (所有部门)
      *
      * @param id
      *            用户id

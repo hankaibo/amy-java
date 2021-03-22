@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import cn.mypandora.springboot.core.annotation.NullOrNumber;
 import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.core.validate.AddGroup;
@@ -197,7 +196,7 @@ public class RoleController {
     @GetMapping("/{id}/resources")
     public Map<String, List> listRoleResource(
         @Positive @PathVariable("id") @ApiParam(value = "角色主键id", required = true) Long id,
-        @NullOrNumber @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
+        @RequestParam(value = "status", required = false) @ApiParam(value = "状态") StatusEnum status,
         @ApiIgnore Long userId) {
         Role role = roleService.getRoleByIdOrName(id, null, userId);
 
