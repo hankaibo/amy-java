@@ -182,7 +182,7 @@ public class UserController {
     @ApiOperation(value = "用户状态启用禁用")
     @PatchMapping("/{id}/status")
     public void enableUser(@Positive @PathVariable("id") @ApiParam(value = "用户主键id", required = true) Long id,
-        @RequestParam @ApiParam(value = "启用(1)，禁用(0)", required = true) StatusEnum status) {
+        @RequestParam @ApiParam(value = "状态", required = true) StatusEnum status) {
         userService.enableUser(id, status);
     }
 
