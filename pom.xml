@@ -36,7 +36,7 @@
         <!-- shiro,jwt -->
         <shiro-core.version>1.5.3</shiro-core.version>
         <shiro-web.version>1.5.3</shiro-web.version>
-        <shiro-spring.version>1.5.3</shiro-spring.version>
+        <shiro-spring.version>1.7.0</shiro-spring.version>
         <jbcrypt.version>0.4.1</jbcrypt.version>
         <jjwt-api.version>0.10.7</jjwt-api.version>
         <jjwt-impl.version>0.10.7</jjwt-impl.version>
