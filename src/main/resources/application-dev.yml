@@ -12,9 +12,9 @@ upload:
 spring:
   ## 数据库
   datasource:
-    url: jdbc:mysql://localhost:3306/my_database?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    url: jdbc:mysql://rm-2zezxd1097ucps7t8bo.mysql.rds.aliyuncs.com:3306/amy-db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ENC(DxIMWvJXceRM2ZRMhuXIooUXBheCirEeCwPqBj5zdQUMRZAe0X6ZzHp6hMBrMpEG)
+    password: ENC(DrB0GuLjdiHrkT1fJjnDYZxQMOjPX+fCrKC8WqSWJ4rM+VK/nKC1lWnrxyp5nRto1YFJ2bARFv/2VlFjkh6GL7JjLvTlbanM/KmF4mr2ZMc=)
     hikari:
       auto-commit: true
       connection-timeout: 30000
@@ -24,10 +24,10 @@ spring:
       pool-name: MyHikariCP
   # redis
   redis:
-    database: 1
-    host: 58.87.121.239
-    port: ENC(e3o4ajYBBZj6NyO6BMrijlAaz8m2CEF0B7PpO6l1YBrCMxm9R98l7iDl56xUf9N9)
-    password: ENC(8SEYKL9DoSRqtyqpgMGuGRpOjmzEzDiriR+akLHGeJhxHbVRQ/stuN2HXjPjmPBsuAJyWDCa/AOPMio6rr4/ng==)
+    database: 10
+    host: 47.95.120.23
+    port: 6379
+    password: ENC(MptyrMQs0LRXuX7Nr0GWvZjJJwldhDNxo7KTPbtDIUyYzSCVR2Jz/DakdE7h04HHlMsZJ/UsAZef4aHs/pNZK6HsmfB+/1Z9WXkFzjcgStI=)
     lettuce:
       shutdown-timeout: 100ms
       pool:
