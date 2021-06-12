@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
-    <contextName>myspringboot</contextName>
+    <contextName>amy</contextName>
     <property name="log.path" value="./logs"/>
-    <property name="log.name" value="myspringboot"/>
+    <property name="log.name" value="amy"/>
 
     <!--输出到控制台-->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">

@@ -11,7 +11,7 @@
 ## 项目目录
 
 ```
-myspringboot  
+amy  
 ├── logs -- 日志目录 
 ├── src/main/java/cn.mypandora.springboot 
 |   ├── config                  -- 通用配置  
@@ -78,7 +78,7 @@ myspringboot
 
 1. 下载项目
     ```
-   git clone https://github.com/hankaibo/myspringboot.git
+   git clone https://github.com/hankaibo/amy-java.git
    ```
 
 2. 导入项目
@@ -101,7 +101,7 @@ myspringboot
 
 6. 启动前端项目
 
-   请参考前端项目[myantdpro](https://github.com/hankaibo/myantdpro)配置。
+   请参考前端项目[amy-react](https://github.com/hankaibo/amy-react)配置。
 
 ## 逻辑
 
