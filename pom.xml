@@ -10,12 +10,12 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>cn.mypandora</groupId>
-    <artifactId>myspringboot</artifactId>
-    <version>1.0.0</version>
+    <groupId>cn.mypandora.springboot</groupId>
+    <artifactId>springboot-amy</artifactId>
+    <version>1.0.0.RELEASE</version>
     <packaging>jar</packaging>
 
-    <name>my-springboot</name>
+    <name>amy</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

@@ -11,20 +11,21 @@
 ## 项目目录
 
 ```
-myspringboot  
+amy  
 ├── logs -- 日志目录 
 ├── src/main/java/cn.mypandora.springboot 
 |   ├── config                  -- 通用配置  
-|   |    ├── converter              -- 转换器配置目录 
 |   |    ├── exception              -- restful 接口异常信息配置目录 
 |   |    ├── filter                 -- filter配置目录
 |   |    ├── redis                  -- redis配置目录
 |   |    ├── shiro                  -- shiro配置目录 
 |   |    ├── swagger                -- swagger配置目录 
+|   |    ├── validate               -- validate配置目录 
+|   |    ├── webmvc                 -- mvc配置目录 
 |   |    └── websocket              -- websocket配置目录   
 |   ├── core                    -- 通用核心代码  
-|   |    ├── annotation             -- 自定义注解 
 |   |    ├── base                   -- 通用Mapper和分页类 
+|   |    ├── converter              -- 格式转换器 
 |   |    ├── enums                  -- 自定义枚举类 
 |   |    ├── exception              -- 异常信息封装类 
 |   |    ├── listener               -- websocket监听类 
@@ -36,6 +37,7 @@ myspringboot
 |   |    ├── system                 -- 通用后台管理代码目录 
 |   |    └── your                   -- 放置你自己的业务代码
 └── src/main/resources  
+    ├── i18n                    -- 国际化目录 
     ├── mybatis                 -- Mybatis的Mapper.xml目录 
     |   ├── mapper                  -- MyBatis sql语句配置目录
     |   └── mybatis-config          -- MyBatis配置文件
@@ -54,11 +56,11 @@ myspringboot
 [x] | 技术名 | 版本
  :---: | :--- | :---  
 [x] | SpringBoot | 2.3.9
-[x] | Redis(spring-boot-starter-data-redis) | 2.3.3
+[x] | Redis(spring-boot-starter-data-redis) | 2.3.9
 [x] | Mybatis(mybatis-spring-boot-starter) | 2.1.1
 [x] | Mapper(mapper-spring-boot-starter) | 2.1.5
 [x] | PageHelper(pagehelper-spring-boot-starter) | 1.2.13
-[x] | Shiro | 1.5.3
+[x] | Shiro | 1.7.1
 [x] | jjwt | 0.10.7
 [x] | jBCrypt | 0.4.1
 [x] | jasypt-spring-boot-starter | 3.0.3
@@ -78,7 +80,7 @@ myspringboot
 
 1. 下载项目
     ```
-   git clone https://github.com/hankaibo/myspringboot.git
+   git clone https://github.com/hankaibo/amy-java.git
    ```
 
 2. 导入项目
@@ -101,7 +103,7 @@ myspringboot
 
 6. 启动前端项目
 
-   请参考前端项目[myantdpro](https://github.com/hankaibo/myantdpro)配置。
+   请参考前端项目[amy-react](https://github.com/hankaibo/amy-react)配置。
 
 ## 逻辑
 
