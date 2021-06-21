@@ -22,7 +22,7 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: Build with Maven
-      run: mvn -B package --file pom.xml -Pdocker -Dmave.test.skip=true
+      run: mvn -B package --file pom.xml -Pdocker -Dmaven.test.skip=true
     - name: Docker Login
       uses: docker/login-action@v1
       with:
