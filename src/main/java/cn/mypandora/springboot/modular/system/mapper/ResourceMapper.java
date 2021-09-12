@@ -107,7 +107,7 @@ public interface ResourceMapper extends MyBaseMapper<Resource> {
      * <p>
      * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾 *
      * </p>
-     * 
+     *
      * @param id
      *            当前资源id
      * @param amount

@@ -29,7 +29,6 @@ public interface MessageService {
      *
      * @param msg
      *            站内信
-     * 
      */
     void addMessage(Msg msg);
 

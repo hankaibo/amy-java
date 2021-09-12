@@ -27,7 +27,7 @@ public interface MessageReceiverMapper extends MyBaseMapper<MessageReceiver> {
 
     /**
      * 查询站内信
-     * 
+     *
      * @param id
      *            站内信内容主键id
      * @param userId

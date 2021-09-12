@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.RegionMapper">
+    <resultMap id="regionMap" type="region">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+        <result column="lft" jdbcType="INTEGER" property="lft"/>
+        <result column="rgt" jdbcType="INTEGER" property="rgt"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="is_update" jdbcType="INTEGER" property="isUpdate"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+        ${alias}.id,
+        ${alias}
+        .
+        parent_id,
+        ${alias}
+        .
+        name,
+        ${alias}
+        .
+        code,
+        ${alias}
+        .
+        value,
+        ${alias}
+        .
+        lft,
+        ${alias}
+        .
+        rgt,
+        ${alias}
+        .
+        level,
+        ${alias}
+        .
+        status,
+        ${alias}
+        .
+        is_update,
+        ${alias}
+        .
+        description,
+        ${alias}
+        .
+        create_time,
+        ${alias}
+        .
+        update_time
+    </sql>
+
+    <select id="listAll" resultMap="regionMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_region t
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        ORDER BY t.lft
+    </select>
+
+    <select id="listAncestries" resultMap="regionMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_region t
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft<(
+                    SELECT s.lft
+                    FROM sys_region s
+                    WHERE s.id=#{id})
+            AND t.rgt>(
+                    SELECT s.lft
+                    FROM sys_region s
+                    WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft
+    </select>
+
+    <select id="listDescendants" resultMap="regionMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_region t
+        WHERE 1=1
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft>(
+                SELECT s.lft
+                FROM sys_region s
+                WHERE s.id=#{id})
+            AND t.rgt<(
+                SELECT s.rgt
+                FROM sys_region s
+                WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft
+    </select>
+
+    <select id="listChildren" resultMap="regionMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_region t
+        WHERE 1=1
+        AND t.parent_id=#{id}
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        ORDER BY t.lft
+    </select>
+
+    <update id="lftAdd">
+        UPDATE sys_region t,(SELECT * FROM sys_region WHERE id = #{id}) f
+        SET t.lft= (t.lft + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update = 1
+        <if test="range!=null">
+            <![CDATA[
+                AND t.lft < #{range}
+            ]]>
+        </if>
+        <![CDATA[
+            AND t.lft > f.rgt
+        ]]>
+    </update>
+
+    <update id="rgtAdd">
+        UPDATE sys_region t,(SELECT * FROM sys_region WHERE id = #{id}) f
+        SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update = 1
+        <if test="range!=null">
+            <![CDATA[
+                AND t.rgt < #{range}
+            ]]>
+        </if>
+        <![CDATA[
+            AND t.rgt >= f.rgt
+        ]]>
+    </update>
+
+    <update id="selfAndDescendant">
+        UPDATE sys_region t
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
+        <if test="level!=null">
+            ,t.level=(t.level + #{level})
+        </if>
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="enableDescendants">
+        UPDATE sys_region t
+        SET t.status= #{status}, t.update_time=now()
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="locking">
+        UPDATE sys_region t
+        SET t.is_update= #{isUpdate}
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -16,7 +16,7 @@ import cn.mypandora.springboot.modular.system.model.vo.Token;
 public interface UserService {
     /**
      * 通过用户名称获取token
-     * 
+     *
      * @param username
      *            用户名称
      * @return token
@@ -25,7 +25,7 @@ public interface UserService {
 
     /**
      * 登出
-     * 
+     *
      * @param authorization
      *            用户authorization
      */
@@ -115,7 +115,7 @@ public interface UserService {
 
     /**
      * 更新用户密码。
-     * 
+     *
      * @param id
      *            用户id
      * @param oldPassword

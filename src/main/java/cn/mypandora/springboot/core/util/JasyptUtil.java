@@ -19,7 +19,7 @@ public class JasyptUtil {
 
     /**
      * Jasyp加密（PBEWithMD5AndDES）
-     * 
+     *
      * @param plainText
      *            待加密的原文
      * @param key
@@ -40,7 +40,7 @@ public class JasyptUtil {
 
     /**
      * Jaspy解密（PBEWithMD5AndDES）
-     * 
+     *
      * @param encryptedText
      *            待解密密文
      * @param key
@@ -60,9 +60,8 @@ public class JasyptUtil {
     }
 
     /**
-     * 
      * Jasyp 加密（PBEWITHHMACSHA512ANDAES_256）
-     * 
+     *
      * @param plainText
      *            待加密的原文
      * @param key
@@ -89,7 +88,7 @@ public class JasyptUtil {
 
     /**
      * Jaspy解密（PBEWITHHMACSHA512ANDAES_256）
-     * 
+     *
      * @param encryptedText
      *            待解密密文
      * @param key

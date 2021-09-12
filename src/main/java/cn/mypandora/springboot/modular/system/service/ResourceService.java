@@ -117,7 +117,7 @@ public interface ResourceService {
 
     /**
      * 批量导入资源
-     * 
+     *
      * @param resourceList
      *            资源列表
      * @param userId

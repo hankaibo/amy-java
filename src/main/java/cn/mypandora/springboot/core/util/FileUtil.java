@@ -14,9 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.mypandora.springboot.config.exception.StorageException;
 
 /**
- * 
  * 文件工具类，保存。
- * 
+ *
  * @author hankaibo
  * @date 2020/6/8
  */
@@ -26,7 +25,7 @@ public class FileUtil {
 
     /**
      * 保存文件。
-     * 
+     *
      * @param file
      *            要保存的文件
      * @param dirPath

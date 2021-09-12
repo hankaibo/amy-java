@@ -367,7 +367,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户姓名，获取其角色码和id
-     * 
+     *
      * @param username
      *            用户名称
      * @return 角色信息
@@ -389,7 +389,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户姓名，获取其资源码
-     * 
+     *
      * @param username
      *            用户名称
      * @return 资源码

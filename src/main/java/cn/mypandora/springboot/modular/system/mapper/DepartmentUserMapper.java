@@ -21,9 +21,8 @@ public interface DepartmentUserMapper extends MyBaseMapper<DepartmentUser> {
     int countUserByDepartmentId(Long departmentId);
 
     /**
-     * 
      * 判断用户是否存在部门用户关系表中
-     * 
+     *
      * @param userId
      *            用户id
      * @return 存在返回1，不存在返回0或者null

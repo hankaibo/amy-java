@@ -23,11 +23,11 @@ import tk.mybatis.mapper.code.Style;
 
 /**
  * BaseEntity
- * 
+ *
  * <p>
  * 基类，所有 PO 实体都继承它。
  * </p>
- * 
+ *
  * @author hankaibo
  * @date 2019/7/17
  */

@@ -60,13 +60,6 @@ public class User extends BaseEntity {
     private String nickname;
 
     /**
-     * 真实名称
-     */
-    @ApiModelProperty(value = "用户真实姓名")
-    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{user.realName.size}")
-    private String realName;
-
-    /**
      * 密码
      */
     @ApiModelProperty(hidden = true)

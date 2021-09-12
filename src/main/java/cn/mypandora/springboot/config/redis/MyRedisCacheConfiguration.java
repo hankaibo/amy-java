@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Spring Cache集成redis的运行原理： Spring缓存抽象模块通过CacheManager来创建、管理实际缓存组件，当SpringBoot应用程序引入spring-boot-starter-data-redis依赖后，
  * 容器中将注册的是CacheManager实例RedisCacheManager对象，RedisCacheManager来负责创建RedisCache作为缓存管理组件， 由RedisCache操作redis服务器实现缓存数据操作。
- * 
+ *
  * @author hankaibo
  * @date 2020/5/7
  * @see <a href="https://www.cnblogs.com/ashleyboy/p/9595584.html">参考一</a>
@@ -74,7 +74,7 @@ public class MyRedisCacheConfiguration extends CachingConfigurerSupport {
 
     /**
      * 自定义缓存管理实现，替换默认。
-     * 
+     *
      * @param factory
      *            LettuceConnection factory
      * @return 缓存管理器

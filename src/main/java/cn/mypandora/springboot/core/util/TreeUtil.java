@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 
 import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Department;
+import cn.mypandora.springboot.modular.system.model.po.Region;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
+import cn.mypandora.springboot.modular.system.model.vo.RegionTree;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 
@@ -109,6 +111,56 @@ public class TreeUtil {
         }).collect(Collectors.toList());
         // 2.
         DepartmentTree node;
+        Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
+        int i;
+        for (i = 0; i < fragmentTree.size(); i += 1) {
+            map.put(fragmentTree.get(i).getId(), i);
+            fragmentTree.get(i).setChildren(new ArrayList<>());
+        }
+        for (i = 0; i < fragmentTree.size(); i += 1) {
+            node = fragmentTree.get(i);
+            if (node.getParentId() != null) {
+                // if you have dangling branches check that map[node.parentId] exists
+                fragmentTree.get(map.get(node.getParentId())).getChildren().add(node);
+            } else {
+                roots.add(node);
+            }
+        }
+        return roots;
+    }
+
+    /**
+     * 将地区数据转换为树。
+     *
+     * @param regionList
+     *            地区列表
+     * @return 地区树
+     */
+    public static List<RegionTree> region2Tree(List<Region> regionList) {
+        List<RegionTree> roots = new ArrayList<>();
+        // 1. 转换数据类型并将不存在的父id置空
+        List<RegionTree> fragmentTree = new ArrayList<>();
+        for (Region region : regionList) {
+            RegionTree regionTree = new RegionTree();
+            regionTree.setId(region.getId());
+            regionTree.setKey(region.getId().toString());
+            regionTree.setValue(region.getId().toString());
+            regionTree.setTitle(region.getName());
+            regionTree.setDisabled(region.getStatus() == StatusEnum.DISABLED);
+            regionTree.setParentId(region.getParentId());
+            // 列表字段
+            regionTree.setStatus(region.getStatus().getName());
+            regionTree.setDescription(region.getDescription());
+            fragmentTree.add(regionTree);
+        }
+        fragmentTree.stream().filter(item -> {
+            if (fragmentTree.stream().noneMatch(it -> it.getId().equals(item.getParentId()))) {
+                item.setParentId(null);
+            }
+            return true;
+        }).collect(Collectors.toList());
+        // 2.
+        RegionTree node;
         Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
         int i;
         for (i = 0; i < fragmentTree.size(); i += 1) {

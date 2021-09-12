@@ -30,10 +30,9 @@ import cn.mypandora.springboot.modular.system.service.DepartmentService;
  * 本测试环境如下：SpringBoot 2.2.6 + junit5 + Mybatis 。
  * 当配置Mybatis框架的@MapperScan注解时，Spring会去尝试实例化Mapper实例，但是因为我们使用的是@WebMvcTest注解，Spring不会去实例化Mapper所依赖的sqlSessionFactory等自动配置的组件，最终导致依赖注解失败，无法构建Spring上下文环境。
  * 解决方法一是使用官方的@AutoConfigureMybatis注解；二是内部类缩小扫描包范围。
- * 
+ *
  * @author hankaibo
  * @date 2020/5/5
- * 
  * @see <a href="https://zhuanlan.zhihu.com/p/67801427">基于spring-boot的单元和集成测试方案</a>
  * @see <a href="https://github.com/mybatis/spring-boot-starter/issues/224>AutoConfigureMybatis</a>
  * @see <a href="https://github.com/mybatis/spring-boot-starter/issues/227>AutoConfigureMybatis</a>

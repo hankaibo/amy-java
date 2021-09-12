@@ -25,7 +25,7 @@ public class RealmManager {
 
     /**
      * 1. 注入UserService接口，以供登录时调用数据库获取用户进行比对。 2. 分别针对登录与接口注入相应的匹配器进行规则匹配。
-     * 
+     * <p>
      * 基于username/password 形式登录时的接口与匹配器
      */
     private UserService userService;

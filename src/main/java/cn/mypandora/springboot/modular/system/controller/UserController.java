@@ -61,7 +61,7 @@ public class UserController {
 
     /**
      * 更新当前登录用户信息。
-     * 
+     *
      * @param userId
      *            当前登录用户id
      * @param user

@@ -30,7 +30,6 @@ public class MyWebMvc implements WebMvcConfigurer {
     private MessageSource messageSource;
 
     /**
-     * 
      * @param registry
      *            注册
      * @see <a href="https://www.codenong.com/cs106882526/">https://www.codenong.com/cs106882526/</a>

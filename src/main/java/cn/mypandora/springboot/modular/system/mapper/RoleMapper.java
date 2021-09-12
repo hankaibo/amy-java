@@ -77,7 +77,7 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * <p>
      * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾
      * </p>
-     * 
+     *
      * @param id
      *            当前角色id
      * @param amount
@@ -92,7 +92,7 @@ public interface RoleMapper extends MyBaseMapper<Role> {
      * <p>
      * 大于当前节点左值，方便插入到父节点的头；大于当前节点右值，方便插入到父节点末尾 *
      * </p>
-     * 
+     *
      * @param id
      *            当前角色id
      * @param amount

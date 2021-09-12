@@ -286,7 +286,7 @@ public class RoleServiceImpl implements RoleService {
 
     /**
      * 清空指定角色资源
-     * 
+     *
      * @param roleId
      *            角色id
      */
@@ -301,7 +301,7 @@ public class RoleServiceImpl implements RoleService {
 
     /**
      * 清空指定角色用户
-     * 
+     *
      * @param roleId
      *            角色id
      */

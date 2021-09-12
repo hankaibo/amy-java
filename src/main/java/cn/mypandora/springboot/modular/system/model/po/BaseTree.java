@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
@@ -58,7 +57,6 @@ public abstract class BaseTree extends BaseEntity {
      * 父节点
      */
     @ApiModelProperty(value = "父节点id")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{tree.parentId.notNull}")
     @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "{tree.parentId.positive}")
     protected Long parentId;
 

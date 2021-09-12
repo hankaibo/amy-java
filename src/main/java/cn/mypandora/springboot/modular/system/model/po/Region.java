@@ -20,46 +20,48 @@ import tk.mybatis.mapper.annotation.NameStyle;
 import tk.mybatis.mapper.code.Style;
 
 /**
- * Dictionary
+ * Region
  *
  * @author hankaibo
  * @date 2019/6/14
  */
-@ApiModel("字典对象")
+@ApiModel("区域对象")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "sys_dictionary")
+@Table(name = "sys_region")
 @NameStyle(Style.camelhumpAndLowercase)
-public class Dictionary extends BaseEntity {
+public class Region extends BaseTree {
+
+    private static final long serialVersionUID = -2023943502971950908L;
 
     /**
-     * 字典名称
+     * 区域编码
      */
-    @ApiModelProperty(value = "字典名称")
-    @NotBlank
-    private String name;
-
-    /**
-     * 字典编码
-     */
-    @ApiModelProperty(value = "字典编码")
+    @ApiModelProperty(value = "区域编码")
     @NotBlank
     private String code;
 
     /**
+     * 区域值
+     */
+    @ApiModelProperty(value = "区域值")
+    @NotBlank
+    private String value;
+
+    /**
      * 状态
      */
-    @ApiModelProperty(value = "字典状态")
-    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{dictionary.status.notNull}")
+    @ApiModelProperty(value = "区域状态")
+    @NotNull(groups = {AddGroup.class, UpdateGroup.class}, message = "{region.status.notNull}")
     @ColumnType(jdbcType = JdbcType.VARCHAR)
     private StatusEnum status;
 
     /**
-     * 字典描述
+     * 区域描述
      */
-    @ApiModelProperty(value = "字典描述")
-    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{dictionary.description.size}")
+    @ApiModelProperty(value = "区域描述")
+    @Size(max = 255, groups = {AddGroup.class, UpdateGroup.class}, message = "{region.description.size}")
     private String description;
 
 }
