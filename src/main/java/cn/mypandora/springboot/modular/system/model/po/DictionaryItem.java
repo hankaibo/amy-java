@@ -60,7 +60,7 @@ public class DictionaryItem extends BaseEntity {
      */
     @ApiModelProperty(value = "字典项顺序")
     @NotBlank
-    private String sort;
+    private Integer sort;
 
     /**
      * 状态

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.DictionaryItemMapper">
+    <resultMap id="DictionaryItemMap" type="dictionaryItem">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="dictionary_id" jdbcType="BIGINT" property="dictionaryId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="pageDictionaryItem" resultMap="DictionaryItemMap">
+        SELECT t.id, t.dictionary_id, t.name, t.value, t.sort, t.status, t.create_time, t.update_time
+        FROM sys_dictionary_item t
+        JOIN sys_dictionary d on t.dictionary_id = d.id
+        WHERE 1 = 1
+        <if test="dictionaryItem.dictionaryId!=null">
+            AND t.dictionary_id = #{dictionaryItem.dictionaryId}
+        </if>
+        <if test="dictionaryItem.name!=null">
+            AND t.name = #{dictionaryItem.name}
+        </if>
+        <if test="dictionaryItem.status!=null">
+            AND t.status = #{dictionaryItem.status}
+        </if>
+        <if test="code!=null">
+            AND d.code = #{code}
+        </if>
+        ORDER BY t.sort ${sort}
+    </select>
+
+</mapper>

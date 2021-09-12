@@ -11,53 +11,18 @@
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
         <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="signature" jdbcType="VARCHAR" property="signature"/>
+        <result column="profile" jdbcType="VARCHAR" property="profile"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="last_login_ip" jdbcType="VARCHAR" property="lastLoginIP"/>
         <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
 
-    <sql id="baseColumns">
-        ${alias}.id,
-        ${alias}
-        .
-        username,
-        ${alias}
-        .
-        nickname,
-        ${alias}
-        .
-        status,
-        ${alias}
-        .
-        avatar,
-        ${alias}
-        .
-        email,
-        ${alias}
-        .
-        phone,
-        ${alias}
-        .
-        mobile,
-        ${alias}
-        .
-        sex,
-        ${alias}
-        .
-        last_login_time,
-        ${alias}
-        .
-        create_time,
-        ${alias}
-        .
-        update_time
-    </sql>
-
     <select id="pageUser" resultMap="userMap">
-        SELECT
-        <include refid="baseColumns">
-            <property name="alias" value="u"/>
-        </include>
+        SELECT u.id, u.username, u.nickname, u.status, u.avatar, u.email, u.phone, u.mobile, u.sex, u.last_login_ip,
+        u.last_login_time, u.create_time, u.update_time
         FROM sys_department_user du
         JOIN sys_user u on du.user_id = u.id
         WHERE 1 = 1

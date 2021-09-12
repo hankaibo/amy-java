@@ -119,7 +119,7 @@ public class User extends BaseEntity {
      * 用户个性签名
      */
     @ApiModelProperty(value = "用户个性签名")
-    @Size(max = 128, message = "{user.signature.size}")
+    @Size(max = 255, message = "{user.signature.size}")
     private String signature;
 
     /**
@@ -135,6 +135,13 @@ public class User extends BaseEntity {
     @ApiModelProperty(value = "用户地址")
     @Size(max = 255, message = "{user.address.size}")
     private String address;
+
+    /**
+     * 用户最近登录IP
+     */
+    @ApiModelProperty(value = "用户最近登录IP")
+    @Size(max = 128, message = "{user.lastLoginIp.size}")
+    private String lastLoginIp;
 
     /**
      * 最后登录时间
