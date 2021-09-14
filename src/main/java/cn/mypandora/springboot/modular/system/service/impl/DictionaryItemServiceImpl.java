@@ -1,9 +1,9 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +83,6 @@ public class DictionaryItemServiceImpl implements DictionaryItemService {
 
     @Override
     public void deleteBatchDictionaryItem(Long[] ids) {
-        dictionaryItemMapper.deleteByIds(Arrays.toString(ids));
+        dictionaryItemMapper.deleteByIds(StringUtils.join(ids, ","));
     }
 }
