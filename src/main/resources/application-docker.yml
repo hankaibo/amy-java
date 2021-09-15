@@ -4,7 +4,7 @@
 ## 文件上传路径
 upload:
   path: /root/upload/images/amy/
-  remote-url: http://47.95.120.23:9000/amy/images/
+  remote-url: http://47.95.120.23:9000/images/
 ## 数据库
 spring:
   datasource:
