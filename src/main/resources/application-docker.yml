@@ -49,7 +49,7 @@ spring:
 ###############################################################################
 ## swagger
 springfox:
-  enable: false
+  enable: true
   application-name: @name@
   application-version: @version@
   application-description: @description@
