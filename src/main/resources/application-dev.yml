@@ -12,9 +12,9 @@ upload:
 spring:
   ## 数据库
   datasource:
-    url: jdbc:mysql://rm-2zezxd1097ucps7t8bo.mysql.rds.aliyuncs.com:3306/amy-db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: ENC(DxIMWvJXceRM2ZRMhuXIooUXBheCirEeCwPqBj5zdQUMRZAe0X6ZzHp6hMBrMpEG)
-    password: ENC(DrB0GuLjdiHrkT1fJjnDYZxQMOjPX+fCrKC8WqSWJ4rM+VK/nKC1lWnrxyp5nRto1YFJ2bARFv/2VlFjkh6GL7JjLvTlbanM/KmF4mr2ZMc=)
+    url: jdbc:mysql://47.95.120.23:3306/amy-db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ENC(TMcevWIdTvC2HBNdfYuMNihlNWngVz5Y1Hv0A6OaWzz8XHhQkI9jv2Sls55VEVHP)
+    password: ENC(PIXUk6yQ5LKDBnLuxvub+388tUHw5WKHJ56WMzKDVAj8EvD9r/4Ex29RyGFSK7D6NAC11wPc4FduYSkx/xovaA==)
     hikari:
       auto-commit: true
       connection-timeout: 30000

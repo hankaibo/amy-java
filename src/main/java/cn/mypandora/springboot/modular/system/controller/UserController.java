@@ -6,13 +6,18 @@ import java.util.Map;
 
 import javax.validation.constraints.Positive;
 
+import cn.mypandora.springboot.core.annotaiton.Log;
+import cn.mypandora.springboot.core.enums.BusinessTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.mypandora.springboot.core.base.PageInfo;
 import cn.mypandora.springboot.core.enums.StatusEnum;
+import cn.mypandora.springboot.core.exception.ApiError;
 import cn.mypandora.springboot.core.util.TreeUtil;
 import cn.mypandora.springboot.core.validate.*;
 import cn.mypandora.springboot.modular.system.model.po.Role;
@@ -44,6 +49,30 @@ public class UserController {
     public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
+    }
+
+    @GetMapping("/401")
+    public ResponseEntity<Object> test401() {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+    
+    @GetMapping("/403")
+    public ResponseEntity<Object> test403() {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+    
+    @GetMapping("/404")
+    public ResponseEntity<Object> test404() {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiError,HttpStatus.ACCEPTED);
+    }    
+    
+    @GetMapping("/500")
+    public ResponseEntity<Object> test500() {
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(apiError, HttpStatus.ACCEPTED);
     }
 
     /**
@@ -133,6 +162,7 @@ public class UserController {
      *            用户数据
      */
     @ApiOperation(value = "用户新建")
+    @Log(title="用户管理", businessType = BusinessTypeEnum.INSERT)
     @PostMapping
     public void
         addUser(@Validated({AddGroup.class}) @RequestBody @ApiParam(value = "用户数据", required = true) User user) {

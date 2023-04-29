@@ -171,7 +171,7 @@ public class JsonWebTokenUtil {
         if (StringUtils.isEmpty(str)) {
             return set;
         }
-        set.addAll(CollectionUtils.arrayToList(str.split(",")));
+        set.addAll((Collection<? extends String>) CollectionUtils.arrayToList(str.split(",")));
         return set;
     }
 

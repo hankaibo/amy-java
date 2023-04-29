@@ -16,7 +16,7 @@ public enum ResourceTypeEnum {
      */
     MENU("菜单"), API("接口");
 
-    private String name;
+    private final String name;
 
     ResourceTypeEnum(String name) {
         this.name = name;

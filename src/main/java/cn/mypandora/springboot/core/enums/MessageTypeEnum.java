@@ -16,7 +16,7 @@ public enum MessageTypeEnum {
      */
     NOTIFICATION("通知"), MESSAGE("消息"), EVENT("事件");
 
-    private String name;
+    private final String name;
 
     MessageTypeEnum(String name) {
         this.name = name;

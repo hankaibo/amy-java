@@ -5,7 +5,7 @@ server:
   max-http-header-size: 10240
 spring:
   profiles:
-    active: @active.profile@
+    active: '@active.profile@'
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
